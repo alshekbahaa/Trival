@@ -18,21 +18,103 @@
         .uppercase-input {
             text-transform: uppercase;
         }
-        /* إعدادات الطباعة الرسمية للتقرير اليومي */
+        /* ==========================================
+           إعدادات الطباعة الرسمية المدمجة (A4 Print Layout)
+           تعالج مشكلة حجم البطاقات واقتطاع الجدول
+           ========================================== */
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
             body {
                 background-color: #ffffff !important;
+                color: #0f172a !important;
                 padding: 0 !important;
+                margin: 0 !important;
+                font-size: 11px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
+            /* إخفاء عناصر التحكم والشاشة غير المطلوبة في الورق */
             .no-print {
                 display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .print-flex {
+                display: flex !important;
+            }
+            /* تقليل المسافات الرأسية لتوفير مساحة الورقة */
+            #dashboard-page {
+                padding: 0 !important;
+            }
+            .max-w-7xl {
+                max-width: 100% !important;
+            }
+            .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+                margin-top: 10px !important;
+            }
+            /* رص بطاقات الملخص الـ 5 في صف واحد مدمج وأنيق */
+            .print-summary-grid {
+                display: grid !important;
+                grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+                gap: 6px !important;
+                margin-bottom: 12px !important;
+            }
+            .print-summary-card {
+                padding: 8px 10px !important;
+                border: 1px solid #94a3b8 !important;
+                border-radius: 8px !important;
+                box-shadow: none !important;
+                background-color: #f8fafc !important;
+                color: #0f172a !important;
+                grid-column: span 1 / span 1 !important;
+            }
+            .print-summary-card .print-card-title {
+                color: #475569 !important;
+                font-size: 10px !important;
+                margin-bottom: 2px !important;
+            }
+            .print-summary-card .print-card-value {
+                color: #0f172a !important;
+                font-size: 15px !important;
+                font-weight: 800 !important;
+            }
+            /* تمييز بطاقة العمولة في الطباعة بحدود واضحة ونص داكن */
+            .print-commission-card {
+                background-color: #ecfdf5 !important;
+                border: 1.5px solid #059669 !important;
+            }
+            .print-commission-card .print-card-value {
+                color: #047857 !important;
+            }
+            /* إصلاح اقتطاع الجدول وإلغاء شريط التمرير الأفقي */
+            .print-table-container {
+                overflow: visible !important;
+                border: 1px solid #94a3b8 !important;
+                border-radius: 8px !important;
+            }
+            table {
+                width: 100% !important;
+                table-layout: auto !important;
+                font-size: 10.5px !important;
+            }
+            th, td {
+                padding: 6px 4px !important;
+                border: 1px solid #cbd5e1 !important;
+                white-space: normal !important;
+                word-break: break-word !important;
+            }
+            th {
+                background-color: #f1f5f9 !important;
+                color: #0f172a !important;
+                font-size: 10px !important;
             }
             .print-border {
                 border: 1px solid #cbd5e1 !important;
                 box-shadow: none !important;
-            }
-            .print-only {
-                display: block !important;
             }
         }
     </style>
@@ -150,16 +232,22 @@
     <div id="dashboard-page" class="hidden flex-grow p-3 md:p-6">
         <div class="max-w-7xl mx-auto space-y-6">
 
-            <!-- ترويسة خاصة بالطباعة الورقية فقط -->
-            <div class="hidden print-only text-center border-b-2 border-slate-800 pb-4 mb-4">
-                <h1 class="text-2xl font-extrabold text-slate-900">تقرير المبيعات والعمولات اليومي - مكتب الطيران</h1>
-                <p id="print-meta-info" class="text-sm font-bold text-slate-600 mt-1"></p>
+            <!-- ترويسة رسمية مدمجة خاصة بالطباعة الورقية فقط (لا تأخذ مساحة كبيرة) -->
+            <div class="hidden print-flex justify-between items-center border-b-2 border-slate-800 pb-2.5 mb-2">
+                <div class="text-right">
+                    <h1 class="text-lg font-extrabold text-slate-900">✈️ تقرير المبيعات والعمولات اليومي - مكتب الطيران</h1>
+                    <p id="print-meta-info" class="text-xs font-bold text-slate-600 mt-0.5"></p>
+                </div>
+                <div class="text-left text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-300">
+                    <div>تاريخ التقرير: <span id="print-date-badge" class="text-slate-900 font-extrabold"></span></div>
+                    <div class="text-[10px] text-slate-500 mt-0.5">نسبة العمولة المعتمدة: 10%</div>
+                </div>
             </div>
 
-            <!-- الشريط العلوي (معلومات الحساب، التاريخ، الطباعة، والخروج) -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 print-border">
+            <!-- الشريط العلوي للشاشة فقط (يختفي في الطباعة لمنع التكرار وإهدار المساحة) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 no-print">
                 <div class="flex items-center gap-3.5">
-                    <div class="w-12 h-12 bg-blue-900 text-white rounded-xl flex items-center justify-center text-2xl font-bold shadow-sm no-print">
+                    <div class="w-12 h-12 bg-blue-900 text-white rounded-xl flex items-center justify-center text-2xl font-bold shadow-sm">
                         ✈️
                     </div>
                     <div>
@@ -300,50 +388,50 @@
                 </div>
             </div>
 
-            <!-- بطاقات الملخص الإحصائي اليومي (تظهر في الشاشة وفي الطباعة) -->
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
-                <!-- عدد التذاكر -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-border">
-                    <span class="text-xs font-bold text-slate-400 block mb-1">عدد التذاكر المباعة</span>
-                    <div id="sum-tickets" class="text-2xl font-extrabold text-slate-800">0</div>
+            <!-- بطاقات الملخص الإحصائي اليومي (تتحول في الطباعة إلى شريط أفقي واحد مدمج من 5 أعمدة) -->
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 print-summary-grid">
+                <!-- 1. عدد التذاكر -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">عدد التذاكر المباعة</span>
+                    <div id="sum-tickets" class="text-2xl font-extrabold text-slate-800 print-card-value">0</div>
                 </div>
 
-                <!-- إجمالي المبيعات -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-border">
-                    <span class="text-xs font-bold text-slate-400 block mb-1">إجمالي المبيعات (كلي)</span>
-                    <div id="sum-total-sales" class="text-2xl font-extrabold text-blue-900">0.00</div>
+                <!-- 2. إجمالي المبيعات -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">إجمالي المبيعات (كلي)</span>
+                    <div id="sum-total-sales" class="text-2xl font-extrabold text-blue-900 print-card-value">0.00</div>
                 </div>
 
-                <!-- تفصيل الكاش والشبكة -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-border">
-                    <span class="text-xs font-bold text-slate-400 block mb-1">تفصيل طرق الدفع</span>
-                    <div class="text-xs font-bold space-y-1 mt-1">
+                <!-- 3. تفصيل الكاش والشبكة -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">تفصيل طرق الدفع</span>
+                    <div class="text-xs font-bold space-y-0.5 mt-0.5">
                         <div class="flex justify-between text-emerald-700"><span>💵 كاش:</span> <span id="sum-cash">0.00</span></div>
                         <div class="flex justify-between text-sky-700"><span>💳 شبكة/تحويل:</span> <span id="sum-card">0.00</span></div>
                     </div>
                 </div>
 
-                <!-- إجمالي صافي المرابح -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-border">
-                    <span class="text-xs font-bold text-slate-400 block mb-1">إجمالي صافي المرابح</span>
-                    <div id="sum-profit" class="text-2xl font-extrabold text-indigo-700">0.00</div>
+                <!-- 4. إجمالي صافي المرابح -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">إجمالي صافي المرابح</span>
+                    <div id="sum-profit" class="text-2xl font-extrabold text-indigo-700 print-card-value">0.00</div>
                 </div>
 
-                <!-- إجمالي عمولة الموظف (10%) -->
-                <div class="bg-emerald-600 text-white p-4 rounded-2xl shadow-sm print-border col-span-2 lg:col-span-1">
-                    <span class="text-xs font-bold text-emerald-100 block mb-1">إجمالي عمولة الموظف (10%)</span>
-                    <div id="sum-commission" class="text-2xl font-extrabold">0.00</div>
+                <!-- 5. إجمالي عمولة الموظف (10%) -->
+                <div class="bg-emerald-600 text-white p-4 rounded-2xl shadow-sm col-span-2 lg:col-span-1 print-summary-card print-commission-card">
+                    <span class="text-xs font-bold text-emerald-100 block mb-1 print-card-title">إجمالي عمولة الموظف (10%)</span>
+                    <div id="sum-commission" class="text-2xl font-extrabold print-card-value">0.00</div>
                 </div>
             </div>
 
             <!-- جدول سجل مبيعات اليوم المحدد -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden print-border">
-                <div class="p-4 md:p-5 border-b border-slate-100 flex justify-between items-center">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden print-table-container">
+                <div class="p-4 md:p-5 border-b border-slate-100 flex justify-between items-center no-print">
                     <h3 class="font-extrabold text-slate-800 text-base md:text-lg">📋 جدول التقرير اليومي المفصل</h3>
                     <span id="table-count-badge" class="text-xs font-bold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">0 حجز</span>
                 </div>
 
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto print-table-container">
                     <table class="w-full text-right border-collapse text-sm">
                         <thead>
                             <tr class="bg-slate-50 text-slate-600 border-b border-slate-200 text-xs uppercase">
@@ -365,6 +453,22 @@
                             <!-- يتم تعبئة صفوف التذاكر برمجياً عبر JavaScript -->
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- قسم التوقيعات الرسمي (يظهر فقط في أسفل ورقة الطباعة لاعتماد التقرير) -->
+            <div class="hidden print-flex justify-between items-center pt-6 mt-4 text-xs font-bold text-slate-700 px-4">
+                <div class="text-center">
+                    <p class="mb-6">توقيع الموظف المختص</p>
+                    <p class="text-slate-400">............................................</p>
+                </div>
+                <div class="text-center">
+                    <p class="mb-6">المراجعة والمحاسبة (الصندوق)</p>
+                    <p class="text-slate-400">............................................</p>
+                </div>
+                <div class="text-center">
+                    <p class="mb-6">اعتماد المدير العام</p>
+                    <p class="text-slate-400">............................................</p>
                 </div>
             </div>
 
@@ -602,12 +706,23 @@
             const selectedDate = document.getElementById('date-picker').value;
             const empFilter = document.getElementById('employee-filter').value;
 
-            // تحديث الاسم的最新 للمستخدم الحالي
+            // تحديث الاسم الأحدث للمستخدم الحالي
             currentUser.name = usersDB[currentUser.username].name;
+
+            // تحديد اسم الموظف المعروض في ترويسة الطباعة بدقة
+            let targetReportOwner = currentUser.name;
+            if (currentUser.role === 'admin') {
+                if (empFilter === 'ALL') {
+                    targetReportOwner = 'المدير العام (شامل جميع الموظفين)';
+                } else if (usersDB[empFilter]) {
+                    targetReportOwner = `تقرير الموظف: ${usersDB[empFilter].name}`;
+                }
+            }
 
             document.getElementById('welcome-title').innerText = `سجل المبيعات - ${currentUser.name}`;
             document.getElementById('report-date-subtitle').innerText = `التقرير اليومي المعتمد لتاريخ: ${selectedDate}`;
-            document.getElementById('print-meta-info').innerText = `المسؤول: ${currentUser.name} | تاريخ التقرير: ${selectedDate}`;
+            document.getElementById('print-meta-info').innerText = `المسؤول / نطاق التقرير: ${targetReportOwner}`;
+            document.getElementById('print-date-badge').innerText = selectedDate;
 
             // فلترة التذاكر حسب التاريخ المحدد وصلاحية المستخدم
             const filteredSales = salesDatabase.filter(sale => {

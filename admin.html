@@ -150,66 +150,191 @@
         </div>
     </div>
 
-    <!-- نافذة تعديل حالة التذكرة (إصدار/استرجاع/إلغاء) وتسديد المديونية -->
-    <div id="status-debt-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+    <!-- نافذة ونظام التعديل الموجّه الشامل (تفتح حسب نوع التعديل المختار من القائمة المنسدلة) -->
+    <div id="status-debt-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 my-8">
             <div class="flex justify-between items-center pb-3 mb-4 border-b border-slate-100">
                 <h3 class="text-lg font-extrabold text-blue-900 flex items-center gap-2">
-                    <span>⚙️</span> إدارة حالة التذكرة والمديونية
+                    <span>🛠️</span> نافذة التعديل الموجهة وإدارة التذكرة
                 </h3>
                 <button onclick="closeStatusDebtModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
             </div>
 
-            <div id="modal-ticket-info" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 mb-4 space-y-1">
-                <!-- معلومات التذكرة المختارة -->
+            <!-- ملخص سريع لبيانات التذكرة الحالية قبل التعديل -->
+            <div id="modal-ticket-info" class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 mb-4 space-y-1.5">
+                <!-- يتم تعبئة معلومات التذكرة المختارة برمجياً -->
             </div>
 
+            <!-- القائمة المنسدلة الرئيسية لاختيار نوع التعديل بوضوح تام -->
+            <div class="mb-5 bg-blue-950 text-white p-4 rounded-2xl shadow-inner">
+                <label class="block text-xs font-extrabold text-sky-300 mb-2">👇 اختر نوع التعديل أو الإجراء المطلوب تنفيذه على التذكرة:</label>
+                <select id="edit-action-type" onchange="handleEditActionTypeChange()" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-sky-400 bg-white font-extrabold text-sm text-blue-950 focus:outline-none cursor-pointer">
+                    <option value="EDIT_INFO">📝 1. تصحيح بيانات الحجز (العميل / الجوال / PNR / شركة الطيران / التاريخ)</option>
+                    <option value="PAY_DEBT">💵 2. تحصيل دفعة مالية / تسديد مديونية على العميل</option>
+                    <option value="EDIT_PRICES">🔄 3. تعديل أسعار التذكرة أو إعادة إصدار (Reissue)</option>
+                    <option value="MAKE_REFUND">↩️ 4. استرجاع التذكرة (Refund - حذف عمولة الـ 10% تلقائياً)</option>
+                    <option value="MAKE_VOID">🚫 5. إلغاء التذكرة بالكامل (Void - تصفير التذكرة وحذف العمولة)</option>
+                </select>
+            </div>
+
+            <!-- الأقسام الديناميكية: يظهر فقط القسم المطابق لاختيار الموظف من القائمة المنسدلة -->
             <div class="space-y-4">
-                <!-- 1. تغيير حالة التذكرة -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">حالة التذكرة (تؤثر تلقائياً على العمولة 10%):</label>
-                    <select id="edit-ticket-status" onchange="handleModalStatusChange()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white font-bold text-sm text-slate-800 focus:border-blue-600 outline-none">
-                        <option value="issue">✅ إصدار مؤكد (تُحتسب العمولة 10%)</option>
-                        <option value="reissue">🔄 تعديل / إعادة إصدار Reissue (تُحتسب العمولة 10%)</option>
-                        <option value="refund">↩️ مسترجعة Refund (حذف عمولة الموظف 0%)</option>
-                        <option value="void">🚫 ملغاة Void (تصفير التذكرة وحذف العمولة 0%)</option>
-                    </select>
+
+                <!-- القسم 1: تصحيح بيانات الحجز الأساسية -->
+                <div id="section-edit-info" class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 hidden">
+                    <div class="text-xs font-extrabold text-blue-900 border-b border-slate-200 pb-2 mb-2">
+                        📝 تعديل البيانات الأساسية للحجز (بدون تغيير الحسابات المالية):
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">اسم العميل / الشركة:</label>
+                            <input type="text" id="modal-client-name" class="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm font-bold text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">رقم الجوال:</label>
+                            <input type="text" id="modal-client-phone" dir="ltr" class="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm font-bold text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">رقم الحجز (PNR):</label>
+                            <input type="text" id="modal-pnr" dir="ltr" maxlength="12" class="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm font-mono font-extrabold text-blue-900 uppercase-input">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ العملية:</label>
+                            <input type="date" id="modal-date" class="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm font-bold text-slate-800">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">شركة الطيران:</label>
+                            <select id="modal-airline-select" onchange="toggleModalCustomAirline()" class="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm font-bold text-slate-800">
+                                <option value="الخطوط السعودية (Saudia)">الخطوط السعودية (Saudia)</option>
+                                <option value="طيران ناس (Flynas)">طيران ناس (Flynas)</option>
+                                <option value="طيران أديل (Flyadeal)">طيران أديل (Flyadeal)</option>
+                                <option value="طيران الإمارات (Emirates)">طيران الإمارات (Emirates)</option>
+                                <option value="الخطوط القطرية (Qatar Airways)">الخطوط القطرية (Qatar Airways)</option>
+                                <option value="مصر للطيران (EgyptAir)">مصر للطيران (EgyptAir)</option>
+                                <option value="طيران الخليج (Gulf Air)">طيران الخليج (Gulf Air)</option>
+                                <option value="فلاي دبي (Flydubai)">فلاي دبي (Flydubai)</option>
+                                <option value="العربية للطيران (Air Arabia)">العربية للطيران (Air Arabia)</option>
+                                <option value="الخطوط التركية (Turkish Airlines)">الخطوط التركية (Turkish Airlines)</option>
+                                <option value="OTHER">➕ أخرى (كتابة يدوية...)</option>
+                            </select>
+                            <input type="text" id="modal-airline-custom" placeholder="اكتب اسم شركة الطيران هنا..." class="hidden mt-2 w-full px-3 py-2 rounded-lg border-2 border-blue-500 bg-white text-sm font-bold text-blue-950">
+                        </div>
+                    </div>
                 </div>
 
-                <!-- حقل رسوم الاسترجاع للمكتب (يظهر فقط عند اختيار مسترجعة) -->
-                <div id="refund-fee-box" class="hidden bg-amber-50 p-3 rounded-xl border border-amber-200">
-                    <label class="block text-xs font-bold text-amber-900 mb-1">صافي رسوم الاسترجاع المحتجزة للمكتب (إن وجدت):</label>
-                    <input type="number" id="edit-refund-fee" placeholder="0.00" step="0.01" value="0"
-                           class="w-full px-3 py-1.5 rounded-lg border border-amber-300 bg-white text-sm font-bold text-slate-800 outline-none">
-                    <p class="text-[11px] text-amber-700 mt-1 font-semibold">💡 سيتم حذف عمولة الموظف (0.00) تلقائياً لأن التذكرة مسترجعة.</p>
-                </div>
-
-                <!-- 2. تحديث المبلغ المدفوع والمديونية -->
-                <div id="debt-update-box" class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-200 space-y-2">
-                    <div class="flex justify-between items-center">
-                        <label class="text-xs font-bold text-blue-950">المبلغ المدفوع فعلياً من العميل:</label>
-                        <button type="button" onclick="payFullTicketAmountInModal()" class="text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2.5 py-1 rounded-lg transition">
-                            💵 تسديد كامل المبلغ
+                <!-- القسم 2: تحصيل دفعة مالية / تسديد مديونية -->
+                <div id="section-pay-debt" class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 space-y-3 hidden">
+                    <div class="flex justify-between items-center border-b border-emerald-200 pb-2">
+                        <span class="text-xs font-extrabold text-emerald-950">💵 تحديث المبلغ المقبوض من العميل وتسديد الذمم:</span>
+                        <button type="button" onclick="payFullTicketAmountInModal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-3 py-1 rounded-lg shadow-sm transition">
+                            ✅ تسديد كامل المبلغ فوراً
                         </button>
                     </div>
-                    <input type="number" id="edit-paid-amount" step="0.01"
-                           class="w-full px-3 py-2 rounded-lg border border-blue-300 bg-white text-sm font-extrabold text-blue-900 outline-none">
-                    
-                    <div class="pt-1">
-                        <label class="block text-xs font-bold text-slate-600 mb-1">طريقة الدفع المعتمدة:</label>
-                        <select id="edit-payment-method" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-700">
-                            <option value="شبكة">💳 شبكة (مدى / فيزا)</option>
-                            <option value="كاش">💵 كاش (نقدي)</option>
-                            <option value="تحويل">🏦 تحويل بنكي</option>
-                            <option value="آجل">📒 آجل / ذمم (حساب شركات أو عملاء)</option>
-                        </select>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-emerald-900 mb-1">إجمالي المبلغ المدفوع فعلياً حتى الآن:</label>
+                            <input type="number" id="edit-paid-amount" step="0.01" oninput="updateModalLiveImpact()"
+                                   class="w-full px-3 py-2 rounded-lg border border-emerald-400 bg-white text-sm font-extrabold text-emerald-900 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-emerald-900 mb-1">طريقة الدفع المعتمدة:</label>
+                            <select id="edit-payment-method" class="w-full px-3 py-2 rounded-lg border border-emerald-300 bg-white text-sm font-bold text-slate-800">
+                                <option value="شبكة">💳 شبكة (مدى / فيزا)</option>
+                                <option value="كاش">💵 كاش (نقدي)</option>
+                                <option value="تحويل">🏦 تحويل بنكي</option>
+                                <option value="آجل">📒 آجل / ذمم (حساب شركات أو عملاء)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- القسم 3: تعديل الأسعار أو إعادة الإصدار (Reissue) -->
+                <div id="section-edit-prices" class="bg-blue-50/70 p-4 rounded-xl border border-blue-200 space-y-3 hidden">
+                    <div class="text-xs font-extrabold text-blue-950 border-b border-blue-200 pb-2">
+                        🔄 تعديل التكلفة وسعر البيع (أو إعادة إصدار التذكرة Reissue):
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">حالة العملية:</label>
+                            <select id="modal-price-status" onchange="updateModalLiveImpact()" class="w-full px-3 py-2 rounded-lg border border-blue-300 bg-white text-sm font-bold text-blue-950">
+                                <option value="reissue">🔄 تعديل / إعادة إصدار (Reissue)</option>
+                                <option value="issue">✅ إصدار مؤكد (Issue)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">طريقة الدفع:</label>
+                            <select id="modal-price-payment" class="w-full px-3 py-2 rounded-lg border border-blue-300 bg-white text-sm font-bold text-slate-800">
+                                <option value="شبكة">💳 شبكة (مدى / فيزا)</option>
+                                <option value="كاش">💵 كاش (نقدي)</option>
+                                <option value="تحويل">🏦 تحويل بنكي</option>
+                                <option value="آجل">📒 آجل / ذمم</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">المبلغ الأساسي الجديد (التكلفة):</label>
+                            <input type="number" id="modal-base-price" step="0.01" oninput="updateModalLiveImpact()" class="w-full px-3 py-2 rounded-lg border border-blue-300 bg-white text-sm font-bold text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">المبلغ الإجمالي الجديد (سعر البيع):</label>
+                            <input type="number" id="modal-total-price" step="0.01" oninput="onModalTotalPriceChange()" class="w-full px-3 py-2 rounded-lg border border-blue-300 bg-white text-sm font-extrabold text-blue-900">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">المبلغ المدفوع فعلياً من العميل:</label>
+                            <input type="number" id="modal-price-paid" step="0.01" oninput="updateModalLiveImpact()" class="w-full px-3 py-2 rounded-lg border border-blue-300 bg-white text-sm font-extrabold text-emerald-800">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- القسم 4: تحويل التذكرة إلى مسترجعة (Refund) -->
+                <div id="section-make-refund" class="bg-amber-50 p-4 rounded-xl border border-amber-300 space-y-3 hidden">
+                    <div class="text-xs font-extrabold text-amber-950 border-b border-amber-200 pb-2">
+                        ↩️ إجراءات استرجاع التذكرة (Refund):
+                    </div>
+                    <p class="text-xs text-amber-800 font-semibold leading-relaxed">
+                        عند تأكيد استرجاع التذكرة، سيقوم النظام تلقائياً بـ <strong class="text-red-600 underline">حذف عمولة الموظف (10% ⬅ 0.00)</strong> واستبعاد سعر التذكرة من المبيعات الفعالة.
+                    </p>
+                    <div>
+                        <label class="block text-xs font-bold text-amber-950 mb-1">صافي رسوم الاسترجاع المحتجزة كربح للمكتب (إن وجدت):</label>
+                        <input type="number" id="edit-refund-fee" placeholder="0.00" step="0.01" value="0" oninput="updateModalLiveImpact()"
+                               class="w-full px-3 py-2 rounded-lg border border-amber-400 bg-white text-sm font-extrabold text-slate-800 outline-none">
+                        <span class="text-[11px] text-amber-700 block mt-1">💡 اتركها 0 إذا تم إرجاع كامل المبلغ للعميل بدون رسوم مكتب.</span>
+                    </div>
+                </div>
+
+                <!-- القسم 5: إلغاء التذكرة بالكامل (Void) -->
+                <div id="section-make-void" class="bg-red-50 p-4 rounded-xl border border-red-200 space-y-2 hidden">
+                    <div class="text-xs font-extrabold text-red-900 border-b border-red-200 pb-2">
+                        🚫 تأكيد إلغاء التذكرة بالكامل (Void):
+                    </div>
+                    <p class="text-xs text-red-700 font-bold leading-relaxed">
+                        تحويل التذكرة إلى (ملغاة Void) سيقوم بتصفير المبلغ المدفوع والمربح، و<strong class="underline">حذف عمولة الموظف (0.00)</strong>، مع بقاء التذكرة في الجدول كسجل أرشيفي مشطوب عليه للرجوع إليه عند الحاجة.
+                    </p>
+                </div>
+
+                <!-- شريط المعاينة المحاسبية الحية لنتيجة التعديل قبل الحفظ -->
+                <div class="bg-slate-100 p-3.5 rounded-xl border border-slate-300 flex flex-wrap justify-around items-center gap-3 text-xs">
+                    <div>
+                        <span class="text-slate-500 font-bold">الحالة بعد الحفظ: </span>
+                        <span id="modal-preview-status" class="font-extrabold text-blue-900">-</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 font-bold">صافي المربح: </span>
+                        <span id="modal-preview-profit" class="font-extrabold text-indigo-700 text-sm">0.00</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 font-bold">عمولة الموظف (10%): </span>
+                        <span id="modal-preview-comm" class="font-extrabold text-emerald-700 text-sm">0.00</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 font-bold">الدين المتبقي: </span>
+                        <span id="modal-preview-debt" class="font-extrabold text-red-600 text-sm">0.00</span>
                     </div>
                 </div>
             </div>
 
             <div class="mt-6 pt-4 border-t border-slate-100 flex justify-end gap-2">
-                <button onclick="saveStatusAndDebtChanges()" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-xl text-sm transition">💾 حفظ وتحديث التقرير</button>
-                <button onclick="closeStatusDebtModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-4 rounded-xl text-sm transition">إلغاء</button>
+                <button onclick="saveStatusAndDebtChanges()" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow transition">💾 اعتماد وحفظ التعديل</button>
+                <button onclick="closeStatusDebtModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl text-sm transition">إلغاء</button>
             </div>
         </div>
     </div>
@@ -1214,41 +1339,174 @@
             renderDashboard();
         }
 
-        // دوال نافذة تعديل حالة التذكرة (إصدار / استرجاع / إلغاء) وتسديد الديون
-        function openStatusDebtModal(ticketId) {
+        // دوال نظام ونافذة التعديل الموجهة عبر القائمة المنسدلة (5 مسارات واضحة)
+        function handleQuickTableAction(selectElem, ticketId) {
+            const chosenAction = selectElem.value;
+            selectElem.value = ""; // إعادة القائمة المنسدلة في الجدول لوضعها الافتراضي
+            if (!chosenAction) return;
+
+            if (chosenAction === 'DELETE') {
+                openDeleteModal(ticketId);
+            } else {
+                openStatusDebtModal(ticketId, chosenAction);
+            }
+        }
+
+        function openStatusDebtModal(ticketId, defaultAction = 'EDIT_INFO') {
             const ticket = salesDatabase.find(t => t.id === ticketId);
             if (!ticket) return;
 
             ticketIdToEditStatus = ticketId;
+
+            // عرض ملخص التذكرة الحالية في أعلى النافذة
+            const statusLabels = {
+                'issue': 'إصدار مؤكد ✅',
+                'reissue': 'تعديل Reissue 🔄',
+                'refund': 'مسترجعة Refund ↩️',
+                'void': 'ملغاة Void 🚫'
+            };
+
             document.getElementById('modal-ticket-info').innerHTML = `
-                <div class="flex justify-between"><span>العميل: <strong>${escapeHTML(ticket.clientName)}</strong></span> <span>PNR: <strong class="font-mono text-blue-900">${escapeHTML(ticket.pnr)}</strong></span></div>
-                <div class="flex justify-between"><span>إجمالي التذكرة: <strong>${ticket.totalPrice.toFixed(2)}</strong></span> <span>المتبقي حالياً: <strong class="text-red-600">${ticket.remainingDebt.toFixed(2)}</strong></span></div>
+                <div class="flex flex-wrap justify-between gap-2">
+                    <span>👤 العميل: <strong class="text-slate-900">${escapeHTML(ticket.clientName)}</strong> (${escapeHTML(ticket.clientPhone)})</span>
+                    <span>✈️ الحجز: <strong class="font-mono text-blue-900 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">${escapeHTML(ticket.pnr)}</strong> — ${escapeHTML(ticket.airline)}</span>
+                </div>
+                <div class="flex flex-wrap justify-between gap-2 pt-1 border-t border-slate-200">
+                    <span>الحالة الحالية: <strong>${statusLabels[ticket.status] || 'إصدار'}</strong></span>
+                    <span>الإجمالي: <strong>${ticket.totalPrice.toFixed(2)}</strong></span>
+                    <span>المدفوع: <strong class="text-emerald-700">${ticket.paidAmount.toFixed(2)}</strong></span>
+                    <span>الدين المتبقي: <strong class="text-red-600">${ticket.remainingDebt.toFixed(2)}</strong></span>
+                </div>
             `;
 
-            document.getElementById('edit-ticket-status').value = ticket.status || 'issue';
+            // 1. تعبئة حقول قسم "تصحيح بيانات الحجز"
+            document.getElementById('modal-client-name').value = ticket.clientName || '';
+            document.getElementById('modal-client-phone').value = ticket.clientPhone || '';
+            document.getElementById('modal-pnr').value = ticket.pnr || '';
+            document.getElementById('modal-date').value = ticket.date || getTodayDateString();
+
+            const airlineSel = document.getElementById('modal-airline-select');
+            const airlineCust = document.getElementById('modal-airline-custom');
+            const existingOptions = Array.from(airlineSel.options).map(o => o.value);
+            if (existingOptions.includes(ticket.airline)) {
+                airlineSel.value = ticket.airline;
+                airlineCust.classList.add('hidden');
+                airlineCust.value = '';
+            } else {
+                airlineSel.value = 'OTHER';
+                airlineCust.classList.remove('hidden');
+                airlineCust.value = ticket.airline || '';
+            }
+
+            // 2. تعبئة حقول قسم "تحصيل دفعة / تسديد دين"
             document.getElementById('edit-paid-amount').value = ticket.paidAmount.toFixed(2);
             document.getElementById('edit-payment-method').value = ticket.paymentMethod || 'شبكة';
+
+            // 3. تعبئة حقول قسم "تعديل الأسعار أو إعادة الإصدار"
+            document.getElementById('modal-price-status').value = (ticket.status === 'reissue') ? 'reissue' : 'issue';
+            document.getElementById('modal-price-payment').value = ticket.paymentMethod || 'شبكة';
+            document.getElementById('modal-base-price').value = ticket.basePrice.toFixed(2);
+            document.getElementById('modal-total-price').value = ticket.totalPrice.toFixed(2);
+            document.getElementById('modal-price-paid').value = ticket.paidAmount.toFixed(2);
+
+            // 4. تعبئة حقول قسم "الاسترجاع Refund"
             document.getElementById('edit-refund-fee').value = (ticket.status === 'refund') ? ticket.profit.toFixed(2) : '0';
 
-            handleModalStatusChange();
+            // ضبط القائمة المنسدلة على نوع التعديل المطلوب
+            document.getElementById('edit-action-type').value = defaultAction;
+            handleEditActionTypeChange();
+
             document.getElementById('status-debt-modal').classList.remove('hidden');
         }
 
-        function handleModalStatusChange() {
-            const st = document.getElementById('edit-ticket-status').value;
-            const refundBox = document.getElementById('refund-fee-box');
-            const debtBox = document.getElementById('debt-update-box');
-
-            if (st === 'refund') {
-                refundBox.classList.remove('hidden');
-                debtBox.classList.add('hidden');
-            } else if (st === 'void') {
-                refundBox.classList.add('hidden');
-                debtBox.classList.add('hidden');
+        function toggleModalCustomAirline() {
+            const sel = document.getElementById('modal-airline-select').value;
+            const cust = document.getElementById('modal-airline-custom');
+            if (sel === 'OTHER') {
+                cust.classList.remove('hidden');
+                cust.focus();
             } else {
-                refundBox.classList.add('hidden');
-                debtBox.classList.remove('hidden');
+                cust.classList.add('hidden');
             }
+        }
+
+        function onModalTotalPriceChange() {
+            const newTotal = parseFloat(document.getElementById('modal-total-price').value) || 0;
+            const payMethod = document.getElementById('modal-price-payment').value;
+            if (payMethod !== 'آجل') {
+                document.getElementById('modal-price-paid').value = newTotal.toFixed(2);
+            }
+            updateModalLiveImpact();
+        }
+
+        // إظهار القسم الخاص بنوع التعديل المختار من القائمة المنسدلة وإخفاء الباقي
+        function handleEditActionTypeChange() {
+            const action = document.getElementById('edit-action-type').value;
+            const sections = {
+                'EDIT_INFO': 'section-edit-info',
+                'PAY_DEBT': 'section-pay-debt',
+                'EDIT_PRICES': 'section-edit-prices',
+                'MAKE_REFUND': 'section-make-refund',
+                'MAKE_VOID': 'section-make-void'
+            };
+
+            Object.keys(sections).forEach(key => {
+                const el = document.getElementById(sections[key]);
+                if (key === action) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+
+            updateModalLiveImpact();
+        }
+
+        // حساب المعاينة الفورية لنتيجة التعديل داخل النافذة قبل الحفظ
+        function updateModalLiveImpact() {
+            const ticket = salesDatabase.find(t => t.id === ticketIdToEditStatus);
+            if (!ticket) return;
+
+            const action = document.getElementById('edit-action-type').value;
+            let statusText = '';
+            let profit = ticket.profit;
+            let comm = ticket.commission;
+            let debt = ticket.remainingDebt;
+
+            if (action === 'EDIT_INFO') {
+                statusText = 'تعديل بيانات فقط (نفس الحالة)';
+            } else if (action === 'PAY_DEBT') {
+                const newPaid = parseFloat(document.getElementById('edit-paid-amount').value) || 0;
+                debt = Math.max(0, ticket.totalPrice - newPaid);
+                profit = ticket.totalPrice - ticket.basePrice;
+                comm = profit > 0 ? (profit * COMMISSION_RATE) : 0;
+                statusText = debt === 0 ? 'مسددة بالكامل ✅' : 'متبقي ذمم 📒';
+            } else if (action === 'EDIT_PRICES') {
+                const bPrice = parseFloat(document.getElementById('modal-base-price').value) || 0;
+                const tPrice = parseFloat(document.getElementById('modal-total-price').value) || 0;
+                const pAmount = parseFloat(document.getElementById('modal-price-paid').value) || 0;
+                const st = document.getElementById('modal-price-status').value;
+                profit = tPrice - bPrice;
+                comm = profit > 0 ? (profit * COMMISSION_RATE) : 0;
+                debt = Math.max(0, tPrice - pAmount);
+                statusText = st === 'reissue' ? 'معاد إصدارها Reissue 🔄' : 'إصدار مؤكد ✅';
+            } else if (action === 'MAKE_REFUND') {
+                const fee = parseFloat(document.getElementById('edit-refund-fee').value) || 0;
+                profit = fee;
+                comm = 0; // حذف عمولة الـ 10%
+                debt = 0;
+                statusText = 'مسترجعة Refund ↩️ (العمولة محذوفة)';
+            } else if (action === 'MAKE_VOID') {
+                profit = 0;
+                comm = 0;
+                debt = 0;
+                statusText = 'ملغاة Void 🚫 (العمولة محذوفة)';
+            }
+
+            document.getElementById('modal-preview-status').innerText = statusText;
+            document.getElementById('modal-preview-profit').innerText = profit.toFixed(2);
+            document.getElementById('modal-preview-comm').innerText = comm.toFixed(2);
+            document.getElementById('modal-preview-debt').innerText = debt.toFixed(2);
         }
 
         function payFullTicketAmountInModal() {
@@ -1258,36 +1516,72 @@
             if (document.getElementById('edit-payment-method').value === 'آجل') {
                 document.getElementById('edit-payment-method').value = 'كاش';
             }
+            updateModalLiveImpact();
         }
 
         function saveStatusAndDebtChanges() {
             const idx = salesDatabase.findIndex(t => t.id === ticketIdToEditStatus);
             if (idx === -1) return;
 
-            const ticket = salesDatabase[idx];
-            const newStatus = document.getElementById('edit-ticket-status').value;
-            const newPaid = parseFloat(document.getElementById('edit-paid-amount').value) || 0;
-            const newMethod = document.getElementById('edit-payment-method').value;
-            const refundFee = parseFloat(document.getElementById('edit-refund-fee').value) || 0;
+            const ticket = { ...salesDatabase[idx] };
+            const action = document.getElementById('edit-action-type').value;
 
-            ticket.status = newStatus;
-            ticket.paymentMethod = newMethod;
+            if (action === 'EDIT_INFO') {
+                const cName = document.getElementById('modal-client-name').value.trim();
+                const cPhone = document.getElementById('modal-client-phone').value.trim();
+                const cPnr = document.getElementById('modal-pnr').value.trim().toUpperCase();
+                const cDate = document.getElementById('modal-date').value;
+                const airSel = document.getElementById('modal-airline-select').value;
+                const airCust = document.getElementById('modal-airline-custom').value.trim();
+                const finalAirline = (airSel === 'OTHER') ? airCust : airSel;
 
-            if (newStatus === 'refund') {
+                if (!cName || !cPhone || !cPnr || !finalAirline) {
+                    showToast("يرجى التأكد من عدم ترك اسم العميل أو الجوال أو PNR أو الطيران فارغاً!", "error");
+                    return;
+                }
+                ticket.clientName = cName;
+                ticket.clientPhone = cPhone;
+                ticket.pnr = cPnr;
+                ticket.date = cDate || ticket.date;
+                ticket.airline = finalAirline;
+
+            } else if (action === 'PAY_DEBT') {
+                const newPaid = parseFloat(document.getElementById('edit-paid-amount').value) || 0;
+                const newMethod = document.getElementById('edit-payment-method').value;
+                if (ticket.status === 'refund' || ticket.status === 'void') {
+                    ticket.status = 'issue';
+                }
+                ticket.paidAmount = newPaid;
+                ticket.paymentMethod = newMethod;
+
+            } else if (action === 'EDIT_PRICES') {
+                const newBase = parseFloat(document.getElementById('modal-base-price').value);
+                const newTotal = parseFloat(document.getElementById('modal-total-price').value);
+                const newPaid = parseFloat(document.getElementById('modal-price-paid').value) || 0;
+                if (isNaN(newBase) || isNaN(newTotal)) {
+                    showToast("يرجى إدخال المبلغ الأساسي والإجمالي بشكل صحيح!", "error");
+                    return;
+                }
+                ticket.status = document.getElementById('modal-price-status').value;
+                ticket.paymentMethod = document.getElementById('modal-price-payment').value;
+                ticket.basePrice = newBase;
+                ticket.totalPrice = newTotal;
+                ticket.paidAmount = newPaid;
+
+            } else if (action === 'MAKE_REFUND') {
+                const refundFee = parseFloat(document.getElementById('edit-refund-fee').value) || 0;
+                ticket.status = 'refund';
                 ticket.paidAmount = 0;
                 ticket.remainingDebt = 0;
                 ticket.profit = refundFee;
-                ticket.commission = 0; // حذف عمولة الموظف 10%
-            } else if (newStatus === 'void') {
+                ticket.commission = 0;
+
+            } else if (action === 'MAKE_VOID') {
+                ticket.status = 'void';
                 ticket.paidAmount = 0;
                 ticket.remainingDebt = 0;
                 ticket.profit = 0;
-                ticket.commission = 0; // حذف عمولة الموظف 10%
-            } else {
-                ticket.paidAmount = newPaid;
-                ticket.remainingDebt = Math.max(0, ticket.totalPrice - newPaid);
-                ticket.profit = ticket.totalPrice - ticket.basePrice;
-                ticket.commission = ticket.profit > 0 ? (ticket.profit * COMMISSION_RATE) : 0;
+                ticket.commission = 0;
             }
 
             salesDatabase[idx] = normalizeTicketRecord(ticket);
@@ -1295,7 +1589,7 @@
 
             closeStatusDebtModal();
             renderDashboard();
-            showToast("تم تحديث حالة التذكرة وإعادة احتساب العمولة والديون بنجاح!");
+            showToast("تم تنفيذ التعديل المختار وتحديث حسابات التقرير والعمولة بنجاح!");
         }
 
         function closeStatusDebtModal() {
@@ -1569,16 +1863,20 @@
                             ${isRefundOrVoid ? '<span class="block text-[9px] text-red-500">محذوفة</span>' : ''}
                         </td>
                         <td class="py-2.5 px-2 text-center no-print">
-                            <div class="flex items-center justify-center gap-1">
-                                <button onclick="sendWhatsAppReceipt(${sale.id})" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-lg transition text-[11px] font-bold" title="إرسال إيصال للعميل عبر واتساب">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <button onclick="sendWhatsAppReceipt(${sale.id})" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-lg transition text-[11px] font-bold shrink-0" title="إرسال إيصال للعميل عبر واتساب">
                                     💬 واتساب
                                 </button>
-                                <button onclick="openStatusDebtModal(${sale.id})" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 px-2 py-1 rounded-lg transition text-[11px] font-bold" title="تغيير الحالة (استرجاع/إلغاء) أو تسديد المديونية">
-                                    ⚙️ حالة/دين
-                                </button>
-                                <button onclick="openDeleteModal(${sale.id})" class="text-red-500 hover:bg-red-50 p-1 rounded-lg transition text-xs font-bold" title="حذف نهائي">
-                                    🗑️
-                                </button>
+                                <!-- قائمة منسدلة واضحة ومباشرة لاختيار نوع التعديل على التذكرة -->
+                                <select onchange="handleQuickTableAction(this, ${sale.id})" class="bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 px-2 py-1 rounded-lg text-[11px] font-extrabold outline-none cursor-pointer transition">
+                                    <option value="">🛠️ اختر تعديل...</option>
+                                    <option value="EDIT_INFO">📝 تصحيح بيانات الحجز</option>
+                                    <option value="PAY_DEBT">💵 تسديد دفعة / دين</option>
+                                    <option value="EDIT_PRICES">🔄 تعديل الأسعار / Reissue</option>
+                                    <option value="MAKE_REFUND">↩️ استرجاع (Refund)</option>
+                                    <option value="MAKE_VOID">🚫 إلغاء التذكرة (Void)</option>
+                                    <option value="DELETE">🗑️ حذف نهائي</option>
+                                </select>
                             </div>
                         </td>
                     `;

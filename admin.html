@@ -188,7 +188,43 @@
                     <span>❌</span>
                     <span>اسم المستخدم أو كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.</span>
                 </div>
-            /* ترويسة رسمية مدمجة خاصة بالطباعة الورقية فقط (لا تأخذ مساحة كبيرة) */
+
+                <div>
+                    <label for="username" class="block text-xs font-bold text-slate-600 mb-1.5">اسم المستخدم (Username)</label>
+                    <input type="text" id="username" required autocomplete="username" placeholder="أدخل اسم المستخدم..."
+                           class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none text-sm font-bold text-slate-800 transition">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-xs font-bold text-slate-600 mb-1.5">كلمة المرور (Password)</label>
+                    <div class="relative">
+                        <input type="password" id="password" required autocomplete="current-password" placeholder="••••••••"
+                               class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none text-sm font-bold text-slate-800 transition">
+                        <button type="button" onclick="togglePasswordVisibility()" id="eye-icon"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-blue-800 hover:text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">
+                            إظهار
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-extrabold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition duration-200 text-sm">
+                    تسجيل الدخول للنظام ⬅
+                </button>
+
+                <div class="pt-3 border-t border-slate-100 text-center">
+                    <span class="text-[11px] font-bold text-slate-400">Designed by <strong class="text-blue-900">Eng. Bahaa Al-Sheikh</strong></span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         الصفحة الثانية: لوحة التحكم والنظام الداخلي
+         ========================================== -->
+    <div id="dashboard-page" class="hidden flex-grow p-4 md:p-6">
+        <div class="max-w-7xl mx-auto space-y-6">
+
+            <!-- ترويسة رسمية مدمجة خاصة بالطباعة الورقية فقط (لا تأخذ مساحة كبيرة) -->
             <div class="hidden print-flex justify-between items-center border-b-2 border-slate-800 pb-2.5 mb-2">
                 <div class="text-right">
                     <h1 id="print-main-title" class="text-lg font-extrabold text-slate-900">✈️ تقرير المبيعات والعمولات - مكتب الطيران</h1>
@@ -457,6 +493,9 @@
                         <tbody id="sales-table-body" class="divide-y divide-slate-100">
                             <!-- يتم تعبئة صفوف التذاكر برمجياً عبر JavaScript -->
                         </tbody>
+                        <tfoot id="sales-table-foot" class="bg-slate-100 font-extrabold text-slate-800 border-t-2 border-slate-300 text-xs">
+                            <!-- يتم تعبئة صف الإجماليات السفلي برمجياً -->
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -508,18 +547,42 @@
             "admin": { password: "admin123", name: "المدير العام", role: "admin" }
         };
 
+        // دالة آمنة لقراءة البيانات من localStorage لتجنب توقف النظام في حال تلف البيانات
+        function safeLoadStorage(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (e) {
+                console.error("Storage load error:", e);
+                return fallback;
+            }
+        }
+
+        // دالة لتعقيم النصوص المدخلة ومنع أخطاء HTML/XSS في الجدول
+        function escapeHTML(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         // تحميل بيانات المستخدمين من الذاكرة المحلية أو اعتماد القيم الافتراضية
-        let usersDB = JSON.parse(localStorage.getItem('airline_users_v3_db')) || DEFAULT_USERS;
+        let usersDB = safeLoadStorage('airline_users_v3_db', DEFAULT_USERS);
 
         let currentUser = null;
         let ticketIdToDelete = null;
         // متغير لتحديد نوع الفلترة الحالية: daily (يومي) | monthly (شهري) | range (فترة من-إلى)
         let currentFilterMode = 'daily';
 
-        // دالة لإرجاع تاريخ اليوم بصيغة YYYY-MM-DD
+        // دالة لإرجاع تاريخ اليوم حسب التوقيت المحلي للجهاز بصيغة YYYY-MM-DD (إصلاح مشكلة فرق التوقيت UTC)
         function getTodayDateString() {
             const today = new Date();
-            return today.toISOString().split('T')[0];
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         // دالة لإرجاع الشهر الحالي بصيغة YYYY-MM
@@ -527,24 +590,27 @@
             return getTodayDateString().slice(0, 7);
         }
 
-        // 3. تحميل قاعدة بيانات المبيعات
-        let salesDatabase = JSON.parse(localStorage.getItem('airline_pos_v2_db')) || [];
+        // 3. تحميل قاعدة بيانات المبيعات بشكل آمن
+        let salesDatabase = safeLoadStorage('airline_pos_v2_db', []);
 
         // التحقق عند فتح الصفحة: هل هناك جلسة تسجيل دخول نشطة؟
         window.onload = function() {
             updateEmployeeFilterNames();
-            const savedSession = sessionStorage.getItem('airline_active_user');
-            if (savedSession) {
-                const parsedUser = JSON.parse(savedSession);
-                // التأكد من أن المستخدم لا يزال موجوداً في قاعدة الحسابات
-                if (usersDB[parsedUser.username]) {
-                    currentUser = {
-                        username: parsedUser.username,
-                        name: usersDB[parsedUser.username].name,
-                        role: usersDB[parsedUser.username].role
-                    };
-                    enterDashboardView();
+            try {
+                const savedSession = sessionStorage.getItem('airline_active_user');
+                if (savedSession) {
+                    const parsedUser = JSON.parse(savedSession);
+                    if (parsedUser && usersDB[parsedUser.username]) {
+                        currentUser = {
+                            username: parsedUser.username,
+                            name: usersDB[parsedUser.username].name,
+                            role: usersDB[parsedUser.username].role
+                        };
+                        enterDashboardView();
+                    }
                 }
+            } catch (e) {
+                sessionStorage.removeItem('airline_active_user');
             }
         };
 
@@ -791,6 +857,9 @@
                 reportMainTitle = '✈️ التقرير الشهري الشامل للمبيعات والعمولات - مكتب الطيران';
                 document.getElementById('print-date-badge').innerText = `شهر ${selectedMonth}`;
             } else if (currentFilterMode === 'range') {
+                if (dateFrom && dateTo && dateFrom > dateTo) {
+                    showToast("تنبيه: تاريخ البداية (من) أحدث من تاريخ النهاية (إلى)!", "warning");
+                }
                 periodLabel = `للفترة من (${dateFrom}) إلى (${dateTo})`;
                 reportMainTitle = '✈️ تقرير فترة مخصصة للمبيعات والعمولات - مكتب الطيران';
                 document.getElementById('print-date-badge').innerText = `${dateFrom} ⬅ ${dateTo}`;
@@ -822,11 +891,14 @@
             });
 
             // ترتيب التذاكر زمنياً من الأقدم للأحدث عند عرض تقرير شهري أو فترة
-            filteredSales.sort((a, b) => a.date.localeCompare(b.date));
+            filteredSales.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
             const tbody = document.getElementById('sales-table-body');
+            const tfoot = document.getElementById('sales-table-foot');
             tbody.innerHTML = '';
+            tfoot.innerHTML = '';
 
+            let totalBaseSum = 0;
             let totalSalesSum = 0;
             let totalCashSum = 0;
             let totalCardSum = 0;
@@ -846,6 +918,7 @@
                     </tr>`;
             } else {
                 filteredSales.forEach((sale, index) => {
+                    totalBaseSum += sale.basePrice;
                     totalSalesSum += sale.totalPrice;
                     totalProfitSum += sale.profit;
                     totalCommissionSum += sale.commission;
@@ -871,14 +944,14 @@
                     tr.className = "hover:bg-slate-50/80 transition";
                     tr.innerHTML = `
                         <td class="py-3 px-3 font-bold text-slate-400">${index + 1}</td>
-                        ${currentFilterMode !== 'daily' ? `<td class="py-3 px-2 font-mono text-xs font-bold text-slate-600 whitespace-nowrap">${sale.date}</td>` : ''}
-                        ${currentUser.role === 'admin' ? `<td class="py-3 px-3 font-bold text-blue-900">${displayEmpName}</td>` : ''}
-                        <td class="py-3 px-3 font-bold text-slate-800">${sale.clientName}</td>
-                        <td class="py-3 px-3 text-slate-600 font-mono text-xs">${sale.clientPhone}</td>
+                        ${currentFilterMode !== 'daily' ? `<td class="py-3 px-2 font-mono text-xs font-bold text-slate-600 whitespace-nowrap">${escapeHTML(sale.date)}</td>` : ''}
+                        ${currentUser.role === 'admin' ? `<td class="py-3 px-3 font-bold text-blue-900">${escapeHTML(displayEmpName)}</td>` : ''}
+                        <td class="py-3 px-3 font-bold text-slate-800">${escapeHTML(sale.clientName)}</td>
+                        <td class="py-3 px-3 text-slate-600 font-mono text-xs">${escapeHTML(sale.clientPhone)}</td>
                         <td class="py-3 px-3">
-                            <span class="font-mono font-extrabold bg-slate-100 text-blue-900 px-2 py-1 rounded border border-slate-200 text-xs">${sale.pnr || '-'}</span>
+                            <span class="font-mono font-extrabold bg-slate-100 text-blue-900 px-2 py-1 rounded border border-slate-200 text-xs">${escapeHTML(sale.pnr || '-')}</span>
                         </td>
-                        <td class="py-3 px-3 font-semibold text-slate-700">${sale.airline || '-'}</td>
+                        <td class="py-3 px-3 font-semibold text-slate-700">${escapeHTML(sale.airline || '-')}</td>
                         <td class="py-3 px-3">${paymentBadge}</td>
                         <td class="py-3 px-3 text-slate-600">${sale.basePrice.toFixed(2)}</td>
                         <td class="py-3 px-3 font-bold text-slate-800">${sale.totalPrice.toFixed(2)}</td>
@@ -892,6 +965,22 @@
                     `;
                     tbody.appendChild(tr);
                 });
+
+                // حساب عدد الأعمدة المدمجة قبل أعمدة المبالغ في شريط الإجمالي السفلي
+                let labelColSpan = 6;
+                if (currentFilterMode !== 'daily') labelColSpan++;
+                if (currentUser.role === 'admin') labelColSpan++;
+
+                tfoot.innerHTML = `
+                    <tr>
+                        <td colspan="${labelColSpan}" class="py-3 px-3 text-left font-extrabold text-slate-700">الإجمالي الكلي للجدول:</td>
+                        <td class="py-3 px-3 font-bold text-slate-700">${totalBaseSum.toFixed(2)}</td>
+                        <td class="py-3 px-3 font-extrabold text-blue-900">${totalSalesSum.toFixed(2)}</td>
+                        <td class="py-3 px-3 font-extrabold text-indigo-700">${totalProfitSum.toFixed(2)}</td>
+                        <td class="py-3 px-3 font-extrabold text-emerald-700 bg-emerald-100/60">${totalCommissionSum.toFixed(2)}</td>
+                        <td class="no-print"></td>
+                    </tr>
+                `;
             }
 
             // تحديث الأرقام في بطاقات الملخص العلوية

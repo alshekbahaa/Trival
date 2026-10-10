@@ -18,7 +18,7 @@
         .uppercase-input {
             text-transform: uppercase;
         }
-        /* إعدادات الطباعة: إخفاء الأزرار ونماذج الإدخال عند طباعة التقرير الورقي */
+        /* إعدادات الطباعة الرسمية للتقرير اليومي */
         @media print {
             body {
                 background-color: #ffffff !important;
@@ -31,13 +31,13 @@
                 border: 1px solid #cbd5e1 !important;
                 box-shadow: none !important;
             }
-            .print-header {
+            .print-only {
                 display: block !important;
             }
         }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen p-3 md:p-6">
+<body class="text-slate-800 min-h-screen flex flex-col justify-between">
 
     <!-- شريط الإشعارات العلوي (بديل عن رسائل التنبيه التقليدية) -->
     <div id="toast-container" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 hidden no-print">
@@ -47,7 +47,7 @@
     </div>
 
     <!-- نافذة تأكيد الحذف المخصصة -->
-    <div id="delete-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+    <div id="delete-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center">
             <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
                 ⚠️
@@ -61,82 +61,130 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto">
-
-        <!-- ==========================================
-             القسم الأول: شاشة تسجيل الدخول
-             ========================================== -->
-        <div id="login-section" class="max-w-md mx-auto mt-10 bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-blue-900 text-white rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3 shadow-md">
-                    ✈️
-                </div>
-                <h1 class="text-2xl font-extrabold text-blue-900">نظام مبيعات الطيران</h1>
-                <p class="text-slate-500 text-sm mt-1">بوابة الموظفين وإدارة العمولات اليومية</p>
+    <!-- نافذة إدارة حسابات الموظفين وتغيير كلمات المرور (خاصة بالمدير فقط) -->
+    <div id="users-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-center pb-3 mb-4 border-b border-slate-100">
+                <h3 class="text-lg font-extrabold text-blue-900 flex items-center gap-2">
+                    <span>🔐</span> إدارة حسابات وصلاحيات الدخول
+                </h3>
+                <button onclick="closeUsersModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+            </div>
+            <p class="text-xs text-slate-500 mb-4">يمكنك من هنا تعديل الاسم الظاهر لكل موظف أو تغيير كلمة المرور الخاصة بحسابه في النظام:</p>
+            
+            <div id="users-settings-list" class="space-y-4 max-h-80 overflow-y-auto pr-1">
+                <!-- يتم تعبئة بيانات المستخدمين برمجياً هنا -->
             </div>
 
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">اسم المستخدم</label>
-                    <input type="text" id="username" placeholder="أدخل اسم المستخدم (مثال: empA)" 
-                           class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">كلمة المرور</label>
-                    <input type="password" id="password" placeholder="أدخل كلمة المرور" 
-                           onkeydown="if(event.key === 'Enter') handleLogin()"
-                           class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
-                </div>
-
-                <button onclick="handleLogin()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition">
-                    تسجيل الدخول للنظام
-                </button>
-            </div>
-
-            <!-- أزرار الدخول السريع لتسهيل التجربة في المعاينة -->
-            <div class="mt-6 pt-5 border-t border-slate-100">
-                <p class="text-xs font-bold text-slate-500 mb-3 text-center">دخول سريع للتجربة والمعاينة (اضغط للتعبئة):</p>
-                <div class="grid grid-cols-3 gap-2 text-xs">
-                    <button onclick="quickFillLogin('empA', '123')" class="bg-slate-100 hover:bg-blue-50 hover:text-blue-800 text-slate-700 py-2 px-2 rounded-lg font-bold border border-slate-200 transition">
-                        👤 الموظف أ
-                    </button>
-                    <button onclick="quickFillLogin('empB', '123')" class="bg-slate-100 hover:bg-blue-50 hover:text-blue-800 text-slate-700 py-2 px-2 rounded-lg font-bold border border-slate-200 transition">
-                        👤 الموظف ب
-                    </button>
-                    <button onclick="quickFillLogin('admin', 'admin123')" class="bg-amber-50 hover:bg-amber-100 text-amber-900 py-2 px-2 rounded-lg font-bold border border-amber-200 transition">
-                        👑 المدير العام
-                    </button>
-                </div>
+            <div class="mt-6 pt-4 border-t border-slate-100 flex justify-end gap-3">
+                <button onclick="saveUsersSettings()" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-xl transition">💾 حفظ التعديلات</button>
+                <button onclick="closeUsersModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-5 rounded-xl transition">إغلاق</button>
             </div>
         </div>
+    </div>
 
-        <!-- ==========================================
-             القسم الثاني: لوحة التحكم الرئيسية
-             ========================================== -->
-        <div id="app-section" class="hidden space-y-6">
+    <!-- ==========================================
+         الصفحة الأولى: صفحة تسجيل الدخول الرسمية الكاملة
+         ========================================== -->
+    <div id="login-page" class="flex-grow flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900">
+        <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
+            
+            <!-- رأس بطاقة تسجيل الدخول -->
+            <div class="bg-blue-900 p-8 text-center text-white relative">
+                <div class="w-20 h-20 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-2xl flex items-center justify-center text-4xl mx-auto mb-4 shadow-inner">
+                    ✈️
+                </div>
+                <h1 class="text-2xl font-extrabold tracking-wide">نظام مبيعات الطيران</h1>
+                <p class="text-blue-200 text-sm mt-1 font-medium">بوابة الدخول الرسمية للموظفين والإدارة</p>
+            </div>
 
-            <!-- الشريط العلوي (معلومات الموظف وأدوات الفلترة والطباعة) -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print-border">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-blue-900 text-white rounded-xl flex items-center justify-center text-2xl font-bold no-print">
+            <!-- نموذج إدخال البيانات الفعلي -->
+            <form onsubmit="event.preventDefault(); handleLogin();" class="p-8 space-y-5">
+                
+                <!-- رسالة الخطأ عند إدخال بيانات خاطئة -->
+                <div id="login-error-alert" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2">
+                    <span>❌</span>
+                    <span>اسم المستخدم أو كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.</span>
+                </div>
+
+                <div>
+                    <label for="username" class="block text-sm font-bold text-slate-700 mb-1.5">اسم المستخدم (Username)</label>
+                    <div class="relative">
+                        <input type="text" id="username" required autocomplete="username" placeholder="أدخل اسم المستخدم الخاص بك" 
+                               class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-300 focus:border-blue-700 focus:ring-2 focus:ring-blue-100 outline-none transition text-sm font-semibold">
+                        <span class="absolute right-3.5 top-3 text-slate-400">👤</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-bold text-slate-700 mb-1.5">كلمة المرور (Password)</label>
+                    <div class="relative">
+                        <input type="password" id="password" required autocomplete="current-password" placeholder="••••••••" 
+                               class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 focus:border-blue-700 focus:ring-2 focus:ring-blue-100 outline-none transition text-sm font-semibold">
+                        <span class="absolute right-3.5 top-3 text-slate-400">🔒</span>
+                        <!-- زر إظهار/إخفاء كلمة المرور -->
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute left-3 top-3 text-slate-400 hover:text-blue-900 text-xs font-bold focus:outline-none">
+                            <span id="eye-icon">إظهار</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white font-extrabold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition duration-200 flex items-center justify-center gap-2">
+                        <span>تسجيل الدخول للنظام</span>
+                        <span>⬅️</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- تذييل داخل بطاقة الدخول -->
+            <div class="bg-slate-50 px-8 py-4 border-t border-slate-100 text-center">
+                <p class="text-xs font-bold text-slate-500">Designed by <span class="text-blue-900">Eng. Bahaa Al-Sheikh</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         الصفحة الثانية: النظام الداخلي ولوحة التحكم
+         ========================================== -->
+    <div id="dashboard-page" class="hidden flex-grow p-3 md:p-6">
+        <div class="max-w-7xl mx-auto space-y-6">
+
+            <!-- ترويسة خاصة بالطباعة الورقية فقط -->
+            <div class="hidden print-only text-center border-b-2 border-slate-800 pb-4 mb-4">
+                <h1 class="text-2xl font-extrabold text-slate-900">تقرير المبيعات والعمولات اليومي - مكتب الطيران</h1>
+                <p id="print-meta-info" class="text-sm font-bold text-slate-600 mt-1"></p>
+            </div>
+
+            <!-- الشريط العلوي (معلومات الحساب، التاريخ، الطباعة، والخروج) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 print-border">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 bg-blue-900 text-white rounded-xl flex items-center justify-center text-2xl font-bold shadow-sm no-print">
                         ✈️
                     </div>
                     <div>
-                        <h2 id="welcome-title" class="text-xl font-extrabold text-blue-900">صفحة المبيعات</h2>
-                        <p id="report-date-subtitle" class="text-slate-500 text-sm font-semibold"></p>
+                        <div class="flex items-center gap-2">
+                            <h2 id="welcome-title" class="text-xl font-extrabold text-blue-900">صفحة المبيعات</h2>
+                            <span id="role-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full"></span>
+                        </div>
+                        <p id="report-date-subtitle" class="text-slate-500 text-sm font-semibold mt-0.5"></p>
                     </div>
                 </div>
 
                 <!-- أدوات التحكم والتاريخ (تختفي عند الطباعة) -->
-                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto no-print">
-                    <!-- فلتر خاص بالمدير فقط -->
-                    <div id="admin-filter-box" class="hidden">
-                        <select id="employee-filter" onchange="renderDashboard()" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-sm text-slate-700 focus:border-blue-600 outline-none">
+                <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto no-print">
+                    
+                    <!-- أدوات خاصة بالمدير فقط (فلترة الموظفين + إدارة الحسابات) -->
+                    <div id="admin-controls" class="hidden flex flex-wrap items-center gap-2">
+                        <select id="employee-filter" onchange="renderDashboard()" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-sm text-slate-700 focus:border-blue-600 outline-none cursor-pointer">
                             <option value="ALL">👥 جميع الموظفين</option>
-                            <option value="empA">👤 الموظف أ فقط</option>
-                            <option value="empB">👤 الموظف ب فقط</option>
+                            <option value="empA" id="filter-opt-empA">👤 الموظف أ فقط</option>
+                            <option value="empB" id="filter-opt-empB">👤 الموظف ب فقط</option>
                         </select>
+
+                        <button onclick="openUsersModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold px-3.5 py-2 rounded-xl text-sm flex items-center gap-1.5 transition" title="تغيير كلمات المرور وأسماء الموظفين">
+                            <span>🔐</span> إدارة الحسابات
+                        </button>
                     </div>
 
                     <!-- اختيار التاريخ للأرشفة اليومية -->
@@ -150,19 +198,19 @@
                     </button>
 
                     <button onclick="handleLogout()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold px-4 py-2 rounded-xl text-sm transition">
-                        خروج
+                        تسجيل خروج
                     </button>
                 </div>
             </div>
 
             <!-- نموذج تسجيل تذكرة جديدة (يختفي عند الطباعة) -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 no-print">
-                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
                     <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
                         <span class="text-blue-600">➕</span> تسجيل تذكرة طيران جديدة
                     </h3>
                     <span class="text-xs bg-blue-50 text-blue-800 font-bold px-3 py-1 rounded-full border border-blue-200">
-                        نسبة العمولة المعتمدة: 10% من صافي المربح
+                        نسبة العمولة المعتمدة: 10% من صافي مربح كل تذكرة على حدة
                     </span>
                 </div>
 
@@ -182,14 +230,14 @@
                                class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
                     </div>
 
-                    <!-- 3. رقم الحجز PNR (جديد) -->
+                    <!-- 3. رقم الحجز PNR -->
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">رقم الحجز (PNR) *</label>
                         <input type="text" id="pnr-code" placeholder="مثال: XY789Z" maxlength="10"
                                class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm uppercase-input font-mono font-bold text-blue-900">
                     </div>
 
-                    <!-- 4. شركة الطيران (جديد) -->
+                    <!-- 4. شركة الطيران -->
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">شركة الطيران *</label>
                         <input type="text" id="airline-name" list="airlines-list" placeholder="اختر أو اكتب اسم الشركة" 
@@ -207,7 +255,7 @@
                         </datalist>
                     </div>
 
-                    <!-- 5. طريقة الدفع: كاش أو شبكة (جديد) -->
+                    <!-- 5. طريقة الدفع: كاش أو شبكة -->
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">طريقة الدفع *</label>
                         <select id="payment-method" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:border-blue-600 outline-none text-sm font-bold text-slate-700">
@@ -244,12 +292,10 @@
                     <div>
                         <span class="text-slate-500 font-semibold">صافي مربح التذكرة: </span>
                         <span id="preview-profit" class="font-extrabold text-blue-900 text-base">0.00</span>
-                        <span class="text-xs text-slate-400">ريال</span>
                     </div>
                     <div>
                         <span class="text-slate-500 font-semibold">عمولة الموظف من هذه التذكرة (10%): </span>
                         <span id="preview-commission" class="font-extrabold text-emerald-600 text-base">0.00</span>
-                        <span class="text-xs text-slate-400">ريال</span>
                     </div>
                 </div>
             </div>
@@ -325,20 +371,36 @@
         </div>
     </div>
 
+    <!-- ==========================================
+         تذييل الصفحات الرسمي (Footer Signature)
+         يظهر في أسفل جميع الصفحات وفي التقارير المطبوعة
+         ========================================== -->
+    <footer class="bg-white border-t border-slate-200 py-4 px-6 text-center mt-auto print-border">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold text-slate-500">
+            <span>جميع الحقوق محفوظة © نظام مبيعات وعمولات مكتب الطيران</span>
+            <span class="text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                Designed by <strong class="text-blue-900">Eng. Bahaa Al-Sheikh</strong>
+            </span>
+        </div>
+    </footer>
+
     <script>
         /* ==========================================
-           البرمجة التفاعلية وإدارة قاعدة البيانات (JavaScript)
+           البرمجة التفاعلية وإدارة الحسابات وقاعدة البيانات
            ========================================== */
 
-        // 1. إعداد نسبة العمولة (10% لكل تذكرة على حدة)
+        // 1. إعداد نسبة العمولة الثابتة (10% لكل تذكرة على حدة)
         const COMMISSION_RATE = 0.10;
 
-        // 2. حسابات المستخدمين (الموظف أ، الموظف ب، والمدير)
-        const USERS_DB = {
+        // 2. الحسابات الافتراضية للنظام (قابلة للتعديل من لوحة المدير وتحفظ في localStorage)
+        const DEFAULT_USERS = {
             "empA":  { password: "123",      name: "الموظف أ",    role: "employee" },
             "empB":  { password: "123",      name: "الموظف ب",    role: "employee" },
             "admin": { password: "admin123", name: "المدير العام", role: "admin" }
         };
+
+        // تحميل بيانات المستخدمين من الذاكرة المحلية أو اعتماد القيم الافتراضية
+        let usersDB = JSON.parse(localStorage.getItem('airline_users_v3_db')) || DEFAULT_USERS;
 
         let currentUser = null;
         let ticketIdToDelete = null;
@@ -349,61 +411,41 @@
             return today.toISOString().split('T')[0];
         }
 
-        // 3. تحميل قاعدة البيانات من المتصفح، أو إضافة بيانات تجريبية أولية لتسهيل المعاينة
-        let salesDatabase = JSON.parse(localStorage.getItem('airline_pos_v2_db'));
-        if (!salesDatabase || salesDatabase.length === 0) {
-            const todayStr = getTodayDateString();
-            salesDatabase = [
-                {
-                    id: 1001,
-                    date: todayStr,
-                    employeeUsername: "empA",
-                    employeeName: "الموظف أ",
-                    clientName: "عبدالله محمد القحطاني",
-                    clientPhone: "0501234567",
-                    pnr: "SV892K",
-                    airline: "الخطوط السعودية (Saudia)",
-                    paymentMethod: "شبكة",
-                    basePrice: 1200,
-                    totalPrice: 1450,
-                    profit: 250,
-                    commission: 25
-                },
-                {
-                    id: 1002,
-                    date: todayStr,
-                    employeeUsername: "empA",
-                    employeeName: "الموظف أ",
-                    clientName: "سارة أحمد العتيبي",
-                    clientPhone: "0559876543",
-                    pnr: "XY441M",
-                    airline: "طيران ناس (Flynas)",
-                    paymentMethod: "كاش",
-                    basePrice: 650,
-                    totalPrice: 800,
-                    profit: 150,
-                    commission: 15
-                },
-                {
-                    id: 1003,
-                    date: todayStr,
-                    employeeUsername: "empB",
-                    employeeName: "الموظف ب",
-                    clientName: "خالد فهد الدوسري",
-                    clientPhone: "0543218765",
-                    pnr: "EK990P",
-                    airline: "طيران الإمارات (Emirates)",
-                    paymentMethod: "شبكة",
-                    basePrice: 2100,
-                    totalPrice: 2500,
-                    profit: 400,
-                    commission: 40
+        // 3. تحميل قاعدة بيانات المبيعات
+        let salesDatabase = JSON.parse(localStorage.getItem('airline_pos_v2_db')) || [];
+
+        // التحقق عند فتح الصفحة: هل هناك جلسة تسجيل دخول نشطة؟
+        window.onload = function() {
+            updateEmployeeFilterNames();
+            const savedSession = sessionStorage.getItem('airline_active_user');
+            if (savedSession) {
+                const parsedUser = JSON.parse(savedSession);
+                // التأكد من أن المستخدم لا يزال موجوداً في قاعدة الحسابات
+                if (usersDB[parsedUser.username]) {
+                    currentUser = {
+                        username: parsedUser.username,
+                        name: usersDB[parsedUser.username].name,
+                        role: usersDB[parsedUser.username].role
+                    };
+                    enterDashboardView();
                 }
-            ];
-            localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
+            }
+        };
+
+        // دالة إظهار أو إخفاء كلمة المرور في شاشة الدخول
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.innerText = 'إخفاء';
+            } else {
+                passInput.type = 'password';
+                eyeIcon.innerText = 'إظهار';
+            }
         }
 
-        // دالة لعرض إشعارات أنيقة بدلاً من alert التقليدية
+        // دالة عرض الإشعارات العلوية الأنيقة
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const box = document.getElementById('toast-box');
@@ -426,55 +468,65 @@
             }, 3500);
         }
 
-        // دالة التعبئة السريعة لحقول الدخول (للتجربة السريعة)
-        function quickFillLogin(user, pass) {
-            document.getElementById('username').value = user;
-            document.getElementById('password').value = pass;
-            handleLogin();
-        }
-
-        // دالة تسجيل الدخول والتحقق من الصلاحيات
+        // دالة تسجيل الدخول الفعلية والتحقق من الهوية
         function handleLogin() {
             const userInp = document.getElementById('username').value.trim();
             const passInp = document.getElementById('password').value.trim();
+            const errorAlert = document.getElementById('login-error-alert');
 
-            if (USERS_DB[userInp] && USERS_DB[userInp].password === passInp) {
+            if (usersDB[userInp] && usersDB[userInp].password === passInp) {
+                errorAlert.classList.add('hidden');
                 currentUser = {
                     username: userInp,
-                    name: USERS_DB[userInp].name,
-                    role: USERS_DB[userInp].role
+                    name: usersDB[userInp].name,
+                    role: usersDB[userInp].role
                 };
 
-                // تعيين تاريخ اليوم كافتراضي عند الدخول
-                document.getElementById('date-picker').value = getTodayDateString();
+                // حفظ الجلسة حتى لا يخرج المستخدم عند تحديث الصفحة
+                sessionStorage.setItem('airline_active_user', JSON.stringify(currentUser));
 
-                // إظهار خيارات الفلترة للمدير فقط
-                if (currentUser.role === 'admin') {
-                    document.getElementById('admin-filter-box').classList.remove('hidden');
-                    document.getElementById('th-emp-name').classList.remove('hidden');
-                } else {
-                    document.getElementById('admin-filter-box').classList.add('hidden');
-                    document.getElementById('th-emp-name').classList.add('hidden');
-                }
-
-                // تبديل الشاشات
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('app-section').classList.remove('hidden');
-
+                enterDashboardView();
                 showToast(`مرحباً بك، ${currentUser.name}`);
-                renderDashboard();
             } else {
-                showToast("اسم المستخدم أو كلمة المرور غير صحيحة!", "error");
+                errorAlert.classList.remove('hidden');
             }
         }
 
-        // دالة تسجيل الخروج
+        // دالة الانتقال من صفحة الدخول المستقلة إلى صفحة النظام الداخلي
+        function enterDashboardView() {
+            document.getElementById('date-picker').value = getTodayDateString();
+
+            const roleBadge = document.getElementById('role-badge');
+            if (currentUser.role === 'admin') {
+                document.getElementById('admin-controls').classList.remove('hidden');
+                document.getElementById('th-emp-name').classList.remove('hidden');
+                roleBadge.innerText = 'صلاحية مدير النظام';
+                roleBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300';
+            } else {
+                document.getElementById('admin-controls').classList.add('hidden');
+                document.getElementById('th-emp-name').classList.add('hidden');
+                roleBadge.innerText = 'حساب موظف مبيعات';
+                roleBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200';
+            }
+
+            // إخفاء صفحة الدخول الكاملة وإظهار صفحة النظام
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('dashboard-page').classList.remove('hidden');
+
+            renderDashboard();
+        }
+
+        // دالة تسجيل الخروج الآمن
         function handleLogout() {
             currentUser = null;
+            sessionStorage.removeItem('airline_active_user');
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
-            document.getElementById('app-section').classList.add('hidden');
-            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('login-error-alert').classList.add('hidden');
+            
+            document.getElementById('dashboard-page').classList.add('hidden');
+            document.getElementById('login-page').classList.remove('hidden');
+            showToast("تم تسجيل الخروج بنجاح");
         }
 
         // دالة الحساب التلقائي الفوري أثناء كتابة الأسعار
@@ -500,7 +552,6 @@
             const totalPrice = parseFloat(document.getElementById('total-price').value);
             const selectedDate = document.getElementById('date-picker').value;
 
-            // التحقق من إدخال كافة البيانات المطلوبة
             if (!clientName || !clientPhone || !pnrCode || !airlineName || isNaN(basePrice) || isNaN(totalPrice)) {
                 showToast("يرجى تعبئة جميع الحقول المطلوبة (العميل، PNR، الطيران، والمبالغ)", "error");
                 return;
@@ -530,11 +581,10 @@
                 commission: commission
             };
 
-            // الحفظ في قاعدة البيانات المحلية
             salesDatabase.push(newTicket);
             localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
 
-            // تفريغ الحقول لتسجيل التذكرة التالية بسهولة
+            // تفريغ الحقول لتسجيل التذكرة التالية
             document.getElementById('client-name').value = '';
             document.getElementById('client-phone').value = '';
             document.getElementById('pnr-code').value = '';
@@ -552,8 +602,12 @@
             const selectedDate = document.getElementById('date-picker').value;
             const empFilter = document.getElementById('employee-filter').value;
 
+            // تحديث الاسم的最新 للمستخدم الحالي
+            currentUser.name = usersDB[currentUser.username].name;
+
             document.getElementById('welcome-title').innerText = `سجل المبيعات - ${currentUser.name}`;
             document.getElementById('report-date-subtitle').innerText = `التقرير اليومي المعتمد لتاريخ: ${selectedDate}`;
+            document.getElementById('print-meta-info').innerText = `المسؤول: ${currentUser.name} | تاريخ التقرير: ${selectedDate}`;
 
             // فلترة التذاكر حسب التاريخ المحدد وصلاحية المستخدم
             const filteredSales = salesDatabase.filter(sale => {
@@ -595,7 +649,6 @@
                         totalCardSum += sale.totalPrice;
                     }
 
-                    // تصميم شارة طريقة الدفع (كاش / شبكة)
                     let paymentBadge = '';
                     if (sale.paymentMethod === 'كاش') {
                         paymentBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-xs font-bold">💵 كاش</span>`;
@@ -605,11 +658,13 @@
                         paymentBadge = `<span class="bg-purple-50 text-purple-700 border border-purple-200 px-2.5 py-0.5 rounded-full text-xs font-bold">🏦 تحويل</span>`;
                     }
 
+                    const displayEmpName = usersDB[sale.employeeUsername] ? usersDB[sale.employeeUsername].name : sale.employeeName;
+
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50/80 transition";
                     tr.innerHTML = `
                         <td class="py-3 px-3 font-bold text-slate-400">${index + 1}</td>
-                        ${currentUser.role === 'admin' ? `<td class="py-3 px-3 font-bold text-blue-900">${sale.employeeName}</td>` : ''}
+                        ${currentUser.role === 'admin' ? `<td class="py-3 px-3 font-bold text-blue-900">${displayEmpName}</td>` : ''}
                         <td class="py-3 px-3 font-bold text-slate-800">${sale.clientName}</td>
                         <td class="py-3 px-3 text-slate-600 font-mono text-xs">${sale.clientPhone}</td>
                         <td class="py-3 px-3">
@@ -639,6 +694,70 @@
             document.getElementById('sum-card').innerText = totalCardSum.toFixed(2);
             document.getElementById('sum-profit').innerText = totalProfitSum.toFixed(2);
             document.getElementById('sum-commission').innerText = totalCommissionSum.toFixed(2);
+        }
+
+        // دوال إدارة الحسابات وتغيير كلمات المرور (للمدير)
+        function openUsersModal() {
+            const listDiv = document.getElementById('users-settings-list');
+            listDiv.innerHTML = '';
+
+            Object.keys(usersDB).forEach(usernameKey => {
+                const u = usersDB[usernameKey];
+                const roleLabel = u.role === 'admin' ? '👑 المدير العام' : '👤 موظف مبيعات';
+                
+                const item = document.createElement('div');
+                item.className = "p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3";
+                item.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                        <span class="font-extrabold text-blue-900 text-sm">${roleLabel}</span>
+                        <span class="text-xs font-mono bg-white px-2 py-0.5 rounded border border-slate-300 text-slate-600">اسم الدخول: <strong>${usernameKey}</strong></span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">الاسم الظاهر في التقرير:</label>
+                            <input type="text" id="edit-name-${usernameKey}" value="${u.name}" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">كلمة المرور (Password):</label>
+                            <input type="text" id="edit-pass-${usernameKey}" value="${u.password}" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-mono font-bold text-emerald-700">
+                        </div>
+                    </div>
+                `;
+                listDiv.appendChild(item);
+            });
+
+            document.getElementById('users-modal').classList.remove('hidden');
+        }
+
+        function closeUsersModal() {
+            document.getElementById('users-modal').classList.add('hidden');
+        }
+
+        function saveUsersSettings() {
+            Object.keys(usersDB).forEach(usernameKey => {
+                const newName = document.getElementById(`edit-name-${usernameKey}`).value.trim();
+                const newPass = document.getElementById(`edit-pass-${usernameKey}`).value.trim();
+
+                if (newName && newPass) {
+                    usersDB[usernameKey].name = newName;
+                    usersDB[usernameKey].password = newPass;
+                }
+            });
+
+            localStorage.setItem('airline_users_v3_db', JSON.stringify(usersDB));
+            updateEmployeeFilterNames();
+            closeUsersModal();
+            renderDashboard();
+            showToast("تم حفظ بيانات الحسابات وكلمات المرور الجديدة بنجاح!");
+        }
+
+        function updateEmployeeFilterNames() {
+            if (usersDB['empA']) {
+                document.getElementById('filter-opt-empA').innerText = `👤 ${usersDB['empA'].name} فقط`;
+            }
+            if (usersDB['empB']) {
+                document.getElementById('filter-opt-empB').innerText = `👤 ${usersDB['empB'].name} فقط`;
+            }
         }
 
         // دوال نافذة تأكيد الحذف

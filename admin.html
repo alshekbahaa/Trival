@@ -20,19 +20,19 @@
         }
         /* ==========================================
            إعدادات الطباعة الرسمية المدمجة (A4 Print Layout)
-           تعالج مشكلة حجم البطاقات واقتطاع الجدول
+           محدثة لتستوعب 6 بطاقات إحصائية وكافة أعمدة الجدول
            ========================================== */
         @media print {
             @page {
-                size: A4 portrait;
-                margin: 10mm;
+                size: A4 landscape;
+                margin: 8mm;
             }
             body {
                 background-color: #ffffff !important;
                 color: #0f172a !important;
                 padding: 0 !important;
                 margin: 0 !important;
-                font-size: 11px !important;
+                font-size: 10.5px !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -54,17 +54,17 @@
                 max-width: 100% !important;
             }
             .space-y-6 > :not([hidden]) ~ :not([hidden]) {
-                margin-top: 10px !important;
+                margin-top: 8px !important;
             }
-            /* رص بطاقات الملخص الـ 5 في صف واحد مدمج وأنيق */
+            /* رص بطاقات الملخص الـ 6 في صف واحد مدمج وأنيق */
             .print-summary-grid {
                 display: grid !important;
-                grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+                grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
                 gap: 6px !important;
-                margin-bottom: 12px !important;
+                margin-bottom: 10px !important;
             }
             .print-summary-card {
-                padding: 8px 10px !important;
+                padding: 6px 8px !important;
                 border: 1px solid #94a3b8 !important;
                 border-radius: 8px !important;
                 box-shadow: none !important;
@@ -74,21 +74,29 @@
             }
             .print-summary-card .print-card-title {
                 color: #475569 !important;
-                font-size: 10px !important;
+                font-size: 9.5px !important;
                 margin-bottom: 2px !important;
             }
             .print-summary-card .print-card-value {
                 color: #0f172a !important;
-                font-size: 15px !important;
+                font-size: 14px !important;
                 font-weight: 800 !important;
             }
-            /* تمييز بطاقة العمولة في الطباعة بحدود واضحة ونص داكن */
+            /* تمييز بطاقة العمولة في الطباعة */
             .print-commission-card {
                 background-color: #ecfdf5 !important;
                 border: 1.5px solid #059669 !important;
             }
             .print-commission-card .print-card-value {
                 color: #047857 !important;
+            }
+            /* تمييز بطاقة الديون في الطباعة */
+            .print-debt-card {
+                background-color: #fef2f2 !important;
+                border: 1.5px solid #dc2626 !important;
+            }
+            .print-debt-card .print-card-value {
+                color: #b91c1c !important;
             }
             /* إصلاح اقتطاع الجدول وإلغاء شريط التمرير الأفقي */
             .print-table-container {
@@ -99,10 +107,10 @@
             table {
                 width: 100% !important;
                 table-layout: auto !important;
-                font-size: 10.5px !important;
+                font-size: 9.5px !important;
             }
             th, td {
-                padding: 6px 4px !important;
+                padding: 5px 4px !important;
                 border: 1px solid #cbd5e1 !important;
                 white-space: normal !important;
                 word-break: break-word !important;
@@ -110,7 +118,7 @@
             th {
                 background-color: #f1f5f9 !important;
                 color: #1e3a8a !important;
-                font-size: 10px !important;
+                font-size: 9.5px !important;
             }
             .print-border {
                 border: 1px solid #cbd5e1 !important;
@@ -134,10 +142,74 @@
                 ⚠️
             </div>
             <h3 class="text-lg font-bold text-slate-800 mb-2">تأكيد حذف التذكرة</h3>
-            <p class="text-sm text-slate-500 mb-6">هل أنت متأكد من رغبتك في حذف هذا الحجز من السجل؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            <p class="text-sm text-slate-500 mb-6">هل أنت متأكد من رغبتك في حذف هذا الحجز نهائياً من السجل؟ (يفضل تحويل حالته إلى "مسترجعة" أو "ملغاة" لحفظه في الأرشيف).</p>
             <div class="flex gap-3 justify-center">
-                <button onclick="confirmDeleteAction()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-xl transition">نعم، احذف</button>
+                <button onclick="confirmDeleteAction()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-xl transition">نعم، احذف نهائياً</button>
                 <button onclick="closeDeleteModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-6 rounded-xl transition">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل حالة التذكرة (إصدار/استرجاع/إلغاء) وتسديد المديونية -->
+    <div id="status-debt-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-center pb-3 mb-4 border-b border-slate-100">
+                <h3 class="text-lg font-extrabold text-blue-900 flex items-center gap-2">
+                    <span>⚙️</span> إدارة حالة التذكرة والمديونية
+                </h3>
+                <button onclick="closeStatusDebtModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
+            </div>
+
+            <div id="modal-ticket-info" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 mb-4 space-y-1">
+                <!-- معلومات التذكرة المختارة -->
+            </div>
+
+            <div class="space-y-4">
+                <!-- 1. تغيير حالة التذكرة -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">حالة التذكرة (تؤثر تلقائياً على العمولة 10%):</label>
+                    <select id="edit-ticket-status" onchange="handleModalStatusChange()" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white font-bold text-sm text-slate-800 focus:border-blue-600 outline-none">
+                        <option value="issue">✅ إصدار مؤكد (تُحتسب العمولة 10%)</option>
+                        <option value="reissue">🔄 تعديل / إعادة إصدار Reissue (تُحتسب العمولة 10%)</option>
+                        <option value="refund">↩️ مسترجعة Refund (حذف عمولة الموظف 0%)</option>
+                        <option value="void">🚫 ملغاة Void (تصفير التذكرة وحذف العمولة 0%)</option>
+                    </select>
+                </div>
+
+                <!-- حقل رسوم الاسترجاع للمكتب (يظهر فقط عند اختيار مسترجعة) -->
+                <div id="refund-fee-box" class="hidden bg-amber-50 p-3 rounded-xl border border-amber-200">
+                    <label class="block text-xs font-bold text-amber-900 mb-1">صافي رسوم الاسترجاع المحتجزة للمكتب (إن وجدت):</label>
+                    <input type="number" id="edit-refund-fee" placeholder="0.00" step="0.01" value="0"
+                           class="w-full px-3 py-1.5 rounded-lg border border-amber-300 bg-white text-sm font-bold text-slate-800 outline-none">
+                    <p class="text-[11px] text-amber-700 mt-1 font-semibold">💡 سيتم حذف عمولة الموظف (0.00) تلقائياً لأن التذكرة مسترجعة.</p>
+                </div>
+
+                <!-- 2. تحديث المبلغ المدفوع والمديونية -->
+                <div id="debt-update-box" class="bg-blue-50/60 p-3.5 rounded-xl border border-blue-200 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-bold text-blue-950">المبلغ المدفوع فعلياً من العميل:</label>
+                        <button type="button" onclick="payFullTicketAmountInModal()" class="text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2.5 py-1 rounded-lg transition">
+                            💵 تسديد كامل المبلغ
+                        </button>
+                    </div>
+                    <input type="number" id="edit-paid-amount" step="0.01"
+                           class="w-full px-3 py-2 rounded-lg border border-blue-300 bg-white text-sm font-extrabold text-blue-900 outline-none">
+                    
+                    <div class="pt-1">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">طريقة الدفع المعتمدة:</label>
+                        <select id="edit-payment-method" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-700">
+                            <option value="شبكة">💳 شبكة (مدى / فيزا)</option>
+                            <option value="كاش">💵 كاش (نقدي)</option>
+                            <option value="تحويل">🏦 تحويل بنكي</option>
+                            <option value="آجل">📒 آجل / ذمم (حساب شركات أو عملاء)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 flex justify-end gap-2">
+                <button onclick="saveStatusAndDebtChanges()" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-xl text-sm transition">💾 حفظ وتحديث التقرير</button>
+                <button onclick="closeStatusDebtModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-4 rounded-xl text-sm transition">إلغاء</button>
             </div>
         </div>
     </div>
@@ -187,7 +259,7 @@
                         <span id="email-meta-preview" class="font-extrabold text-blue-900 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200"></span>
                     </div>
                     <label class="block font-bold text-slate-600 pt-1">معاينة محتوى الرسالة المرسلة:</label>
-                    <textarea id="email-body-preview" rows="6" readonly class="w-full bg-white p-2.5 rounded-lg border border-slate-200 text-slate-700 font-semibold text-xs outline-none resize-none"></textarea>
+                    <textarea id="email-body-preview" rows="7" readonly class="w-full bg-white p-2.5 rounded-lg border border-slate-200 text-slate-700 font-semibold text-xs outline-none resize-none"></textarea>
                 </div>
 
                 <p class="text-[11px] text-blue-800 bg-blue-50 p-2.5 rounded-xl border border-blue-200 font-semibold">
@@ -280,7 +352,6 @@
 
     <!-- ==========================================
          الصفحة الثانية: لوحة التحكم وصفحة الموظف
-         (تمت إعادتها للألوان السابقة: الأزرق الملكي والأخضر الزمردي)
          ========================================== -->
     <div id="dashboard-page" class="hidden flex-grow p-4 md:p-6">
         <div class="max-w-7xl mx-auto space-y-6">
@@ -297,7 +368,7 @@
                 </div>
                 <div class="text-left text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-300">
                     <div>فترة التقرير: <span id="print-date-badge" class="text-slate-900 font-extrabold"></span></div>
-                    <div class="text-[10px] text-slate-500 mt-0.5">رقم النسخة: <span id="print-version-badge" class="font-mono font-bold text-blue-900">v1</span> | العمولة: 10%</div>
+                    <div class="text-[10px] text-slate-500 mt-0.5">رقم النسخة: <span id="print-version-badge" class="font-mono font-bold text-blue-900">v1</span> | العمولة: 10% (تُحذف للمسترجع)</div>
                 </div>
             </div>
 
@@ -367,7 +438,7 @@
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3">
                     
                     <!-- أزرار اختيار نوع التقرير -->
-                    <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex flex-wrap items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
                         <span class="text-xs font-extrabold text-slate-500 px-2">📊 نوع التقرير:</span>
                         <button type="button" id="btn-mode-daily" onclick="setFilterMode('daily')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition bg-blue-900 text-white">
                             📅 يومي منفرد
@@ -416,163 +487,226 @@
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 no-print">
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
                     <h3 class="text-lg font-extrabold text-blue-900 flex items-center gap-2">
-                        <span>➕</span> تسجيل تذكرة طيران جديدة
+                        <span>➕</span> تسجيل عملية تذكرة طيران (إصدار / تعديل / استرجاع / آجل)
                     </h3>
                     <span class="text-xs bg-emerald-50 text-emerald-700 font-bold px-3 py-1 rounded-full border border-emerald-200">
-                        نسبة العمولة المعتمدة: 10% من صافي مربح كل تذكرة على حدة
+                        العمولة: 10% للإصدار والتعديل | 0% (تُحذف تلقائياً) للمسترجع والملغي
                     </span>
                 </div>
 
-                <!-- شبكة حقول الإدخال -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- شبكة حقول الإدخال المحدثة (10 حقول منظمة) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
                     <!-- 1. اسم العميل -->
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">اسم العميل *</label>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">اسم العميل / الشركة *</label>
                         <input type="text" id="client-name" placeholder="الاسم الثلاثي للعميل" 
                                class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
                     </div>
 
                     <!-- 2. رقم الجوال -->
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">رقم العميل *</label>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">رقم جوال العميل (لواتساب) *</label>
                         <input type="text" id="client-phone" placeholder="05xxxxxxxx" 
-                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
+                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm" dir="ltr">
                     </div>
 
                     <!-- 3. رقم الحجز PNR -->
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">رقم الحجز (PNR) *</label>
-                        <input type="text" id="pnr-code" placeholder="مثال: XY789Z" maxlength="10"
-                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm uppercase-input font-mono font-bold text-blue-900">
+                        <input type="text" id="pnr-code" placeholder="مثال: XY789Z" maxlength="12"
+                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm uppercase-input font-mono font-bold text-blue-900" dir="ltr">
                     </div>
 
-                    <!-- 4. شركة الطيران -->
+                    <!-- 4. شركة الطيران مع خيار "أخرى (كتابة يدوية)" -->
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">شركة الطيران *</label>
-                        <input type="text" id="airline-name" list="airlines-list" placeholder="اختر أو اكتب اسم الشركة" 
-                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
-                        <datalist id="airlines-list">
-                            <option value="الخطوط السعودية (Saudia)">
-                            <option value="طيران ناس (Flynas)">
-                            <option value="طيران أديل (Flyadeal)">
-                            <option value="طيران الإمارات (Emirates)">
-                            <option value="الخطوط القطرية (Qatar Airways)">
-                            <option value="مصر للطيران (EgyptAir)">
-                            <option value="طيران الخليج (Gulf Air)">
-                            <option value="فلاي دبي (Flydubai)">
-                            <option value="العربية للطيران (Air Arabia)">
-                        </datalist>
+                        <select id="airline-select" onchange="toggleCustomAirlineInput()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:border-blue-600 outline-none text-sm font-bold text-slate-700">
+                            <option value="الخطوط السعودية (Saudia)">الخطوط السعودية (Saudia)</option>
+                            <option value="طيران ناس (Flynas)">طيران ناس (Flynas)</option>
+                            <option value="طيران أديل (Flyadeal)">طيران أديل (Flyadeal)</option>
+                            <option value="طيران الإمارات (Emirates)">طيران الإمارات (Emirates)</option>
+                            <option value="الخطوط القطرية (Qatar Airways)">الخطوط القطرية (Qatar Airways)</option>
+                            <option value="مصر للطيران (EgyptAir)">مصر للطيران (EgyptAir)</option>
+                            <option value="طيران الخليج (Gulf Air)">طيران الخليج (Gulf Air)</option>
+                            <option value="فلاي دبي (Flydubai)">فلاي دبي (Flydubai)</option>
+                            <option value="العربية للطيران (Air Arabia)">العربية للطيران (Air Arabia)</option>
+                            <option value="الخطوط التركية (Turkish Airlines)">الخطوط التركية (Turkish Airlines)</option>
+                            <option value="OTHER">➕ أخرى (إضافة يدوية...)</option>
+                        </select>
+                        <!-- حقل الإدخال اليدوي يظهر فوراً عند اختيار "أخرى" -->
+                        <input type="text" id="airline-custom" placeholder="اكتب اسم شركة الطيران هنا..." 
+                               class="hidden mt-2 w-full px-3 py-2 rounded-xl border-2 border-blue-500 bg-blue-50/30 focus:bg-white outline-none text-sm font-bold text-blue-950">
                     </div>
 
-                    <!-- 5. طريقة الدفع: كاش أو شبكة -->
+                    <!-- 5. حالة التذكرة -->
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">طريقة الدفع *</label>
-                        <select id="payment-method" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:border-blue-600 outline-none text-sm font-bold text-slate-700">
-                            <option value="شبكة">💳 شبكة (مدى / فيزا)</option>
-                            <option value="كاش">💵 كاش (نقدي)</option>
-                            <option value="تحويل">🏦 تحويل بنكي</option>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">حالة التذكرة *</label>
+                        <select id="ticket-status" onchange="handleFormStatusOrPaymentChange()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:border-blue-600 outline-none text-sm font-bold text-slate-800">
+                            <option value="issue">✅ إصدار جديد (Issue)</option>
+                            <option value="reissue">🔄 تعديل (Reissue)</option>
+                            <option value="refund">↩️ مسترجعة (Refund - بدون عمولة)</option>
+                            <option value="void">🚫 ملغاة (Void - بدون عمولة)</option>
                         </select>
                     </div>
 
                     <!-- 6. المبلغ الأساسي (التكلفة) -->
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">المبلغ الأساسي (رأس المال) *</label>
-                        <input type="number" id="base-price" placeholder="0.00" step="0.01" oninput="calculateLivePreview()"
+                        <label class="block text-xs font-bold text-slate-600 mb-1">المبلغ الأساسي (التكلفة) *</label>
+                        <input type="number" id="base-price" placeholder="0.00" step="0.01" oninput="onTotalPriceOrBaseInput()"
                                class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
                     </div>
 
                     <!-- 7. المبلغ الإجمالي (سعر البيع) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">المبلغ الإجمالي (سعر البيع) *</label>
-                        <input type="number" id="total-price" placeholder="0.00" step="0.01" oninput="calculateLivePreview()"
+                        <input type="number" id="total-price" placeholder="0.00" step="0.01" oninput="onTotalPriceOrBaseInput()"
                                class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
                     </div>
 
-                    <!-- 8. تاريخ إصدار التذكرة + زر الحفظ -->
+                    <!-- 8. طريقة الدفع -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">طريقة الدفع *</label>
+                        <select id="payment-method" onchange="handleFormStatusOrPaymentChange()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:border-blue-600 outline-none text-sm font-bold text-slate-700">
+                            <option value="شبكة">💳 شبكة (مدى / فيزا)</option>
+                            <option value="كاش">💵 كاش (نقدي)</option>
+                            <option value="تحويل">🏦 تحويل بنكي</option>
+                            <option value="آجل">📒 آجل / ذمم (غير مدفوع)</option>
+                        </select>
+                    </div>
+
+                    <!-- 9. المبلغ المدفوع فعلياً (لحساب الديون والآجل) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">المبلغ المدفوع فعلياً *</label>
+                        <input type="number" id="paid-amount" placeholder="يُملأ تلقائياً أو عدله للآجل" step="0.01" oninput="onPaidAmountManualInput()"
+                               class="w-full px-3 py-2 rounded-xl border border-emerald-400 bg-emerald-50/30 focus:border-emerald-600 outline-none text-sm font-bold text-emerald-900">
+                    </div>
+
+                    <!-- 10. تاريخ إصدار التذكرة + زر الحفظ -->
                     <div class="flex items-end gap-2">
                         <div class="w-1/2">
-                            <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ التذكرة *</label>
-                            <input type="date" id="sale-entry-date" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-xs font-bold text-slate-700">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ العملية *</label>
+                            <input type="date" id="sale-entry-date" class="w-full px-2 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-xs font-bold text-slate-700">
                         </div>
-                        <button onclick="addNewSale()" class="w-1/2 bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 text-sm">
-                            <span>💾</span> إضافة
+                        <button onclick="addNewSale()" class="w-1/2 bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1 text-sm">
+                            <span>💾</span> حفظ
                         </button>
                     </div>
                 </div>
 
                 <!-- شريط الحساب التلقائي الفوري للتذكرة قبل الحفظ -->
-                <div class="mt-4 bg-slate-50 border border-dashed border-slate-300 rounded-xl p-3 flex flex-wrap justify-around items-center gap-4 text-sm">
+                <div class="mt-4 bg-slate-50 border border-dashed border-slate-300 rounded-xl p-3 flex flex-wrap justify-around items-center gap-4 text-xs sm:text-sm">
                     <div>
                         <span class="text-slate-500 font-semibold">صافي مربح التذكرة: </span>
                         <span id="preview-profit" class="font-extrabold text-blue-900 text-base">0.00</span>
                     </div>
                     <div>
-                        <span class="text-slate-500 font-semibold">عمولة الموظف من هذه التذكرة (10%): </span>
+                        <span class="text-slate-500 font-semibold">عمولة الموظف (10%): </span>
                         <span id="preview-commission" class="font-extrabold text-emerald-600 text-base">0.00</span>
+                        <span id="preview-status-note" class="text-[11px] font-bold text-red-600 mr-1 hidden">(محذوفة للاسترجاع/الإلغاء)</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 font-semibold">المتبقي على العميل (دين/ذمم): </span>
+                        <span id="preview-debt" class="font-extrabold text-red-600 text-base">0.00</span>
                     </div>
                 </div>
             </div>
 
-            <!-- بطاقات الملخص الإحصائي (بالألوان السابقة: الأزرق والزمردي) -->
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 print-summary-grid">
-                <!-- 1. عدد التذاكر -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
-                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">عدد التذاكر المباعة</span>
+            <!-- بطاقات الملخص الإحصائي (6 بطاقات تشمل المديونيات وتستبعد المسترجع من العمولة) -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 print-summary-grid">
+                <!-- 1. عدد التذاكر وحالاتها -->
+                <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-[11px] font-bold text-slate-400 block mb-1 print-card-title">إجمالي التذاكر</span>
                     <div id="sum-tickets" class="text-2xl font-extrabold text-slate-800 print-card-value">0</div>
+                    <div id="sum-tickets-sub" class="text-[10px] font-bold text-slate-500 mt-1">فعالة: 0 | مسترجع/ملغي: 0</div>
                 </div>
 
-                <!-- 2. إجمالي المبيعات -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
-                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">إجمالي المبيعات (كلي)</span>
-                    <div id="sum-total-sales" class="text-2xl font-extrabold text-blue-900 print-card-value">0.00</div>
+                <!-- 2. إجمالي المبيعات الفعالة -->
+                <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-[11px] font-bold text-slate-400 block mb-1 print-card-title">إجمالي المبيعات الفعالة</span>
+                    <div id="sum-total-sales" class="text-xl font-extrabold text-blue-900 print-card-value">0.00</div>
+                    <div class="text-[10px] font-semibold text-slate-400 mt-1">بعد استبعاد المسترجع</div>
                 </div>
 
-                <!-- 3. تفصيل الكاش والشبكة -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
-                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">تفصيل طرق الدفع</span>
-                    <div class="text-xs font-bold space-y-0.5 mt-0.5">
+                <!-- 3. المقبوض الفعلي في الصندوق (كاش / شبكة) -->
+                <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-[11px] font-bold text-slate-400 block mb-1 print-card-title">المقبوض فعلياً بالصندوق</span>
+                    <div class="text-xs font-bold space-y-0.5 mt-1">
                         <div class="flex justify-between text-emerald-700"><span>💵 كاش:</span> <span id="sum-cash">0.00</span></div>
                         <div class="flex justify-between text-sky-700"><span>💳 شبكة/تحويل:</span> <span id="sum-card">0.00</span></div>
                     </div>
                 </div>
 
-                <!-- 4. إجمالي صافي المرابح -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
-                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">إجمالي صافي المرابح</span>
-                    <div id="sum-profit" class="text-2xl font-extrabold text-indigo-700 print-card-value">0.00</div>
+                <!-- 4. إجمالي الديون المتبقية (الذمم / الآجل) -->
+                <div class="bg-red-50/60 p-3.5 rounded-2xl shadow-sm border border-red-200 print-summary-card print-debt-card">
+                    <span class="text-[11px] font-bold text-red-700 block mb-1 print-card-title">ديون متبقية (ذمم/آجل)</span>
+                    <div id="sum-debt" class="text-xl font-extrabold text-red-600 print-card-value">0.00</div>
+                    <div class="text-[10px] font-bold text-red-500 mt-1">مبالغ غير محصلة بعد</div>
                 </div>
 
-                <!-- 5. إجمالي عمولة الموظف (10%) -->
-                <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white p-4 rounded-2xl shadow-sm col-span-2 lg:col-span-1 print-summary-card print-commission-card">
-                    <span class="text-xs font-bold text-emerald-100 block mb-1 print-card-title">إجمالي عمولة الموظف (10%)</span>
-                    <div id="sum-commission" class="text-2xl font-extrabold print-card-value">0.00</div>
+                <!-- 5. إجمالي صافي المرابح -->
+                <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-[11px] font-bold text-slate-400 block mb-1 print-card-title">إجمالي صافي المرابح</span>
+                    <div id="sum-profit" class="text-xl font-extrabold text-indigo-700 print-card-value">0.00</div>
+                    <div class="text-[10px] font-semibold text-slate-400 mt-1">صافي ربح المكتب</div>
+                </div>
+
+                <!-- 6. إجمالي عمولة الموظف الصافية (10%) -->
+                <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white p-3.5 rounded-2xl shadow-sm print-summary-card print-commission-card">
+                    <span class="text-[11px] font-bold text-emerald-100 block mb-1 print-card-title">صافي عمولة الموظف (10%)</span>
+                    <div id="sum-commission" class="text-xl font-extrabold print-card-value">0.00</div>
+                    <div class="text-[10px] font-semibold text-emerald-100 mt-1">محذوف منها المسترجع</div>
                 </div>
             </div>
 
-            <!-- جدول سجل المبيعات -->
+            <!-- جدول سجل المبيعات مع محرك البحث الفوري الشامل -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden print-table-container">
-                <div class="p-4 md:p-5 border-b border-slate-100 flex justify-between items-center no-print">
-                    <h3 id="table-section-title" class="font-extrabold text-blue-900 text-base md:text-lg">📋 جدول التقرير المفصل</h3>
-                    <span id="table-count-badge" class="text-xs font-bold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">0 حجز</span>
+                
+                <!-- شريط البحث الفوري الشامل (Global Search Bar) وفلتر الحالات -->
+                <div class="p-4 md:p-5 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 no-print">
+                    <div class="flex items-center gap-2">
+                        <h3 id="table-section-title" class="font-extrabold text-blue-900 text-base md:text-lg">📋 جدول التقرير المفصل</h3>
+                        <span id="table-count-badge" class="text-xs font-bold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">0 حجز</span>
+                    </div>
+
+                    <!-- أدوات البحث الفوري وفلترة الحالات والديون -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="relative flex-grow sm:w-64">
+                            <input type="text" id="global-search-input" oninput="renderDashboard()" placeholder="🔍 ابحث برقم PNR، اسم العميل، الجوال..."
+                                   class="w-full pl-3 pr-8 py-2 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-blue-600 outline-none text-xs font-bold text-slate-800">
+                        </div>
+
+                        <label class="flex items-center gap-1.5 text-xs font-bold text-blue-900 bg-blue-50 px-3 py-2 rounded-xl border border-blue-200 cursor-pointer select-none" title="البحث في جميع التواريخ والأرشيف بالكامل">
+                            <input type="checkbox" id="search-all-dates" onchange="renderDashboard()" class="rounded text-blue-900 focus:ring-0">
+                            <span>شامل كل التواريخ</span>
+                        </label>
+
+                        <select id="status-filter" onchange="renderDashboard()" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-bold text-slate-700 outline-none cursor-pointer">
+                            <option value="ALL">كل الحالات</option>
+                            <option value="ACTIVE">✅ الفعالة فقط (إصدار/تعديل)</option>
+                            <option value="DEBT">📒 عليها مديونية (ذمم متبقية)</option>
+                            <option value="REFUND_VOID">↩️ المسترجعة والملغاة فقط</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto print-table-container">
-                    <table class="w-full text-right border-collapse text-sm">
+                    <table class="w-full text-right border-collapse text-xs sm:text-sm">
                         <thead>
-                            <tr class="bg-slate-50 text-slate-600 border-b border-slate-200 text-xs uppercase">
-                                <th class="py-3.5 px-3 font-bold">#</th>
-                                <th id="th-sale-date" class="py-3.5 px-3 font-bold hidden">التاريخ</th>
-                                <th id="th-emp-name" class="py-3.5 px-3 font-bold hidden">الموظف</th>
-                                <th class="py-3.5 px-3 font-bold">اسم العميل</th>
-                                <th class="py-3.5 px-3 font-bold">رقم الجوال</th>
-                                <th class="py-3.5 px-3 font-bold">رقم الحجز PNR</th>
-                                <th class="py-3.5 px-3 font-bold">شركة الطيران</th>
-                                <th class="py-3.5 px-3 font-bold">طريقة الدفع</th>
-                                <th class="py-3.5 px-3 font-bold">الأساسي</th>
-                                <th class="py-3.5 px-3 font-bold">الإجمالي</th>
-                                <th class="py-3.5 px-3 font-bold text-indigo-700">المربح</th>
-                                <th class="py-3.5 px-3 font-bold text-emerald-700">العمولة (10%)</th>
-                                <th class="py-3.5 px-3 font-bold no-print text-center">إجراء</th>
+                            <tr class="bg-slate-50 text-slate-600 border-b border-slate-200 text-[11px] uppercase">
+                                <th class="py-3 px-2 font-bold">#</th>
+                                <th id="th-sale-date" class="py-3 px-2 font-bold hidden">التاريخ</th>
+                                <th id="th-emp-name" class="py-3 px-2 font-bold hidden">الموظف</th>
+                                <th class="py-3 px-2 font-bold">العميل والجوال</th>
+                                <th class="py-3 px-2 font-bold">PNR والطيران</th>
+                                <th class="py-3 px-2 font-bold">الحالة</th>
+                                <th class="py-3 px-2 font-bold">الدفع</th>
+                                <th class="py-3 px-2 font-bold">الأساسي</th>
+                                <th class="py-3 px-2 font-bold">الإجمالي</th>
+                                <th class="py-3 px-2 font-bold text-emerald-800">المدفوع</th>
+                                <th class="py-3 px-2 font-bold text-red-600">المتبقي (دين)</th>
+                                <th class="py-3 px-2 font-bold text-indigo-700">المربح</th>
+                                <th class="py-3 px-2 font-bold text-emerald-700">العمولة (10%)</th>
+                                <th class="py-3 px-2 font-bold no-print text-center">إجراءات وواتساب</th>
                             </tr>
                         </thead>
                         <tbody id="sales-table-body" class="divide-y divide-slate-100">
@@ -592,7 +726,7 @@
                     <p class="text-slate-400">............................................</p>
                 </div>
                 <div class="text-center">
-                    <p class="mb-6">المراجعة والمحاسبة (الصندوق)</p>
+                    <p class="mb-6">المراجعة والمحاسبة (الصندوق والذمم)</p>
                     <p class="text-slate-400">............................................</p>
                 </div>
                 <div class="text-center">
@@ -606,7 +740,6 @@
 
     <!-- ==========================================
          تذييل الصفحات الرسمي (Footer Signature)
-         يظهر في أسفل جميع الصفحات وفي التقارير المطبوعة
          ========================================== -->
     <footer class="bg-white border-t border-slate-200 py-4 px-6 text-center mt-auto print-border">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold text-slate-500">
@@ -619,20 +752,20 @@
 
     <script>
         /* ==========================================
-           البرمجة التفاعلية وإدارة الحسابات والنسخ الاحتياطي
+           البرمجة التفاعلية، المنطق المحاسبي، وإدارة التذاكر والديون
            ========================================== */
 
-        // 1. إعداد نسبة العمولة الثابتة (10% لكل تذكرة على حدة)
+        // 1. إعداد نسبة العمولة الثابتة (10% للتذاكر الفعالة فقط، و 0% للمسترجع والملغي)
         const COMMISSION_RATE = 0.10;
 
-        // 2. الحسابات الافتراضية للنظام (قابلة للتعديل من لوحة المدير وتحفظ في localStorage)
+        // 2. الحسابات الافتراضية للنظام
         const DEFAULT_USERS = {
             "empA":  { password: "123",      name: "الموظف أ",    role: "employee" },
             "empB":  { password: "123",      name: "الموظف ب",    role: "employee" },
             "admin": { password: "admin123", name: "المدير العام", role: "admin" }
         };
 
-        // دالة آمنة لقراءة البيانات من localStorage لتجنب توقف النظام في حال تلف البيانات
+        // دالة آمنة لقراءة البيانات من localStorage
         function safeLoadStorage(key, fallback) {
             try {
                 const raw = localStorage.getItem(key);
@@ -643,7 +776,7 @@
             }
         }
 
-        // دالة لتعقيم النصوص المدخلة ومنع أخطاء HTML/XSS في الجدول
+        // دالة لتعقيم النصوص المدخلة ومنع أخطاء HTML/XSS
         function escapeHTML(str) {
             return String(str || '')
                 .replace(/&/g, '&amp;')
@@ -653,18 +786,66 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // تحميل بيانات المستخدمين ورقم النسخة الاحتياطية ووضع شاشة الدخول (ليلي/فاتح)
+        // تحميل بيانات المستخدمين ورقم النسخة الاحتياطية ووضع شاشة الدخول
         let usersDB = safeLoadStorage('airline_users_v3_db', DEFAULT_USERS);
         let backupVersionCounter = parseInt(localStorage.getItem('airline_backup_version_num') || '1', 10);
         let loginThemeMode = localStorage.getItem('airline_login_theme') || 'dark';
 
         let currentUser = null;
         let ticketIdToDelete = null;
+        let ticketIdToEditStatus = null;
         let currentFilterMode = 'daily';
+        let isPaidManuallyEdited = false;
 
-        // ------------------------------------------
+        // دالة تطبيع بيانات التذاكر القديمة لضمان توافقها مع نظام الحالات والمديونيات الجديد
+        function normalizeTicketRecord(t) {
+            const status = t.status || 'issue';
+            const basePrice = parseFloat(t.basePrice) || 0;
+            const totalPrice = parseFloat(t.totalPrice) || 0;
+
+            let paidAmount = (t.paidAmount !== undefined && t.paidAmount !== null)
+                ? parseFloat(t.paidAmount)
+                : ((status === 'refund' || status === 'void') ? 0 : totalPrice);
+
+            let remainingDebt = 0;
+            let profit = 0;
+            let commission = 0;
+
+            if (status === 'void') {
+                // التذكرة الملغاة: تصفر بالكامل ولا عمولة عليها
+                paidAmount = 0;
+                remainingDebt = 0;
+                profit = 0;
+                commission = 0;
+            } else if (status === 'refund') {
+                // التذكرة المسترجعة: تحذف عمولة الموظف (0.00) ويبقى فقط رسم الاسترجاع للمكتب إن وجد
+                remainingDebt = 0;
+                profit = parseFloat(t.profit) || 0;
+                commission = 0;
+            } else {
+                // التذكرة الفعالة (إصدار أو تعديل)
+                remainingDebt = Math.max(0, totalPrice - paidAmount);
+                profit = totalPrice - basePrice;
+                commission = profit > 0 ? (profit * COMMISSION_RATE) : 0;
+            }
+
+            return {
+                ...t,
+                status: status,
+                basePrice: basePrice,
+                totalPrice: totalPrice,
+                paidAmount: paidAmount,
+                remainingDebt: remainingDebt,
+                profit: profit,
+                commission: commission
+            };
+        }
+
+        // 3. تحميل قاعدة بيانات المبيعات وتطبيع سجلاتها
+        let rawSalesDB = safeLoadStorage('airline_pos_v2_db', []);
+        let salesDatabase = Array.isArray(rawSalesDB) ? rawSalesDB.map(normalizeTicketRecord) : [];
+
         // دالة التحكم في مظهر شاشة تسجيل الدخول (ليلي Dark / فاتح Light)
-        // ------------------------------------------
         function applyLoginTheme() {
             const loginPage = document.getElementById('login-page');
             const loginCard = document.getElementById('login-card');
@@ -683,7 +864,6 @@
             const themeText = document.getElementById('login-theme-text');
 
             if (loginThemeMode === 'dark') {
-                // تطبيق النظام الليلي (Dark Mode) على شاشة الدخول
                 loginPage.className = "flex-grow flex flex-col items-center justify-center p-4 transition-colors duration-300 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 relative";
                 loginCard.className = "max-w-md w-full bg-slate-900/95 rounded-3xl shadow-2xl border border-slate-800 overflow-hidden transition-colors duration-300";
                 loginHeader.className = "bg-gradient-to-b from-blue-950 to-slate-900 p-8 text-center text-white relative border-b border-slate-800 transition-colors duration-300";
@@ -700,7 +880,6 @@
                 themeIcon.innerText = "☀️";
                 themeText.innerText = "تحويل للوضع الفاتح";
             } else {
-                // تطبيق النظام الفاتح (Light Mode) على شاشة الدخول
                 loginPage.className = "flex-grow flex flex-col items-center justify-center p-4 transition-colors duration-300 bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200 relative";
                 loginCard.className = "max-w-md w-full bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden transition-colors duration-300";
                 loginHeader.className = "bg-gradient-to-b from-blue-900 to-blue-950 p-8 text-center text-white relative border-b border-blue-800 transition-colors duration-300";
@@ -725,7 +904,6 @@
             applyLoginTheme();
         }
 
-        // دالة لإرجاع تاريخ اليوم حسب التوقيت المحلي للجهاز بصيغة YYYY-MM-DD
         function getTodayDateString() {
             const today = new Date();
             const year = today.getFullYear();
@@ -734,15 +912,10 @@
             return `${year}-${month}-${day}`;
         }
 
-        // دالة لإرجاع الشهر الحالي بصيغة YYYY-MM
         function getCurrentMonthString() {
             return getTodayDateString().slice(0, 7);
         }
 
-        // 3. تحميل قاعدة بيانات المبيعات بشكل آمن
-        let salesDatabase = safeLoadStorage('airline_pos_v2_db', []);
-
-        // التحقق عند فتح الصفحة: تطبيق وضع شاشة الدخول وفحص الجلسة
         window.onload = function() {
             applyLoginTheme();
             updateEmployeeFilterNames();
@@ -764,7 +937,6 @@
             }
         };
 
-        // تحديث شارة رقم النسخة والتاريخ واسم الموظف في الواجهة والطباعة
         function updateVersionBadgeUI() {
             if (!currentUser) return;
             const todayStr = getTodayDateString();
@@ -778,7 +950,6 @@
             }
         }
 
-        // دالة إظهار أو إخفاء كلمة المرور في شاشة الدخول
         function togglePasswordVisibility() {
             const passInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eye-icon');
@@ -791,7 +962,6 @@
             }
         }
 
-        // دالة عرض الإشعارات العلوية الأنيقة
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const box = document.getElementById('toast-box');
@@ -814,7 +984,6 @@
             }, 3800);
         }
 
-        // دالة تسجيل الدخول الفعلية والتحقق من الهوية
         function handleLogin() {
             const userInp = document.getElementById('username').value.trim();
             const passInp = document.getElementById('password').value.trim();
@@ -829,7 +998,6 @@
                 };
 
                 sessionStorage.setItem('airline_active_user', JSON.stringify(currentUser));
-
                 enterDashboardView();
                 showToast(`مرحباً بك، ${currentUser.name}`);
             } else {
@@ -837,7 +1005,6 @@
             }
         }
 
-        // دالة الانتقال من صفحة الدخول المستقلة إلى صفحة النظام الداخلي
         function enterDashboardView() {
             const todayStr = getTodayDateString();
             document.getElementById('date-picker').value = todayStr;
@@ -866,7 +1033,6 @@
             setFilterMode('daily');
         }
 
-        // دالة التبديل بين أنماط التقرير (يومي / شهري / فترة مخصصة)
         function setFilterMode(mode) {
             currentFilterMode = mode;
 
@@ -883,17 +1049,9 @@
                 }
             });
 
-            const thDate = document.getElementById('th-sale-date');
-            if (mode === 'daily') {
-                thDate.classList.add('hidden');
-            } else {
-                thDate.classList.remove('hidden');
-            }
-
             renderDashboard();
         }
 
-        // دالة تسجيل الخروج الآمن
         function handleLogout() {
             currentUser = null;
             sessionStorage.removeItem('airline_active_user');
@@ -906,42 +1064,115 @@
             showToast("تم تسجيل الخروج بنجاح");
         }
 
-        // دالة الحساب التلقائي الفوري أثناء كتابة الأسعار
+        // إظهار أو إخفاء خانة شركة الطيران اليدوية عند اختيار "أخرى"
+        function toggleCustomAirlineInput() {
+            const selectVal = document.getElementById('airline-select').value;
+            const customInput = document.getElementById('airline-custom');
+            if (selectVal === 'OTHER') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+                customInput.value = '';
+            }
+        }
+
+        // تحديث المبلغ المدفوع تلقائياً عند تغيير السعر الإجمالي أو طريقة الدفع أو الحالة
+        function onTotalPriceOrBaseInput() {
+            const totalPrice = parseFloat(document.getElementById('total-price').value) || 0;
+            const paymentMethod = document.getElementById('payment-method').value;
+            const status = document.getElementById('ticket-status').value;
+
+            if (!isPaidManuallyEdited) {
+                if (paymentMethod === 'آجل' || status === 'void' || status === 'refund') {
+                    document.getElementById('paid-amount').value = '0';
+                } else {
+                    document.getElementById('paid-amount').value = totalPrice > 0 ? totalPrice : '';
+                }
+            }
+            calculateLivePreview();
+        }
+
+        function onPaidAmountManualInput() {
+            isPaidManuallyEdited = true;
+            calculateLivePreview();
+        }
+
+        function handleFormStatusOrPaymentChange() {
+            const paymentMethod = document.getElementById('payment-method').value;
+            const status = document.getElementById('ticket-status').value;
+            const totalPrice = parseFloat(document.getElementById('total-price').value) || 0;
+
+            if (paymentMethod === 'آجل' || status === 'void' || status === 'refund') {
+                document.getElementById('paid-amount').value = '0';
+                isPaidManuallyEdited = false;
+            } else if (!isPaidManuallyEdited) {
+                document.getElementById('paid-amount').value = totalPrice > 0 ? totalPrice : '';
+            }
+            calculateLivePreview();
+        }
+
+        // دالة الحساب التلقائي الفوري (تراعي حذف العمولة للمسترجع والملغي وحساب الديون)
         function calculateLivePreview() {
             const basePrice = parseFloat(document.getElementById('base-price').value) || 0;
             const totalPrice = parseFloat(document.getElementById('total-price').value) || 0;
+            const paidInputVal = document.getElementById('paid-amount').value;
+            const paidAmount = paidInputVal !== '' ? (parseFloat(paidInputVal) || 0) : totalPrice;
+            const status = document.getElementById('ticket-status').value;
 
-            const profit = totalPrice - basePrice;
-            const commission = profit > 0 ? (profit * COMMISSION_RATE) : 0;
+            const statusNote = document.getElementById('preview-status-note');
+            let profit = 0;
+            let commission = 0;
+            let debt = 0;
+
+            if (status === 'void') {
+                profit = 0;
+                commission = 0;
+                debt = 0;
+                statusNote.classList.remove('hidden');
+            } else if (status === 'refund') {
+                profit = Math.max(0, totalPrice - basePrice);
+                commission = 0; // حذف نسبة الـ 10% للمسترجع
+                debt = 0;
+                statusNote.classList.remove('hidden');
+            } else {
+                profit = totalPrice - basePrice;
+                commission = profit > 0 ? (profit * COMMISSION_RATE) : 0;
+                debt = Math.max(0, totalPrice - paidAmount);
+                statusNote.classList.add('hidden');
+            }
 
             document.getElementById('preview-profit').innerText = profit.toFixed(2);
             document.getElementById('preview-commission').innerText = commission.toFixed(2);
+            document.getElementById('preview-debt').innerText = debt.toFixed(2);
         }
 
-        // دالة إضافة التذكرة الجديدة وحساب عمولتها (10%) بشكل مستقل
+        // دالة إضافة التذكرة الجديدة
         function addNewSale() {
             const clientName = document.getElementById('client-name').value.trim();
             const clientPhone = document.getElementById('client-phone').value.trim();
             const pnrCode = document.getElementById('pnr-code').value.trim().toUpperCase();
-            const airlineName = document.getElementById('airline-name').value.trim();
+            
+            const airlineSelect = document.getElementById('airline-select').value;
+            const airlineCustom = document.getElementById('airline-custom').value.trim();
+            const airlineName = (airlineSelect === 'OTHER') ? airlineCustom : airlineSelect;
+
+            const status = document.getElementById('ticket-status').value;
             const paymentMethod = document.getElementById('payment-method').value;
             const basePrice = parseFloat(document.getElementById('base-price').value);
             const totalPrice = parseFloat(document.getElementById('total-price').value);
+            const paidRaw = document.getElementById('paid-amount').value;
             const saleEntryDate = document.getElementById('sale-entry-date').value || getTodayDateString();
 
             if (!clientName || !clientPhone || !pnrCode || !airlineName || isNaN(basePrice) || isNaN(totalPrice)) {
-                showToast("يرجى تعبئة جميع الحقول المطلوبة (العميل، PNR، الطيران، والمبالغ)", "error");
+                showToast("يرجى تعبئة كافة الحقول المطلوبة (العميل، الجوال، PNR، شركة الطيران، والمبالغ)", "error");
                 return;
             }
 
-            if (totalPrice < basePrice) {
-                showToast("تنبيه: سعر البيع أقل من سعر التكلفة الأساسي!", "warning");
-            }
+            let paidAmount = paidRaw !== '' ? parseFloat(paidRaw) : totalPrice;
+            if (isNaN(paidAmount) || paidAmount < 0) paidAmount = 0;
 
-            const profit = totalPrice - basePrice;
-            const commission = profit > 0 ? (profit * COMMISSION_RATE) : 0;
-
-            const newTicket = {
+            const newTicket = normalizeTicketRecord({
                 id: Date.now(),
                 date: saleEntryDate,
                 employeeUsername: currentUser.username,
@@ -950,12 +1181,13 @@
                 clientPhone: clientPhone,
                 pnr: pnrCode,
                 airline: airlineName,
+                status: status,
                 paymentMethod: paymentMethod,
                 basePrice: basePrice,
                 totalPrice: totalPrice,
-                profit: profit,
-                commission: commission
-            };
+                paidAmount: paidAmount,
+                profit: totalPrice - basePrice
+            });
 
             salesDatabase.push(newTicket);
             localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
@@ -964,30 +1196,174 @@
                 document.getElementById('date-picker').value = saleEntryDate;
             }
 
+            // تفريغ الحقول بعد الإضافة
             document.getElementById('client-name').value = '';
             document.getElementById('client-phone').value = '';
             document.getElementById('pnr-code').value = '';
-            document.getElementById('airline-name').value = '';
             document.getElementById('base-price').value = '';
             document.getElementById('total-price').value = '';
+            document.getElementById('paid-amount').value = '';
+            document.getElementById('ticket-status').value = 'issue';
+            if (airlineSelect === 'OTHER') {
+                document.getElementById('airline-custom').value = '';
+            }
+            isPaidManuallyEdited = false;
             calculateLivePreview();
 
-            showToast("تم حفظ التذكرة وإضافتها للسجل بنجاح!");
+            showToast("تم حفظ العملية وتحديث حسابات التقرير والعمولة بنجاح!");
             renderDashboard();
         }
 
-        // دالة إرجاع التذاكر المفلترة حالياً ومعلومات الفترة (تُستخدم للجدول وللإيميل)
+        // دوال نافذة تعديل حالة التذكرة (إصدار / استرجاع / إلغاء) وتسديد الديون
+        function openStatusDebtModal(ticketId) {
+            const ticket = salesDatabase.find(t => t.id === ticketId);
+            if (!ticket) return;
+
+            ticketIdToEditStatus = ticketId;
+            document.getElementById('modal-ticket-info').innerHTML = `
+                <div class="flex justify-between"><span>العميل: <strong>${escapeHTML(ticket.clientName)}</strong></span> <span>PNR: <strong class="font-mono text-blue-900">${escapeHTML(ticket.pnr)}</strong></span></div>
+                <div class="flex justify-between"><span>إجمالي التذكرة: <strong>${ticket.totalPrice.toFixed(2)}</strong></span> <span>المتبقي حالياً: <strong class="text-red-600">${ticket.remainingDebt.toFixed(2)}</strong></span></div>
+            `;
+
+            document.getElementById('edit-ticket-status').value = ticket.status || 'issue';
+            document.getElementById('edit-paid-amount').value = ticket.paidAmount.toFixed(2);
+            document.getElementById('edit-payment-method').value = ticket.paymentMethod || 'شبكة';
+            document.getElementById('edit-refund-fee').value = (ticket.status === 'refund') ? ticket.profit.toFixed(2) : '0';
+
+            handleModalStatusChange();
+            document.getElementById('status-debt-modal').classList.remove('hidden');
+        }
+
+        function handleModalStatusChange() {
+            const st = document.getElementById('edit-ticket-status').value;
+            const refundBox = document.getElementById('refund-fee-box');
+            const debtBox = document.getElementById('debt-update-box');
+
+            if (st === 'refund') {
+                refundBox.classList.remove('hidden');
+                debtBox.classList.add('hidden');
+            } else if (st === 'void') {
+                refundBox.classList.add('hidden');
+                debtBox.classList.add('hidden');
+            } else {
+                refundBox.classList.add('hidden');
+                debtBox.classList.remove('hidden');
+            }
+        }
+
+        function payFullTicketAmountInModal() {
+            const ticket = salesDatabase.find(t => t.id === ticketIdToEditStatus);
+            if (!ticket) return;
+            document.getElementById('edit-paid-amount').value = ticket.totalPrice.toFixed(2);
+            if (document.getElementById('edit-payment-method').value === 'آجل') {
+                document.getElementById('edit-payment-method').value = 'كاش';
+            }
+        }
+
+        function saveStatusAndDebtChanges() {
+            const idx = salesDatabase.findIndex(t => t.id === ticketIdToEditStatus);
+            if (idx === -1) return;
+
+            const ticket = salesDatabase[idx];
+            const newStatus = document.getElementById('edit-ticket-status').value;
+            const newPaid = parseFloat(document.getElementById('edit-paid-amount').value) || 0;
+            const newMethod = document.getElementById('edit-payment-method').value;
+            const refundFee = parseFloat(document.getElementById('edit-refund-fee').value) || 0;
+
+            ticket.status = newStatus;
+            ticket.paymentMethod = newMethod;
+
+            if (newStatus === 'refund') {
+                ticket.paidAmount = 0;
+                ticket.remainingDebt = 0;
+                ticket.profit = refundFee;
+                ticket.commission = 0; // حذف عمولة الموظف 10%
+            } else if (newStatus === 'void') {
+                ticket.paidAmount = 0;
+                ticket.remainingDebt = 0;
+                ticket.profit = 0;
+                ticket.commission = 0; // حذف عمولة الموظف 10%
+            } else {
+                ticket.paidAmount = newPaid;
+                ticket.remainingDebt = Math.max(0, ticket.totalPrice - newPaid);
+                ticket.profit = ticket.totalPrice - ticket.basePrice;
+                ticket.commission = ticket.profit > 0 ? (ticket.profit * COMMISSION_RATE) : 0;
+            }
+
+            salesDatabase[idx] = normalizeTicketRecord(ticket);
+            localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
+
+            closeStatusDebtModal();
+            renderDashboard();
+            showToast("تم تحديث حالة التذكرة وإعادة احتساب العمولة والديون بنجاح!");
+        }
+
+        function closeStatusDebtModal() {
+            ticketIdToEditStatus = null;
+            document.getElementById('status-debt-modal').classList.add('hidden');
+        }
+
+        // دالة إرسال إيصال للعميل عبر واتساب بضغطة زر (WhatsApp Receipt)
+        function sendWhatsAppReceipt(ticketId) {
+            const ticket = salesDatabase.find(t => t.id === ticketId);
+            if (!ticket) return;
+
+            // تنظيف رقم الجوال وتحويل الصفر المحلي إلى مفتاح السعودية 966 تلقائياً
+            let cleanPhone = String(ticket.clientPhone || '').replace(/\D/g, '');
+            if (cleanPhone.startsWith('00')) {
+                cleanPhone = cleanPhone.slice(2);
+            } else if (cleanPhone.startsWith('05')) {
+                cleanPhone = '966' + cleanPhone.slice(1);
+            } else if (cleanPhone.length === 9 && cleanPhone.startsWith('5')) {
+                cleanPhone = '966' + cleanPhone;
+            }
+
+            const statusLabels = {
+                'issue': 'إصدار مؤكد ✅',
+                'reissue': 'تعديل حجز 🔄',
+                'refund': 'تذكرة مسترجعة ↩️',
+                'void': 'حجز ملغي 🚫'
+            };
+
+            const msgLines = [
+                `✈️ *إيصال وتأكيد حجز - مكتب الطيران*`,
+                `--------------------------------`,
+                `مرحباً بك أستاذ/ة: *${ticket.clientName}*`,
+                `• رقم الحجز (PNR): *${ticket.pnr}*`,
+                `• شركة الطيران: *${ticket.airline}*`,
+                `• حالة التذكرة: *${statusLabels[ticket.status] || 'إصدار مؤكد'}*`,
+                `• تاريخ العملية: ${ticket.date}`,
+                `--------------------------------`,
+                `💰 *التفاصيل المالية:*`,
+                `• إجمالي قيمة التذكرة: ${ticket.totalPrice.toFixed(2)}`,
+                `• المبلغ المدفوع: ${ticket.paidAmount.toFixed(2)} (${ticket.paymentMethod})`,
+                ticket.remainingDebt > 0 ? `• *المبلغ المتبقي (ذمم): ${ticket.remainingDebt.toFixed(2)}*` : `• حالة السداد: خالص بالكامل ✅`,
+                `--------------------------------`,
+                `شكراً لاختياركم مكتبنا، نتمنى لكم رحلة سعيدة وموفقة! 🌍`
+            ];
+
+            const whatsappURL = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msgLines.join('\n'))}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        // دالة إرجاع التذاكر المفلترة حالياً حسب التاريخ والموظف والبحث الفوري والحالة
         function getActiveFilteredData() {
             const empFilter = document.getElementById('employee-filter').value;
             const selectedDay = document.getElementById('date-picker').value;
             const selectedMonth = document.getElementById('month-picker').value;
             const dateFrom = document.getElementById('date-from').value;
             const dateTo = document.getElementById('date-to').value;
+            const searchQuery = (document.getElementById('global-search-input').value || '').trim().toLowerCase();
+            const searchAllDates = document.getElementById('search-all-dates').checked;
+            const statusFilter = document.getElementById('status-filter').value;
 
             let periodLabel = '';
             let cleanDateTag = selectedDay || getTodayDateString();
 
-            if (currentFilterMode === 'daily') {
+            if (searchQuery && searchAllDates) {
+                periodLabel = `نتائج البحث الشامل عن: "${searchQuery}" في كل التواريخ`;
+                cleanDateTag = `All_Dates_Search`;
+            } else if (currentFilterMode === 'daily') {
                 periodLabel = `ليوم: ${selectedDay}`;
                 cleanDateTag = selectedDay;
             } else if (currentFilterMode === 'monthly') {
@@ -998,34 +1374,65 @@
                 cleanDateTag = `${dateFrom}_to_${dateTo}`;
             }
 
-            const filteredSales = salesDatabase.filter(sale => {
-                let matchPeriod = false;
-                if (currentFilterMode === 'daily') {
-                    matchPeriod = (sale.date === selectedDay);
-                } else if (currentFilterMode === 'monthly') {
-                    matchPeriod = sale.date && sale.date.startsWith(selectedMonth);
-                } else if (currentFilterMode === 'range') {
-                    matchPeriod = sale.date && (sale.date >= dateFrom && sale.date <= dateTo);
+            const filteredSales = salesDatabase.map(normalizeTicketRecord).filter(sale => {
+                // 1. فلترة الفترة الزمنية (إلا إذا كان البحث شاملاً لكل التواريخ)
+                let matchPeriod = true;
+                if (!(searchQuery && searchAllDates)) {
+                    if (currentFilterMode === 'daily') {
+                        matchPeriod = (sale.date === selectedDay);
+                    } else if (currentFilterMode === 'monthly') {
+                        matchPeriod = sale.date && sale.date.startsWith(selectedMonth);
+                    } else if (currentFilterMode === 'range') {
+                        matchPeriod = sale.date && (sale.date >= dateFrom && sale.date <= dateTo);
+                    }
                 }
 
+                // 2. فلترة الموظف حسب الصلاحية
+                let matchEmp = true;
                 if (currentUser.role === 'admin') {
-                    const matchEmp = (empFilter === 'ALL') || (sale.employeeUsername === empFilter);
-                    return matchPeriod && matchEmp;
+                    matchEmp = (empFilter === 'ALL') || (sale.employeeUsername === empFilter);
                 } else {
-                    return matchPeriod && (sale.employeeUsername === currentUser.username);
+                    matchEmp = (sale.employeeUsername === currentUser.username);
                 }
+
+                // 3. فلترة حالة التذكرة والمديونية
+                let matchStatus = true;
+                if (statusFilter === 'ACTIVE') {
+                    matchStatus = (sale.status === 'issue' || sale.status === 'reissue');
+                } else if (statusFilter === 'DEBT') {
+                    matchStatus = (sale.remainingDebt > 0);
+                } else if (statusFilter === 'REFUND_VOID') {
+                    matchStatus = (sale.status === 'refund' || sale.status === 'void');
+                }
+
+                // 4. فلترة محرك البحث الفوري الشامل (PNR / العميل / الجوال / الطيران)
+                let matchSearch = true;
+                if (searchQuery) {
+                    const haystack = `${sale.pnr} ${sale.clientName} ${sale.clientPhone} ${sale.airline} ${sale.employeeName}`.toLowerCase();
+                    matchSearch = haystack.includes(searchQuery);
+                }
+
+                return matchPeriod && matchEmp && matchStatus && matchSearch;
             });
 
             filteredSales.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
-            return { filteredSales, periodLabel, cleanDateTag, empFilter, selectedDay, selectedMonth, dateFrom, dateTo };
+            return { filteredSales, periodLabel, cleanDateTag, empFilter, selectedDay, selectedMonth, dateFrom, dateTo, searchQuery, searchAllDates };
         }
 
-        // دالة تحديث الجدول والإحصائيات حسب نوع الفلتر والموظف
+        // دالة تحديث الجدول والإحصائيات المحاسبية
         function renderDashboard() {
-            const { filteredSales, periodLabel, empFilter, selectedDay, selectedMonth, dateFrom, dateTo } = getActiveFilteredData();
+            const { filteredSales, periodLabel, empFilter, selectedDay, selectedMonth, dateFrom, dateTo, searchQuery, searchAllDates } = getActiveFilteredData();
 
             if (currentFilterMode === 'daily' && selectedDay) {
                 document.getElementById('sale-entry-date').value = selectedDay;
+            }
+
+            const showDateColumn = (currentFilterMode !== 'daily') || (searchQuery && searchAllDates);
+            const thDate = document.getElementById('th-sale-date');
+            if (showDateColumn) {
+                thDate.classList.remove('hidden');
+            } else {
+                thDate.classList.add('hidden');
             }
 
             currentUser.name = usersDB[currentUser.username].name;
@@ -1040,18 +1447,15 @@
                 }
             }
 
-            let reportMainTitle = '';
+            let reportMainTitle = '✈️ تقرير المبيعات والعمولات والذمم - مكتب الطيران';
             if (currentFilterMode === 'daily') {
-                reportMainTitle = '✈️ التقرير اليومي للمبيعات والعمولات - مكتب الطيران';
                 document.getElementById('print-date-badge').innerText = selectedDay;
             } else if (currentFilterMode === 'monthly') {
-                reportMainTitle = '✈️ التقرير الشهري الشامل للمبيعات والعمولات - مكتب الطيران';
                 document.getElementById('print-date-badge').innerText = `شهر ${selectedMonth}`;
             } else if (currentFilterMode === 'range') {
                 if (dateFrom && dateTo && dateFrom > dateTo) {
                     showToast("تنبيه: تاريخ البداية (من) أحدث من تاريخ النهاية (إلى)!", "warning");
                 }
-                reportMainTitle = '✈️ تقرير فترة مخصصة للمبيعات والعمولات - مكتب الطيران';
                 document.getElementById('print-date-badge').innerText = `${dateFrom} ⬅ ${dateTo}`;
             }
 
@@ -1066,103 +1470,150 @@
             tbody.innerHTML = '';
             tfoot.innerHTML = '';
 
+            let activeCount = 0;
+            let refundVoidCount = 0;
             let totalBaseSum = 0;
             let totalSalesSum = 0;
+            let totalPaidSum = 0;
+            let totalDebtSum = 0;
             let totalCashSum = 0;
             let totalCardSum = 0;
             let totalProfitSum = 0;
             let totalCommissionSum = 0;
 
             if (filteredSales.length === 0) {
-                let colSpan = 11;
+                let colSpan = 12;
                 if (currentUser.role === 'admin') colSpan++;
-                if (currentFilterMode !== 'daily') colSpan++;
+                if (showDateColumn) colSpan++;
 
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="${colSpan}" class="py-10 text-center text-slate-400 font-semibold">
-                            لا توجد تذاكر مسجلة ${periodLabel}.
+                            لا توجد تذاكر مطابقة ${periodLabel}.
                         </td>
                     </tr>`;
             } else {
                 filteredSales.forEach((sale, index) => {
-                    totalBaseSum += sale.basePrice;
-                    totalSalesSum += sale.totalPrice;
-                    totalProfitSum += sale.profit;
-                    totalCommissionSum += sale.commission;
+                    const isRefundOrVoid = (sale.status === 'refund' || sale.status === 'void');
 
-                    if (sale.paymentMethod === 'كاش') {
-                        totalCashSum += sale.totalPrice;
+                    if (isRefundOrVoid) {
+                        refundVoidCount++;
+                        // في حال وجود رسوم استرجاع محتجزة للمكتب تضاف لصافي ربح المكتب فقط، والعمولة 0
+                        totalProfitSum += sale.profit;
                     } else {
-                        totalCardSum += sale.totalPrice;
+                        activeCount++;
+                        totalBaseSum += sale.basePrice;
+                        totalSalesSum += sale.totalPrice;
+                        totalPaidSum += sale.paidAmount;
+                        totalDebtSum += sale.remainingDebt;
+                        totalProfitSum += sale.profit;
+                        totalCommissionSum += sale.commission;
+
+                        // الصندوق يحسب المبلغ المقبوض فعلياً
+                        if (sale.paymentMethod === 'كاش') {
+                            totalCashSum += sale.paidAmount;
+                        } else if (sale.paymentMethod === 'شبكة' || sale.paymentMethod === 'تحويل') {
+                            totalCardSum += sale.paidAmount;
+                        }
                     }
 
+                    // شارة حالة التذكرة
+                    let statusBadge = '';
+                    if (sale.status === 'issue') {
+                        statusBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[11px] font-bold">✅ إصدار</span>`;
+                    } else if (sale.status === 'reissue') {
+                        statusBadge = `<span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full text-[11px] font-bold">🔄 تعديل</span>`;
+                    } else if (sale.status === 'refund') {
+                        statusBadge = `<span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full text-[11px] font-extrabold">↩️ مسترجعة</span>`;
+                    } else if (sale.status === 'void') {
+                        statusBadge = `<span class="bg-red-100 text-red-700 border border-red-300 px-2 py-0.5 rounded-full text-[11px] font-extrabold">🚫 ملغاة</span>`;
+                    }
+
+                    // شارة طريقة الدفع
                     let paymentBadge = '';
                     if (sale.paymentMethod === 'كاش') {
-                        paymentBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-xs font-bold">💵 كاش</span>`;
+                        paymentBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[11px] font-bold">💵 كاش</span>`;
                     } else if (sale.paymentMethod === 'شبكة') {
-                        paymentBadge = `<span class="bg-sky-50 text-sky-700 border border-sky-200 px-2.5 py-0.5 rounded-full text-xs font-bold">💳 شبكة</span>`;
+                        paymentBadge = `<span class="bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-md text-[11px] font-bold">💳 شبكة</span>`;
+                    } else if (sale.paymentMethod === 'تحويل') {
+                        paymentBadge = `<span class="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-md text-[11px] font-bold">🏦 تحويل</span>`;
                     } else {
-                        paymentBadge = `<span class="bg-purple-50 text-purple-700 border border-purple-200 px-2.5 py-0.5 rounded-full text-xs font-bold">🏦 تحويل</span>`;
+                        paymentBadge = `<span class="bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-md text-[11px] font-bold">📒 آجل/ذمم</span>`;
                     }
 
                     const displayEmpName = usersDB[sale.employeeUsername] ? usersDB[sale.employeeUsername].name : sale.employeeName;
 
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50/80 transition";
+                    tr.className = isRefundOrVoid ? "bg-red-50/30 text-slate-500 transition" : "hover:bg-slate-50/80 transition";
                     tr.innerHTML = `
-                        <td class="py-3 px-3 font-bold text-slate-400">${index + 1}</td>
-                        ${currentFilterMode !== 'daily' ? `<td class="py-3 px-2 font-mono text-xs font-bold text-slate-600 whitespace-nowrap">${escapeHTML(sale.date)}</td>` : ''}
-                        ${currentUser.role === 'admin' ? `<td class="py-3 px-3 font-bold text-blue-900">${escapeHTML(displayEmpName)}</td>` : ''}
-                        <td class="py-3 px-3 font-bold text-slate-800">${escapeHTML(sale.clientName)}</td>
-                        <td class="py-3 px-3 text-slate-600 font-mono text-xs">${escapeHTML(sale.clientPhone)}</td>
-                        <td class="py-3 px-3">
-                            <span class="font-mono font-extrabold bg-slate-100 text-blue-900 px-2 py-1 rounded border border-slate-200 text-xs">${escapeHTML(sale.pnr || '-')}</span>
+                        <td class="py-2.5 px-2 font-bold text-slate-400">${index + 1}</td>
+                        ${showDateColumn ? `<td class="py-2.5 px-2 font-mono text-[11px] font-bold text-slate-600 whitespace-nowrap">${escapeHTML(sale.date)}</td>` : ''}
+                        ${currentUser.role === 'admin' ? `<td class="py-2.5 px-2 font-bold text-blue-900">${escapeHTML(displayEmpName)}</td>` : ''}
+                        <td class="py-2.5 px-2">
+                            <div class="font-bold text-slate-800">${escapeHTML(sale.clientName)}</div>
+                            <div class="text-[11px] font-mono text-slate-500">${escapeHTML(sale.clientPhone)}</div>
                         </td>
-                        <td class="py-3 px-3 font-semibold text-slate-700">${escapeHTML(sale.airline || '-')}</td>
-                        <td class="py-3 px-3">${paymentBadge}</td>
-                        <td class="py-3 px-3 text-slate-600">${sale.basePrice.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-bold text-slate-800">${sale.totalPrice.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-extrabold text-indigo-700">${sale.profit.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-extrabold text-emerald-600 bg-emerald-50/40">${sale.commission.toFixed(2)}</td>
-                        <td class="py-3 px-3 text-center no-print">
-                            <button onclick="openDeleteModal(${sale.id})" class="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition text-xs font-bold" title="حذف التذكرة">
-                                🗑️ حذف
-                            </button>
+                        <td class="py-2.5 px-2">
+                            <span class="font-mono font-extrabold bg-slate-100 text-blue-900 px-1.5 py-0.5 rounded border border-slate-200 text-[11px]">${escapeHTML(sale.pnr || '-')}</span>
+                            <div class="text-[11px] font-semibold text-slate-600 mt-0.5">${escapeHTML(sale.airline || '-')}</div>
+                        </td>
+                        <td class="py-2.5 px-2">${statusBadge}</td>
+                        <td class="py-2.5 px-2">${paymentBadge}</td>
+                        <td class="py-2.5 px-2 ${isRefundOrVoid ? 'line-through text-slate-400' : 'text-slate-600'}">${sale.basePrice.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-bold ${isRefundOrVoid ? 'line-through text-slate-400' : 'text-slate-800'}">${sale.totalPrice.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-bold text-emerald-700">${sale.paidAmount.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-extrabold ${sale.remainingDebt > 0 ? 'text-red-600 bg-red-50/50' : 'text-slate-400'}">${sale.remainingDebt.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-extrabold text-indigo-700">${sale.profit.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-extrabold ${isRefundOrVoid ? 'text-red-500 bg-red-50/40' : 'text-emerald-600 bg-emerald-50/40'}">
+                            ${sale.commission.toFixed(2)}
+                            ${isRefundOrVoid ? '<span class="block text-[9px] text-red-500">محذوفة</span>' : ''}
+                        </td>
+                        <td class="py-2.5 px-2 text-center no-print">
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="sendWhatsAppReceipt(${sale.id})" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-lg transition text-[11px] font-bold" title="إرسال إيصال للعميل عبر واتساب">
+                                    💬 واتساب
+                                </button>
+                                <button onclick="openStatusDebtModal(${sale.id})" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 px-2 py-1 rounded-lg transition text-[11px] font-bold" title="تغيير الحالة (استرجاع/إلغاء) أو تسديد المديونية">
+                                    ⚙️ حالة/دين
+                                </button>
+                                <button onclick="openDeleteModal(${sale.id})" class="text-red-500 hover:bg-red-50 p-1 rounded-lg transition text-xs font-bold" title="حذف نهائي">
+                                    🗑️
+                                </button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
 
-                let labelColSpan = 6;
-                if (currentFilterMode !== 'daily') labelColSpan++;
+                let labelColSpan = 5;
+                if (showDateColumn) labelColSpan++;
                 if (currentUser.role === 'admin') labelColSpan++;
 
                 tfoot.innerHTML = `
                     <tr>
-                        <td colspan="${labelColSpan}" class="py-3 px-3 text-left font-extrabold text-slate-700">الإجمالي الكلي للجدول:</td>
-                        <td class="py-3 px-3 font-bold text-slate-700">${totalBaseSum.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-extrabold text-blue-900">${totalSalesSum.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-extrabold text-indigo-700">${totalProfitSum.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-extrabold text-emerald-700 bg-emerald-50/60">${totalCommissionSum.toFixed(2)}</td>
+                        <td colspan="${labelColSpan}" class="py-3 px-2 text-left font-extrabold text-slate-700">الإجمالي الصافي (للتذاكر الفعالة):</td>
+                        <td class="py-3 px-2 font-bold text-slate-700">${totalBaseSum.toFixed(2)}</td>
+                        <td class="py-3 px-2 font-extrabold text-blue-900">${totalSalesSum.toFixed(2)}</td>
+                        <td class="py-3 px-2 font-extrabold text-emerald-700">${totalPaidSum.toFixed(2)}</td>
+                        <td class="py-3 px-2 font-extrabold text-red-600 bg-red-50/60">${totalDebtSum.toFixed(2)}</td>
+                        <td class="py-3 px-2 font-extrabold text-indigo-700">${totalProfitSum.toFixed(2)}</td>
+                        <td class="py-3 px-2 font-extrabold text-emerald-700 bg-emerald-50/60">${totalCommissionSum.toFixed(2)}</td>
                         <td class="no-print"></td>
                     </tr>
                 `;
             }
 
+            // تحديث البطاقات الـ 6 العلوية
             document.getElementById('table-count-badge').innerText = `${filteredSales.length} حجز`;
             document.getElementById('sum-tickets').innerText = filteredSales.length;
+            document.getElementById('sum-tickets-sub').innerText = `فعالة: ${activeCount} | مسترجع/ملغي: ${refundVoidCount}`;
             document.getElementById('sum-total-sales').innerText = totalSalesSum.toFixed(2);
             document.getElementById('sum-cash').innerText = totalCashSum.toFixed(2);
             document.getElementById('sum-card').innerText = totalCardSum.toFixed(2);
+            document.getElementById('sum-debt').innerText = totalDebtSum.toFixed(2);
             document.getElementById('sum-profit').innerText = totalProfitSum.toFixed(2);
             document.getElementById('sum-commission').innerText = totalCommissionSum.toFixed(2);
         }
-
-        // ==========================================
-        // 4. دوال النسخ الاحتياطي، الاستعادة، والإرسال للإيميل
-        //    (تتضمن رقم النسخة - التاريخ - اسم الموظف)
-        // ==========================================
 
         function exportBackupFile() {
             const todayStr = getTodayDateString();
@@ -1219,7 +1670,7 @@
                         return;
                     }
 
-                    salesDatabase = imported.salesDatabase;
+                    salesDatabase = imported.salesDatabase.map(normalizeTicketRecord);
                     localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
 
                     if (imported.usersDB && typeof imported.usersDB === 'object') {
@@ -1253,13 +1704,20 @@
             const verNum = backupVersionCounter;
             const empName = currentUser.name;
 
-            let totalSales = 0, totalProfit = 0, totalComm = 0, totalCash = 0, totalCard = 0;
+            let activeCount = 0, refundCount = 0, totalSales = 0, totalProfit = 0, totalComm = 0, totalCash = 0, totalCard = 0, totalDebt = 0;
             filteredSales.forEach(s => {
-                totalSales += s.totalPrice;
-                totalProfit += s.profit;
-                totalComm += s.commission;
-                if (s.paymentMethod === 'كاش') totalCash += s.totalPrice;
-                else totalCard += s.totalPrice;
+                if (s.status === 'refund' || s.status === 'void') {
+                    refundCount++;
+                    totalProfit += s.profit;
+                } else {
+                    activeCount++;
+                    totalSales += s.totalPrice;
+                    totalProfit += s.profit;
+                    totalComm += s.commission;
+                    totalDebt += s.remainingDebt;
+                    if (s.paymentMethod === 'كاش') totalCash += s.paidAmount;
+                    else if (s.paymentMethod === 'شبكة' || s.paymentMethod === 'تحويل') totalCard += s.paidAmount;
+                }
             });
 
             const subject = `تقرير مبيعات الطيران | نسخة #${verNum} - التاريخ: ${todayStr} - الموظف: ${empName}`;
@@ -1271,11 +1729,12 @@
                 `• نطاق التقرير: ${periodLabel}`,
                 `----------------------------------------`,
                 `📊 ملخص الإحصائيات والمبالغ:`,
-                `- عدد التذاكر المباعة: ${filteredSales.length} تذكرة`,
-                `- إجمالي المبيعات الكلي: ${totalSales.toFixed(2)}`,
-                `- مبيعات الكاش: ${totalCash.toFixed(2)} | الشبكة والتحويل: ${totalCard.toFixed(2)}`,
+                `- إجمالي التذاكر: ${filteredSales.length} (فعالة: ${activeCount} | مسترجعة/ملغاة: ${refundCount})`,
+                `- إجمالي المبيعات الفعالة: ${totalSales.toFixed(2)}`,
+                `- المقبوض كاش: ${totalCash.toFixed(2)} | المقبوض شبكة وتحويل: ${totalCard.toFixed(2)}`,
+                `- إجمالي الديون المتبقية (الذمم/الآجل): ${totalDebt.toFixed(2)}`,
                 `- إجمالي صافي المرابح: ${totalProfit.toFixed(2)}`,
-                `- إجمالي عمولة الموظف (10%): ${totalComm.toFixed(2)}`,
+                `- صافي عمولة الموظف المستحقة (10%): ${totalComm.toFixed(2)} (تم حذف عمولة المسترجع)`,
                 `----------------------------------------`,
                 `Designed by Eng. Bahaa Al-Sheikh`
             ];
@@ -1318,7 +1777,6 @@
             closeEmailModal();
         }
 
-        // دوال إدارة الحسابات وتغيير كلمات المرور (للمدير)
         function openUsersModal() {
             const listDiv = document.getElementById('users-settings-list');
             listDiv.innerHTML = '';
@@ -1382,7 +1840,6 @@
             }
         }
 
-        // دوال نافذة تأكيد الحذف
         function openDeleteModal(ticketId) {
             ticketIdToDelete = ticketId;
             document.getElementById('delete-modal').classList.remove('hidden');
@@ -1403,7 +1860,6 @@
             }
         }
 
-        // دالة طباعة التقرير اليومي
         function printReport() {
             window.print();
         }

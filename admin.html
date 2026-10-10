@@ -188,106 +188,106 @@
                     <span>❌</span>
                     <span>اسم المستخدم أو كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.</span>
                 </div>
-
-                <div>
-                    <label for="username" class="block text-sm font-bold text-slate-700 mb-1.5">اسم المستخدم (Username)</label>
-                    <div class="relative">
-                        <input type="text" id="username" required autocomplete="username" placeholder="أدخل اسم المستخدم الخاص بك" 
-                               class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-300 focus:border-blue-700 focus:ring-2 focus:ring-blue-100 outline-none transition text-sm font-semibold">
-                        <span class="absolute right-3.5 top-3 text-slate-400">👤</span>
-                    </div>
-                </div>
-
-                <div>
-                    <label for="password" class="block text-sm font-bold text-slate-700 mb-1.5">كلمة المرور (Password)</label>
-                    <div class="relative">
-                        <input type="password" id="password" required autocomplete="current-password" placeholder="••••••••" 
-                               class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-300 focus:border-blue-700 focus:ring-2 focus:ring-blue-100 outline-none transition text-sm font-semibold">
-                        <span class="absolute right-3.5 top-3 text-slate-400">🔒</span>
-                        <!-- زر إظهار/إخفاء كلمة المرور -->
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute left-3 top-3 text-slate-400 hover:text-blue-900 text-xs font-bold focus:outline-none">
-                            <span id="eye-icon">إظهار</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="pt-2">
-                    <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white font-extrabold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition duration-200 flex items-center justify-center gap-2">
-                        <span>تسجيل الدخول للنظام</span>
-                        <span>⬅️</span>
-                    </button>
-                </div>
-            </form>
-
-            <!-- تذييل داخل بطاقة الدخول -->
-            <div class="bg-slate-50 px-8 py-4 border-t border-slate-100 text-center">
-                <p class="text-xs font-bold text-slate-500">Designed by <span class="text-blue-900">Eng. Bahaa Al-Sheikh</span></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==========================================
-         الصفحة الثانية: النظام الداخلي ولوحة التحكم
-         ========================================== -->
-    <div id="dashboard-page" class="hidden flex-grow p-3 md:p-6">
-        <div class="max-w-7xl mx-auto space-y-6">
-
-            <!-- ترويسة رسمية مدمجة خاصة بالطباعة الورقية فقط (لا تأخذ مساحة كبيرة) -->
+            /* ترويسة رسمية مدمجة خاصة بالطباعة الورقية فقط (لا تأخذ مساحة كبيرة) */
             <div class="hidden print-flex justify-between items-center border-b-2 border-slate-800 pb-2.5 mb-2">
                 <div class="text-right">
-                    <h1 class="text-lg font-extrabold text-slate-900">✈️ تقرير المبيعات والعمولات اليومي - مكتب الطيران</h1>
+                    <h1 id="print-main-title" class="text-lg font-extrabold text-slate-900">✈️ تقرير المبيعات والعمولات - مكتب الطيران</h1>
                     <p id="print-meta-info" class="text-xs font-bold text-slate-600 mt-0.5"></p>
                 </div>
                 <div class="text-left text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-300">
-                    <div>تاريخ التقرير: <span id="print-date-badge" class="text-slate-900 font-extrabold"></span></div>
+                    <div>فترة التقرير: <span id="print-date-badge" class="text-slate-900 font-extrabold"></span></div>
                     <div class="text-[10px] text-slate-500 mt-0.5">نسبة العمولة المعتمدة: 10%</div>
                 </div>
             </div>
 
             <!-- الشريط العلوي للشاشة فقط (يختفي في الطباعة لمنع التكرار وإهدار المساحة) -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 no-print">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-12 h-12 bg-blue-900 text-white rounded-xl flex items-center justify-center text-2xl font-bold shadow-sm">
-                        ✈️
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <h2 id="welcome-title" class="text-xl font-extrabold text-blue-900">صفحة المبيعات</h2>
-                            <span id="role-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full"></span>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col gap-4 no-print">
+                
+                <!-- الصف الأول: الترحيب وأزرار الإجراءات السريعة -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 bg-blue-900 text-white rounded-xl flex items-center justify-center text-2xl font-bold shadow-sm">
+                            ✈️
                         </div>
-                        <p id="report-date-subtitle" class="text-slate-500 text-sm font-semibold mt-0.5"></p>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 id="welcome-title" class="text-xl font-extrabold text-blue-900">صفحة المبيعات</h2>
+                                <span id="role-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full"></span>
+                            </div>
+                            <p id="report-date-subtitle" class="text-slate-500 text-sm font-semibold mt-0.5"></p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+                        <!-- أدوات خاصة بالمدير فقط (فلترة الموظفين + إدارة الحسابات) -->
+                        <div id="admin-controls" class="hidden flex flex-wrap items-center gap-2">
+                            <select id="employee-filter" onchange="renderDashboard()" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-sm text-slate-700 focus:border-blue-600 outline-none cursor-pointer">
+                                <option value="ALL">👥 جميع الموظفين</option>
+                                <option value="empA" id="filter-opt-empA">👤 الموظف أ فقط</option>
+                                <option value="empB" id="filter-opt-empB">👤 الموظف ب فقط</option>
+                            </select>
+
+                            <button onclick="openUsersModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold px-3.5 py-2 rounded-xl text-sm flex items-center gap-1.5 transition" title="تغيير كلمات المرور وأسماء الموظفين">
+                                <span>🔐</span> إدارة الحسابات
+                            </button>
+                        </div>
+
+                        <button onclick="printReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-2 shadow-sm transition">
+                            <span>🖨️</span> طباعة التقرير المحدد
+                        </button>
+
+                        <button onclick="handleLogout()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold px-4 py-2 rounded-xl text-sm transition">
+                            تسجيل خروج
+                        </button>
                     </div>
                 </div>
 
-                <!-- أدوات التحكم والتاريخ (تختفي عند الطباعة) -->
-                <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto no-print">
+                <!-- الصف الثاني: شريط فلترة نوع التقرير والفترات الزمنية (يومي / شهري / من - إلى) -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3">
                     
-                    <!-- أدوات خاصة بالمدير فقط (فلترة الموظفين + إدارة الحسابات) -->
-                    <div id="admin-controls" class="hidden flex flex-wrap items-center gap-2">
-                        <select id="employee-filter" onchange="renderDashboard()" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-sm text-slate-700 focus:border-blue-600 outline-none cursor-pointer">
-                            <option value="ALL">👥 جميع الموظفين</option>
-                            <option value="empA" id="filter-opt-empA">👤 الموظف أ فقط</option>
-                            <option value="empB" id="filter-opt-empB">👤 الموظف ب فقط</option>
-                        </select>
-
-                        <button onclick="openUsersModal()" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold px-3.5 py-2 rounded-xl text-sm flex items-center gap-1.5 transition" title="تغيير كلمات المرور وأسماء الموظفين">
-                            <span>🔐</span> إدارة الحسابات
+                    <!-- أزرار اختيار نوع التقرير -->
+                    <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-xs font-extrabold text-slate-500 px-2">📊 نوع التقرير:</span>
+                        <button type="button" id="btn-mode-daily" onclick="setFilterMode('daily')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition bg-blue-900 text-white">
+                            📅 يومي منفرد
+                        </button>
+                        <button type="button" id="btn-mode-monthly" onclick="setFilterMode('monthly')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-600 hover:bg-slate-100">
+                            🗓️ الشهر كامل
+                        </button>
+                        <button type="button" id="btn-mode-range" onclick="setFilterMode('range')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-600 hover:bg-slate-100">
+                            ⏳ فترة مخصصة (من - إلى)
                         </button>
                     </div>
 
-                    <!-- اختيار التاريخ للأرشفة اليومية -->
-                    <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-300">
-                        <span class="text-xs font-bold text-slate-500">📅 تاريخ التقرير:</span>
-                        <input type="date" id="date-picker" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-slate-800 outline-none cursor-pointer">
+                    <!-- حقول التاريخ المتغيرة حسب نوع التقرير المختار -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        
+                        <!-- 1. محدد اليوم الواحد -->
+                        <div id="filter-box-daily" class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-300">
+                            <span class="text-xs font-bold text-slate-500">اختر اليوم:</span>
+                            <input type="date" id="date-picker" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-slate-800 outline-none cursor-pointer">
+                        </div>
+
+                        <!-- 2. محدد الشهر كامل -->
+                        <div id="filter-box-monthly" class="hidden flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-300">
+                            <span class="text-xs font-bold text-slate-500">اختر الشهر:</span>
+                            <input type="month" id="month-picker" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-slate-800 outline-none cursor-pointer">
+                        </div>
+
+                        <!-- 3. محدد الفترة (من تاريخ - إلى تاريخ) -->
+                        <div id="filter-box-range" class="hidden flex flex-wrap items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-300">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs font-bold text-slate-500">من:</span>
+                                <input type="date" id="date-from" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-slate-800 outline-none cursor-pointer">
+                            </div>
+                            <span class="text-slate-300">|</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs font-bold text-slate-500">إلى:</span>
+                                <input type="date" id="date-to" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-slate-800 outline-none cursor-pointer">
+                            </div>
+                        </div>
+
                     </div>
-
-                    <button onclick="printReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-2 shadow-sm transition">
-                        <span>🖨️</span> طباعة التقرير
-                    </button>
-
-                    <button onclick="handleLogout()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold px-4 py-2 rounded-xl text-sm transition">
-                        تسجيل خروج
-                    </button>
                 </div>
             </div>
 
@@ -367,10 +367,14 @@
                                class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
                     </div>
 
-                    <!-- زر الحفظ والإضافة -->
-                    <div class="flex items-end">
-                        <button onclick="addNewSale()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-xl shadow transition flex items-center justify-center gap-2">
-                            <span>💾</span> إضافة للتقرير اليومي
+                    <!-- 8. تاريخ إصدار التذكرة + زر الحفظ -->
+                    <div class="flex items-end gap-2">
+                        <div class="w-1/2">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ التذكرة *</label>
+                            <input type="date" id="sale-entry-date" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-xs font-bold text-slate-700">
+                        </div>
+                        <button onclick="addNewSale()" class="w-1/2 bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 text-sm">
+                            <span>💾</span> إضافة
                         </button>
                     </div>
                 </div>
@@ -427,7 +431,7 @@
             <!-- جدول سجل مبيعات اليوم المحدد -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden print-table-container">
                 <div class="p-4 md:p-5 border-b border-slate-100 flex justify-between items-center no-print">
-                    <h3 class="font-extrabold text-slate-800 text-base md:text-lg">📋 جدول التقرير اليومي المفصل</h3>
+                    <h3 id="table-section-title" class="font-extrabold text-slate-800 text-base md:text-lg">📋 جدول التقرير المفصل</h3>
                     <span id="table-count-badge" class="text-xs font-bold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">0 حجز</span>
                 </div>
 
@@ -436,6 +440,7 @@
                         <thead>
                             <tr class="bg-slate-50 text-slate-600 border-b border-slate-200 text-xs uppercase">
                                 <th class="py-3.5 px-3 font-bold">#</th>
+                                <th id="th-sale-date" class="py-3.5 px-3 font-bold hidden">التاريخ</th>
                                 <th id="th-emp-name" class="py-3.5 px-3 font-bold hidden">الموظف</th>
                                 <th class="py-3.5 px-3 font-bold">اسم العميل</th>
                                 <th class="py-3.5 px-3 font-bold">رقم الجوال</th>
@@ -508,11 +513,18 @@
 
         let currentUser = null;
         let ticketIdToDelete = null;
+        // متغير لتحديد نوع الفلترة الحالية: daily (يومي) | monthly (شهري) | range (فترة من-إلى)
+        let currentFilterMode = 'daily';
 
         // دالة لإرجاع تاريخ اليوم بصيغة YYYY-MM-DD
         function getTodayDateString() {
             const today = new Date();
             return today.toISOString().split('T')[0];
+        }
+
+        // دالة لإرجاع الشهر الحالي بصيغة YYYY-MM
+        function getCurrentMonthString() {
+            return getTodayDateString().slice(0, 7);
         }
 
         // 3. تحميل قاعدة بيانات المبيعات
@@ -598,7 +610,13 @@
 
         // دالة الانتقال من صفحة الدخول المستقلة إلى صفحة النظام الداخلي
         function enterDashboardView() {
-            document.getElementById('date-picker').value = getTodayDateString();
+            const todayStr = getTodayDateString();
+            document.getElementById('date-picker').value = todayStr;
+            document.getElementById('sale-entry-date').value = todayStr;
+            document.getElementById('month-picker').value = getCurrentMonthString();
+            // ضبط الفترة الافتراضية من أول الشهر الحالي إلى اليوم
+            document.getElementById('date-from').value = todayStr.slice(0, 8) + '01';
+            document.getElementById('date-to').value = todayStr;
 
             const roleBadge = document.getElementById('role-badge');
             if (currentUser.role === 'admin') {
@@ -616,6 +634,35 @@
             // إخفاء صفحة الدخول الكاملة وإظهار صفحة النظام
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('dashboard-page').classList.remove('hidden');
+
+            setFilterMode('daily');
+        }
+
+        // دالة التبديل بين أنماط التقرير (يومي / شهري / فترة مخصصة)
+        function setFilterMode(mode) {
+            currentFilterMode = mode;
+
+            // تحديث تصميم الأزرار النشطة
+            const modes = ['daily', 'monthly', 'range'];
+            modes.forEach(m => {
+                const btn = document.getElementById(`btn-mode-${m}`);
+                const box = document.getElementById(`filter-box-${m}`);
+                if (m === mode) {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition bg-blue-900 text-white shadow-sm";
+                    box.classList.remove('hidden');
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-600 hover:bg-slate-100";
+                    box.classList.add('hidden');
+                }
+            });
+
+            // إظهار عمود التاريخ في الجدول إذا كان التقرير شهرياً أو فترة، وإخفاؤه إذا كان يومياً
+            const thDate = document.getElementById('th-sale-date');
+            if (mode === 'daily') {
+                thDate.classList.add('hidden');
+            } else {
+                thDate.classList.remove('hidden');
+            }
 
             renderDashboard();
         }
@@ -654,7 +701,7 @@
             const paymentMethod = document.getElementById('payment-method').value;
             const basePrice = parseFloat(document.getElementById('base-price').value);
             const totalPrice = parseFloat(document.getElementById('total-price').value);
-            const selectedDate = document.getElementById('date-picker').value;
+            const saleEntryDate = document.getElementById('sale-entry-date').value || getTodayDateString();
 
             if (!clientName || !clientPhone || !pnrCode || !airlineName || isNaN(basePrice) || isNaN(totalPrice)) {
                 showToast("يرجى تعبئة جميع الحقول المطلوبة (العميل، PNR، الطيران، والمبالغ)", "error");
@@ -671,7 +718,7 @@
 
             const newTicket = {
                 id: Date.now(),
-                date: selectedDate,
+                date: saleEntryDate,
                 employeeUsername: currentUser.username,
                 employeeName: currentUser.name,
                 clientName: clientName,
@@ -688,6 +735,11 @@
             salesDatabase.push(newTicket);
             localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
 
+            // إذا كان المستخدم في الوضع اليومي، نضبط التاريخ المعروض على تاريخ التذكرة المضافة ليراها فوراً
+            if (currentFilterMode === 'daily') {
+                document.getElementById('date-picker').value = saleEntryDate;
+            }
+
             // تفريغ الحقول لتسجيل التذكرة التالية
             document.getElementById('client-name').value = '';
             document.getElementById('client-phone').value = '';
@@ -697,14 +749,22 @@
             document.getElementById('total-price').value = '';
             calculateLivePreview();
 
-            showToast("تم حفظ التذكرة وإضافتها للتقرير اليومي بنجاح!");
+            showToast("تم حفظ التذكرة وإضافتها للسجل بنجاح!");
             renderDashboard();
         }
 
-        // دالة تحديث الجدول والإحصائيات حسب التاريخ والموظف
+        // دالة تحديث الجدول والإحصائيات حسب نوع الفلتر (يومي / شهري / فترة) والموظف
         function renderDashboard() {
-            const selectedDate = document.getElementById('date-picker').value;
             const empFilter = document.getElementById('employee-filter').value;
+            const selectedDay = document.getElementById('date-picker').value;
+            const selectedMonth = document.getElementById('month-picker').value; // YYYY-MM
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+
+            // إذا غيّر المستخدم التاريخ اليومي، نحدث تاريخ الإدخال الافتراضي ليتطابق معه تسهيلاً للعمل
+            if (currentFilterMode === 'daily' && selectedDay) {
+                document.getElementById('sale-entry-date').value = selectedDay;
+            }
 
             // تحديث الاسم الأحدث للمستخدم الحالي
             currentUser.name = usersDB[currentUser.username].name;
@@ -719,21 +779,50 @@
                 }
             }
 
-            document.getElementById('welcome-title').innerText = `سجل المبيعات - ${currentUser.name}`;
-            document.getElementById('report-date-subtitle').innerText = `التقرير اليومي المعتمد لتاريخ: ${selectedDate}`;
-            document.getElementById('print-meta-info').innerText = `المسؤول / نطاق التقرير: ${targetReportOwner}`;
-            document.getElementById('print-date-badge').innerText = selectedDate;
+            // تجهيز نصوص العناوين وترويسة الطباعة بناءً على نوع التقرير المختار
+            let periodLabel = '';
+            let reportMainTitle = '';
+            if (currentFilterMode === 'daily') {
+                periodLabel = `ليوم: ${selectedDay}`;
+                reportMainTitle = '✈️ التقرير اليومي للمبيعات والعمولات - مكتب الطيران';
+                document.getElementById('print-date-badge').innerText = selectedDay;
+            } else if (currentFilterMode === 'monthly') {
+                periodLabel = `لشهر: ${selectedMonth} بالكامل`;
+                reportMainTitle = '✈️ التقرير الشهري الشامل للمبيعات والعمولات - مكتب الطيران';
+                document.getElementById('print-date-badge').innerText = `شهر ${selectedMonth}`;
+            } else if (currentFilterMode === 'range') {
+                periodLabel = `للفترة من (${dateFrom}) إلى (${dateTo})`;
+                reportMainTitle = '✈️ تقرير فترة مخصصة للمبيعات والعمولات - مكتب الطيران';
+                document.getElementById('print-date-badge').innerText = `${dateFrom} ⬅ ${dateTo}`;
+            }
 
-            // فلترة التذاكر حسب التاريخ المحدد وصلاحية المستخدم
+            document.getElementById('welcome-title').innerText = `سجل المبيعات - ${currentUser.name}`;
+            document.getElementById('report-date-subtitle').innerText = `التقرير المعتمد ${periodLabel}`;
+            document.getElementById('table-section-title').innerText = `📋 جدول التقرير المفصل (${periodLabel})`;
+            document.getElementById('print-main-title').innerText = reportMainTitle;
+            document.getElementById('print-meta-info').innerText = `المسؤول / نطاق التقرير: ${targetReportOwner}`;
+
+            // فلترة التذاكر حسب الفترة الزمنية المختارة وصلاحية المستخدم
             const filteredSales = salesDatabase.filter(sale => {
-                const matchDate = (sale.date === selectedDate);
+                let matchPeriod = false;
+                if (currentFilterMode === 'daily') {
+                    matchPeriod = (sale.date === selectedDay);
+                } else if (currentFilterMode === 'monthly') {
+                    matchPeriod = sale.date && sale.date.startsWith(selectedMonth);
+                } else if (currentFilterMode === 'range') {
+                    matchPeriod = sale.date && (sale.date >= dateFrom && sale.date <= dateTo);
+                }
+
                 if (currentUser.role === 'admin') {
                     const matchEmp = (empFilter === 'ALL') || (sale.employeeUsername === empFilter);
-                    return matchDate && matchEmp;
+                    return matchPeriod && matchEmp;
                 } else {
-                    return matchDate && (sale.employeeUsername === currentUser.username);
+                    return matchPeriod && (sale.employeeUsername === currentUser.username);
                 }
             });
+
+            // ترتيب التذاكر زمنياً من الأقدم للأحدث عند عرض تقرير شهري أو فترة
+            filteredSales.sort((a, b) => a.date.localeCompare(b.date));
 
             const tbody = document.getElementById('sales-table-body');
             tbody.innerHTML = '';
@@ -745,11 +834,14 @@
             let totalCommissionSum = 0;
 
             if (filteredSales.length === 0) {
-                const colSpan = currentUser.role === 'admin' ? 12 : 11;
+                let colSpan = 11;
+                if (currentUser.role === 'admin') colSpan++;
+                if (currentFilterMode !== 'daily') colSpan++;
+
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="${colSpan}" class="py-10 text-center text-slate-400 font-semibold">
-                            لا توجد تذاكر مسجلة في هذا التاريخ (${selectedDate}).
+                            لا توجد تذاكر مسجلة ${periodLabel}.
                         </td>
                     </tr>`;
             } else {
@@ -779,6 +871,7 @@
                     tr.className = "hover:bg-slate-50/80 transition";
                     tr.innerHTML = `
                         <td class="py-3 px-3 font-bold text-slate-400">${index + 1}</td>
+                        ${currentFilterMode !== 'daily' ? `<td class="py-3 px-2 font-mono text-xs font-bold text-slate-600 whitespace-nowrap">${sale.date}</td>` : ''}
                         ${currentUser.role === 'admin' ? `<td class="py-3 px-3 font-bold text-blue-900">${displayEmpName}</td>` : ''}
                         <td class="py-3 px-3 font-bold text-slate-800">${sale.clientName}</td>
                         <td class="py-3 px-3 text-slate-600 font-mono text-xs">${sale.clientPhone}</td>

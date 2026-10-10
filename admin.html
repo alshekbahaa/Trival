@@ -12,7 +12,7 @@
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #f5f5f4;
+            background-color: #f1f5f9;
         }
         /* تحويل رقم الحجز PNR إلى أحرف كبيرة تلقائياً */
         .uppercase-input {
@@ -84,11 +84,11 @@
             }
             /* تمييز بطاقة العمولة في الطباعة بحدود واضحة ونص داكن */
             .print-commission-card {
-                background-color: #fffbeb !important;
-                border: 1.5px solid #d97706 !important;
+                background-color: #ecfdf5 !important;
+                border: 1.5px solid #059669 !important;
             }
             .print-commission-card .print-card-value {
-                color: #b45309 !important;
+                color: #047857 !important;
             }
             /* إصلاح اقتطاع الجدول وإلغاء شريط التمرير الأفقي */
             .print-table-container {
@@ -108,8 +108,8 @@
                 word-break: break-word !important;
             }
             th {
-                background-color: #f0fdfa !important;
-                color: #134e4a !important;
+                background-color: #f1f5f9 !important;
+                color: #1e3a8a !important;
                 font-size: 10px !important;
             }
             .print-border {
@@ -119,7 +119,7 @@
         }
     </style>
 </head>
-<body class="text-stone-800 min-h-screen flex flex-col justify-between">
+<body class="text-slate-800 min-h-screen flex flex-col justify-between">
     <!-- شريط الإشعارات العلوي (بديل عن رسائل التنبيه التقليدية) -->
     <div id="toast-container" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 hidden no-print">
         <div id="toast-box" class="px-6 py-3 rounded-xl shadow-lg text-white font-bold flex items-center gap-3 transition-all duration-300">
@@ -128,81 +128,81 @@
     </div>
 
     <!-- نافذة تأكيد الحذف المخصصة -->
-    <div id="delete-modal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-stone-100 text-center">
+    <div id="delete-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center">
             <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
                 ⚠️
             </div>
-            <h3 class="text-lg font-bold text-stone-800 mb-2">تأكيد حذف التذكرة</h3>
-            <p class="text-sm text-stone-500 mb-6">هل أنت متأكد من رغبتك في حذف هذا الحجز من السجل؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">تأكيد حذف التذكرة</h3>
+            <p class="text-sm text-slate-500 mb-6">هل أنت متأكد من رغبتك في حذف هذا الحجز من السجل؟ لا يمكن التراجع عن هذا الإجراء.</p>
             <div class="flex gap-3 justify-center">
                 <button onclick="confirmDeleteAction()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-xl transition">نعم، احذف</button>
-                <button onclick="closeDeleteModal()" class="bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold py-2 px-6 rounded-xl transition">إلغاء</button>
+                <button onclick="closeDeleteModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-6 rounded-xl transition">إلغاء</button>
             </div>
         </div>
     </div>
 
     <!-- نافذة إدارة حسابات الموظفين وتغيير كلمات المرور (خاصة بالمدير فقط) -->
-    <div id="users-modal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-stone-100">
-            <div class="flex justify-between items-center pb-3 mb-4 border-b border-stone-100">
-                <h3 class="text-lg font-extrabold text-teal-900 flex items-center gap-2">
+    <div id="users-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-center pb-3 mb-4 border-b border-slate-100">
+                <h3 class="text-lg font-extrabold text-blue-900 flex items-center gap-2">
                     <span>🔐</span> إدارة حسابات وصلاحيات الدخول
                 </h3>
-                <button onclick="closeUsersModal()" class="text-stone-400 hover:text-stone-600 font-bold text-xl">✕</button>
+                <button onclick="closeUsersModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
             </div>
-            <p class="text-xs text-stone-500 mb-4">يمكنك من هنا تعديل الاسم الظاهر لكل موظف أو تغيير كلمة المرور الخاصة بحسابه في النظام:</p>
+            <p class="text-xs text-slate-500 mb-4">يمكنك من هنا تعديل الاسم الظاهر لكل موظف أو تغيير كلمة المرور الخاصة بحسابه في النظام:</p>
             
             <div id="users-settings-list" class="space-y-4 max-h-80 overflow-y-auto pr-1">
                 <!-- يتم تعبئة بيانات المستخدمين برمجياً هنا -->
             </div>
 
-            <div class="mt-6 pt-4 border-t border-stone-100 flex justify-end gap-3">
-                <button onclick="saveUsersSettings()" class="bg-teal-900 hover:bg-teal-800 text-white font-bold py-2 px-6 rounded-xl transition">💾 حفظ التعديلات</button>
-                <button onclick="closeUsersModal()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2 px-5 rounded-xl transition">إغلاق</button>
+            <div class="mt-6 pt-4 border-t border-slate-100 flex justify-end gap-3">
+                <button onclick="saveUsersSettings()" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-xl transition">💾 حفظ التعديلات</button>
+                <button onclick="closeUsersModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-5 rounded-xl transition">إغلاق</button>
             </div>
         </div>
     </div>
 
     <!-- نافذة إرسال التقرير والنسخة الاحتياطية عبر البريد الإلكتروني -->
-    <div id="email-modal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-stone-100">
-            <div class="flex justify-between items-center pb-3 mb-4 border-b border-stone-100">
-                <h3 class="text-lg font-extrabold text-teal-900 flex items-center gap-2">
+    <div id="email-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100">
+            <div class="flex justify-between items-center pb-3 mb-4 border-b border-slate-100">
+                <h3 class="text-lg font-extrabold text-blue-900 flex items-center gap-2">
                     <span>✉️</span> إرسال التقرير وبيانات النسخة إلى الإيميل
                 </h3>
-                <button onclick="closeEmailModal()" class="text-stone-400 hover:text-stone-600 font-bold text-xl">✕</button>
+                <button onclick="closeEmailModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">✕</button>
             </div>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-stone-600 mb-1">البريد الإلكتروني المستلم (إيميل المدير أو الأرشيف):</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">البريد الإلكتروني المستلم (إيميل المدير أو الأرشيف):</label>
                     <input type="email" id="recipient-email" placeholder="example@company.com" 
-                           class="w-full px-3.5 py-2 rounded-xl border border-stone-300 focus:border-teal-600 outline-none text-sm font-bold text-stone-800" dir="ltr">
+                           class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm font-bold text-slate-800" dir="ltr">
                 </div>
 
-                <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200 space-y-2 text-xs">
-                    <div class="flex justify-between items-center border-b border-stone-200 pb-2">
-                        <span class="font-bold text-stone-500">معرف النسخة والتاريخ والموظف:</span>
-                        <span id="email-meta-preview" class="font-extrabold text-teal-900 bg-teal-50 px-2.5 py-0.5 rounded-lg border border-teal-200"></span>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2 text-xs">
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                        <span class="font-bold text-slate-500">معرف النسخة والتاريخ والموظف:</span>
+                        <span id="email-meta-preview" class="font-extrabold text-blue-900 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200"></span>
                     </div>
-                    <label class="block font-bold text-stone-600 pt-1">معاينة محتوى الرسالة المرسلة:</label>
-                    <textarea id="email-body-preview" rows="6" readonly class="w-full bg-white p-2.5 rounded-lg border border-stone-200 text-stone-700 font-semibold text-xs outline-none resize-none"></textarea>
+                    <label class="block font-bold text-slate-600 pt-1">معاينة محتوى الرسالة المرسلة:</label>
+                    <textarea id="email-body-preview" rows="6" readonly class="w-full bg-white p-2.5 rounded-lg border border-slate-200 text-slate-700 font-semibold text-xs outline-none resize-none"></textarea>
                 </div>
 
-                <p class="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200 font-semibold">
+                <p class="text-[11px] text-blue-800 bg-blue-50 p-2.5 rounded-xl border border-blue-200 font-semibold">
                     💡 ملاحظة: يمكنك إرسال الملخص مباشرة عبر برنامج البريد لديك، أو الضغط على "تحميل ملف النسخة + فتح الإيميل" لإرفاق الملف الكامل في رسالتك.
                 </p>
             </div>
 
-            <div class="mt-5 pt-4 border-t border-stone-100 flex flex-wrap justify-end gap-2">
-                <button onclick="copyEmailReportContent()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-2 px-4 rounded-xl text-xs transition">
+            <div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap justify-end gap-2">
+                <button onclick="copyEmailReportContent()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-4 rounded-xl text-xs transition">
                     📋 نسخ النص
                 </button>
-                <button onclick="sendEmailNow(true)" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-xl text-xs transition">
+                <button onclick="sendEmailNow(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs transition">
                     📥 تحميل النسخة + فتح الإيميل
                 </button>
-                <button onclick="sendEmailNow(false)" class="bg-teal-900 hover:bg-teal-800 text-white font-bold py-2 px-5 rounded-xl text-xs transition">
+                <button onclick="sendEmailNow(false)" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-5 rounded-xl text-xs transition">
                     ✉️ فتح برنامج الإيميل وإرسال
                 </button>
             </div>
@@ -210,112 +210,125 @@
     </div>
 
     <!-- ==========================================
-         الصفحة الأولى: صفحة تسجيل الدخول الرسمية الكاملة
+         الصفحة الأولى: صفحة تسجيل الدخول الرسمية
+         تدعم التبديل بين النظام الليلي (Dark) والنظام الفاتح (Light)
          ========================================== -->
-    <div id="login-page" class="flex-grow flex items-center justify-center p-4 bg-gradient-to-br from-stone-900 via-teal-950 to-stone-900">
-        <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-stone-100 overflow-hidden">
+    <div id="login-page" class="flex-grow flex flex-col items-center justify-center p-4 transition-colors duration-300 bg-slate-950 relative">
+        
+        <!-- زر التبديل بين الوضع الليلي والوضع الفاتح في أعلى شاشة الدخول -->
+        <div class="w-full max-w-md flex justify-end mb-3">
+            <button type="button" onclick="toggleLoginTheme()" id="login-theme-btn"
+                    class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-extrabold shadow-md transition duration-200 bg-slate-800 text-amber-400 border border-slate-700 hover:bg-slate-700">
+                <span id="login-theme-icon">☀️</span>
+                <span id="login-theme-text">الوضع الفاتح</span>
+            </button>
+        </div>
+
+        <!-- بطاقة تسجيل الدخول المتجاوبة مع الوضع الليلي/الفاتح -->
+        <div id="login-card" class="max-w-md w-full bg-slate-900 rounded-3xl shadow-2xl border border-slate-800 overflow-hidden transition-colors duration-300">
             
             <!-- رأس بطاقة تسجيل الدخول مع الشعار logo1.jpg -->
-            <div class="bg-gradient-to-b from-teal-900 to-teal-950 p-8 text-center text-white relative border-b-4 border-amber-500">
-                <div class="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg overflow-hidden border-2 border-amber-400 p-1">
+            <div id="login-card-header" class="bg-gradient-to-b from-blue-950 to-slate-900 p-8 text-center text-white relative border-b border-slate-800 transition-colors duration-300">
+                <div class="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg overflow-hidden border-2 border-blue-400 p-1">
                     <img src="logo1.jpg" alt="شعار المكتب" class="w-full h-full object-contain rounded-xl"
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div style="display:none;" class="w-full h-full items-center justify-center text-4xl bg-teal-50 text-teal-900 rounded-xl font-extrabold">
+                    <div style="display:none;" class="w-full h-full items-center justify-center text-4xl bg-blue-50 text-blue-900 rounded-xl font-extrabold">
                         ✈️
                     </div>
                 </div>
                 <h1 class="text-2xl font-extrabold tracking-wide text-white">نظام مبيعات الطيران</h1>
-                <p class="text-amber-300 text-sm mt-1 font-bold">بوابة الدخول الرسمية للموظفين والإدارة</p>
+                <p id="login-subtitle" class="text-sky-300 text-sm mt-1 font-bold">بوابة الدخول الرسمية للموظفين والإدارة</p>
             </div>
 
             <!-- نموذج إدخال البيانات الفعلي -->
             <form onsubmit="event.preventDefault(); handleLogin();" class="p-8 space-y-5">
                 
                 <!-- رسالة الخطأ عند إدخال بيانات خاطئة -->
-                <div id="login-error-alert" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2">
+                <div id="login-error-alert" class="hidden bg-red-500/10 border border-red-500/40 text-red-400 px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2">
                     <span>❌</span>
                     <span>اسم المستخدم أو كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.</span>
                 </div>
 
                 <div>
-                    <label for="username" class="block text-xs font-bold text-stone-600 mb-1.5">اسم المستخدم (Username)</label>
+                    <label id="lbl-username" for="username" class="block text-xs font-bold text-slate-300 mb-1.5 transition-colors">اسم المستخدم (Username)</label>
                     <input type="text" id="username" required autocomplete="username" placeholder="أدخل اسم المستخدم..."
-                           class="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-teal-700 focus:ring-2 focus:ring-teal-100 outline-none text-sm font-bold text-stone-800 transition">
+                           class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-800 text-white placeholder-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm font-bold transition">
                 </div>
 
                 <div>
-                    <label for="password" class="block text-xs font-bold text-stone-600 mb-1.5">كلمة المرور (Password)</label>
+                    <label id="lbl-password" for="password" class="block text-xs font-bold text-slate-300 mb-1.5 transition-colors">كلمة المرور (Password)</label>
                     <div class="relative">
                         <input type="password" id="password" required autocomplete="current-password" placeholder="••••••••"
-                               class="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-teal-700 focus:ring-2 focus:ring-teal-100 outline-none text-sm font-bold text-stone-800 transition">
+                               class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-800 text-white placeholder-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm font-bold transition">
                         <button type="button" onclick="togglePasswordVisibility()" id="eye-icon"
-                                class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-teal-900 hover:text-teal-700 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-lg">
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-sky-300 hover:text-white bg-slate-700 border border-slate-600 px-2.5 py-1 rounded-lg transition">
                             إظهار
                         </button>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-teal-900 hover:bg-teal-800 text-amber-400 font-extrabold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition duration-200 text-sm border border-teal-700">
+                <button type="submit" id="login-submit-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition duration-200 text-sm">
                     تسجيل الدخول للنظام ⬅
                 </button>
 
-                <div class="pt-3 border-t border-stone-100 text-center">
-                    <span class="text-[11px] font-bold text-stone-400">Designed by <strong class="text-teal-900">Eng. Bahaa Al-Sheikh</strong></span>
+                <div id="login-footer-divider" class="pt-3 border-t border-slate-800 text-center transition-colors">
+                    <span id="login-signature" class="text-[11px] font-bold text-slate-400">Designed by <strong class="text-sky-400">Eng. Bahaa Al-Sheikh</strong></span>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- ==========================================
-         الصفحة الثانية: لوحة التحكم والنظام الداخلي
+         الصفحة الثانية: لوحة التحكم وصفحة الموظف
+         (تمت إعادتها للألوان السابقة: الأزرق الملكي والأخضر الزمردي)
          ========================================== -->
     <div id="dashboard-page" class="hidden flex-grow p-4 md:p-6">
         <div class="max-w-7xl mx-auto space-y-6">
 
             <!-- ترويسة رسمية مدمجة خاصة بالطباعة الورقية فقط (مع شعار المكتب logo1.jpg) -->
-            <div class="hidden print-flex justify-between items-center border-b-2 border-teal-900 pb-2.5 mb-2">
+            <div class="hidden print-flex justify-between items-center border-b-2 border-blue-900 pb-2.5 mb-2">
                 <div class="flex items-center gap-3 text-right">
-                    <img src="logo1.jpg" alt="Logo" class="w-12 h-12 object-contain rounded-lg border border-stone-300 p-0.5"
+                    <img src="logo1.jpg" alt="Logo" class="w-12 h-12 object-contain rounded-lg border border-slate-300 p-0.5"
                          onerror="this.style.display='none';">
                     <div>
-                        <h1 id="print-main-title" class="text-lg font-extrabold text-teal-950">✈️ تقرير المبيعات والعمولات - مكتب الطيران</h1>
-                        <p id="print-meta-info" class="text-xs font-bold text-stone-600 mt-0.5"></p>
+                        <h1 id="print-main-title" class="text-lg font-extrabold text-blue-950">✈️ تقرير المبيعات والعمولات - مكتب الطيران</h1>
+                        <p id="print-meta-info" class="text-xs font-bold text-slate-600 mt-0.5"></p>
                     </div>
                 </div>
-                <div class="text-left text-xs font-bold text-stone-600 bg-stone-100 px-3 py-1.5 rounded-lg border border-stone-300">
-                    <div>فترة التقرير: <span id="print-date-badge" class="text-stone-900 font-extrabold"></span></div>
-                    <div class="text-[10px] text-stone-500 mt-0.5">رقم النسخة: <span id="print-version-badge" class="font-mono font-bold text-teal-900">v1</span> | العمولة: 10%</div>
+                <div class="text-left text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-300">
+                    <div>فترة التقرير: <span id="print-date-badge" class="text-slate-900 font-extrabold"></span></div>
+                    <div class="text-[10px] text-slate-500 mt-0.5">رقم النسخة: <span id="print-version-badge" class="font-mono font-bold text-blue-900">v1</span> | العمولة: 10%</div>
                 </div>
             </div>
 
             <!-- الشريط العلوي للشاشة فقط -->
-            <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-4 md:p-6 flex flex-col gap-4 no-print">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col gap-4 no-print">
                 
                 <!-- الصف الأول: الشعار والترحيب وأزرار الإدارة -->
                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                     <div class="flex items-center gap-3.5">
                         <!-- شعار المكتب logo1.jpg -->
-                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow-sm border-2 border-amber-500 overflow-hidden p-1 shrink-0">
+                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow-sm border-2 border-blue-600 overflow-hidden p-1 shrink-0">
                             <img src="logo1.jpg" alt="شعار المكتب" class="w-full h-full object-contain rounded-lg"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div style="display:none;" class="w-full h-full items-center justify-center text-2xl bg-teal-900 text-amber-400 rounded-lg font-bold">
+                            <div style="display:none;" class="w-full h-full items-center justify-center text-2xl bg-blue-900 text-white rounded-lg font-bold">
                                 ✈️
                             </div>
                         </div>
                         <div>
                             <div class="flex flex-wrap items-center gap-2">
-                                <h2 id="welcome-title" class="text-xl font-extrabold text-teal-950">صفحة المبيعات</h2>
+                                <h2 id="welcome-title" class="text-xl font-extrabold text-blue-950">صفحة المبيعات</h2>
                                 <span id="role-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full"></span>
-                                <span id="backup-version-pill" class="text-[11px] font-mono font-extrabold bg-stone-100 text-stone-700 px-2.5 py-0.5 rounded-full border border-stone-300" title="رقم النسخة الحالية والتاريخ والموظف"></span>
+                                <span id="backup-version-pill" class="text-[11px] font-mono font-extrabold bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full border border-slate-300" title="رقم النسخة الحالية والتاريخ والموظف"></span>
                             </div>
-                            <p id="report-date-subtitle" class="text-stone-500 text-sm font-semibold mt-0.5"></p>
+                            <p id="report-date-subtitle" class="text-slate-500 text-sm font-semibold mt-0.5"></p>
                         </div>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
                         <!-- أدوات خاصة بالمدير فقط (فلترة الموظفين + إدارة الحسابات) -->
                         <div id="admin-controls" class="hidden flex flex-wrap items-center gap-2">
-                            <select id="employee-filter" onchange="renderDashboard()" class="px-3 py-2 rounded-xl border border-stone-300 bg-stone-50 font-bold text-xs text-stone-700 focus:border-teal-700 outline-none cursor-pointer">
+                            <select id="employee-filter" onchange="renderDashboard()" class="px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-bold text-xs text-slate-700 focus:border-blue-600 outline-none cursor-pointer">
                                 <option value="ALL">👥 جميع الموظفين</option>
                                 <option value="empA" id="filter-opt-empA">👤 الموظف أ فقط</option>
                                 <option value="empB" id="filter-opt-empB">👤 الموظف ب فقط</option>
@@ -327,20 +340,20 @@
                         </div>
 
                         <!-- أزرار النسخة الاحتياطية، الاستعادة، والإيميل -->
-                        <button onclick="exportBackupFile()" class="bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-300 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition" title="حفظ نسخة احتياطية برقم النسخة والتاريخ واسم الموظف">
+                        <button onclick="exportBackupFile()" class="bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition" title="حفظ نسخة احتياطية برقم النسخة والتاريخ واسم الموظف">
                             <span>📥</span> نسخة احتياطية
                         </button>
 
-                        <button onclick="triggerRestoreFile()" class="bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition" title="استعادة البيانات من ملف نسخة احتياطية">
+                        <button onclick="triggerRestoreFile()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition" title="استعادة البيانات من ملف نسخة احتياطية">
                             <span>📤</span> استعادة
                         </button>
                         <input type="file" id="restore-file-input" accept=".json" onchange="handleRestoreFile(event)" class="hidden">
 
-                        <button onclick="openEmailModal()" class="bg-amber-500 hover:bg-amber-600 text-stone-950 font-extrabold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition" title="إرسال التقرير ومعلومات النسخة إلى البريد الإلكتروني">
+                        <button onclick="openEmailModal()" class="bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition" title="إرسال التقرير ومعلومات النسخة إلى البريد الإلكتروني">
                             <span>✉️</span> إرسال إلى الإيميل
                         </button>
 
-                        <button onclick="printReport()" class="bg-teal-900 hover:bg-teal-800 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition">
+                        <button onclick="printReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition">
                             <span>🖨️</span> طباعة التقرير
                         </button>
 
@@ -351,18 +364,18 @@
                 </div>
 
                 <!-- الصف الثاني: شريط فلترة نوع التقرير والفترات الزمنية (يومي / شهري / من - إلى) -->
-                <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 flex flex-wrap items-center justify-between gap-3">
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3">
                     
                     <!-- أزرار اختيار نوع التقرير -->
-                    <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-stone-200 shadow-sm">
-                        <span class="text-xs font-extrabold text-stone-500 px-2">📊 نوع التقرير:</span>
-                        <button type="button" id="btn-mode-daily" onclick="setFilterMode('daily')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition bg-teal-900 text-amber-400">
+                    <div class="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-xs font-extrabold text-slate-500 px-2">📊 نوع التقرير:</span>
+                        <button type="button" id="btn-mode-daily" onclick="setFilterMode('daily')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition bg-blue-900 text-white">
                             📅 يومي منفرد
                         </button>
-                        <button type="button" id="btn-mode-monthly" onclick="setFilterMode('monthly')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition text-stone-600 hover:bg-stone-100">
+                        <button type="button" id="btn-mode-monthly" onclick="setFilterMode('monthly')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-600 hover:bg-slate-100">
                             🗓️ الشهر كامل
                         </button>
-                        <button type="button" id="btn-mode-range" onclick="setFilterMode('range')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition text-stone-600 hover:bg-stone-100">
+                        <button type="button" id="btn-mode-range" onclick="setFilterMode('range')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-600 hover:bg-slate-100">
                             ⏳ فترة مخصصة (من - إلى)
                         </button>
                     </div>
@@ -371,27 +384,27 @@
                     <div class="flex flex-wrap items-center gap-2">
                         
                         <!-- 1. محدد اليوم الواحد -->
-                        <div id="filter-box-daily" class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-stone-300">
-                            <span class="text-xs font-bold text-stone-500">اختر اليوم:</span>
-                            <input type="date" id="date-picker" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-stone-800 outline-none cursor-pointer">
+                        <div id="filter-box-daily" class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-300">
+                            <span class="text-xs font-bold text-slate-500">اختر اليوم:</span>
+                            <input type="date" id="date-picker" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-slate-800 outline-none cursor-pointer">
                         </div>
 
                         <!-- 2. محدد الشهر كامل -->
-                        <div id="filter-box-monthly" class="hidden flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-stone-300">
-                            <span class="text-xs font-bold text-stone-500">اختر الشهر:</span>
-                            <input type="month" id="month-picker" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-stone-800 outline-none cursor-pointer">
+                        <div id="filter-box-monthly" class="hidden flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-300">
+                            <span class="text-xs font-bold text-slate-500">اختر الشهر:</span>
+                            <input type="month" id="month-picker" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-slate-800 outline-none cursor-pointer">
                         </div>
 
                         <!-- 3. محدد الفترة (من تاريخ - إلى تاريخ) -->
-                        <div id="filter-box-range" class="hidden flex flex-wrap items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-stone-300">
+                        <div id="filter-box-range" class="hidden flex flex-wrap items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-300">
                             <div class="flex items-center gap-1.5">
-                                <span class="text-xs font-bold text-stone-500">من:</span>
-                                <input type="date" id="date-from" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-stone-800 outline-none cursor-pointer">
+                                <span class="text-xs font-bold text-slate-500">من:</span>
+                                <input type="date" id="date-from" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-slate-800 outline-none cursor-pointer">
                             </div>
-                            <span class="text-stone-300">|</span>
+                            <span class="text-slate-300">|</span>
                             <div class="flex items-center gap-1.5">
-                                <span class="text-xs font-bold text-stone-500">إلى:</span>
-                                <input type="date" id="date-to" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-stone-800 outline-none cursor-pointer">
+                                <span class="text-xs font-bold text-slate-500">إلى:</span>
+                                <input type="date" id="date-to" onchange="renderDashboard()" class="bg-transparent font-bold text-sm text-slate-800 outline-none cursor-pointer">
                             </div>
                         </div>
 
@@ -400,12 +413,12 @@
             </div>
 
             <!-- نموذج تسجيل تذكرة جديدة (يختفي عند الطباعة) -->
-            <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-5 md:p-6 no-print">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-stone-100">
-                    <h3 class="text-lg font-extrabold text-teal-950 flex items-center gap-2">
-                        <span class="text-amber-600">➕</span> تسجيل تذكرة طيران جديدة
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-6 no-print">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
+                    <h3 class="text-lg font-extrabold text-blue-900 flex items-center gap-2">
+                        <span>➕</span> تسجيل تذكرة طيران جديدة
                     </h3>
-                    <span class="text-xs bg-teal-50 text-teal-900 font-bold px-3 py-1 rounded-full border border-teal-200">
+                    <span class="text-xs bg-emerald-50 text-emerald-700 font-bold px-3 py-1 rounded-full border border-emerald-200">
                         نسبة العمولة المعتمدة: 10% من صافي مربح كل تذكرة على حدة
                     </span>
                 </div>
@@ -414,30 +427,30 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- 1. اسم العميل -->
                     <div>
-                        <label class="block text-xs font-bold text-stone-600 mb-1">اسم العميل *</label>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">اسم العميل *</label>
                         <input type="text" id="client-name" placeholder="الاسم الثلاثي للعميل" 
-                               class="w-full px-3 py-2 rounded-xl border border-stone-300 focus:border-teal-700 outline-none text-sm">
+                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
                     </div>
 
                     <!-- 2. رقم الجوال -->
                     <div>
-                        <label class="block text-xs font-bold text-stone-600 mb-1">رقم العميل *</label>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">رقم العميل *</label>
                         <input type="text" id="client-phone" placeholder="05xxxxxxxx" 
-                               class="w-full px-3 py-2 rounded-xl border border-stone-300 focus:border-teal-700 outline-none text-sm">
+                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
                     </div>
 
                     <!-- 3. رقم الحجز PNR -->
                     <div>
-                        <label class="block text-xs font-bold text-stone-600 mb-1">رقم الحجز (PNR) *</label>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">رقم الحجز (PNR) *</label>
                         <input type="text" id="pnr-code" placeholder="مثال: XY789Z" maxlength="10"
-                               class="w-full px-3 py-2 rounded-xl border border-stone-300 focus:border-teal-700 outline-none text-sm uppercase-input font-mono font-bold text-teal-900">
+                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm uppercase-input font-mono font-bold text-blue-900">
                     </div>
 
                     <!-- 4. شركة الطيران -->
                     <div>
-                        <label class="block text-xs font-bold text-stone-600 mb-1">شركة الطيران *</label>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">شركة الطيران *</label>
                         <input type="text" id="airline-name" list="airlines-list" placeholder="اختر أو اكتب اسم الشركة" 
-                               class="w-full px-3 py-2 rounded-xl border border-stone-300 focus:border-teal-700 outline-none text-sm">
+                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
                         <datalist id="airlines-list">
                             <option value="الخطوط السعودية (Saudia)">
                             <option value="طيران ناس (Flynas)">
@@ -453,8 +466,8 @@
 
                     <!-- 5. طريقة الدفع: كاش أو شبكة -->
                     <div>
-                        <label class="block text-xs font-bold text-stone-600 mb-1">طريقة الدفع *</label>
-                        <select id="payment-method" class="w-full px-3 py-2 rounded-xl border border-stone-300 bg-white focus:border-teal-700 outline-none text-sm font-bold text-stone-700">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">طريقة الدفع *</label>
+                        <select id="payment-method" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white focus:border-blue-600 outline-none text-sm font-bold text-slate-700">
                             <option value="شبكة">💳 شبكة (مدى / فيزا)</option>
                             <option value="كاش">💵 كاش (نقدي)</option>
                             <option value="تحويل">🏦 تحويل بنكي</option>
@@ -463,90 +476,90 @@
 
                     <!-- 6. المبلغ الأساسي (التكلفة) -->
                     <div>
-                        <label class="block text-xs font-bold text-stone-600 mb-1">المبلغ الأساسي (رأس المال) *</label>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">المبلغ الأساسي (رأس المال) *</label>
                         <input type="number" id="base-price" placeholder="0.00" step="0.01" oninput="calculateLivePreview()"
-                               class="w-full px-3 py-2 rounded-xl border border-stone-300 focus:border-teal-700 outline-none text-sm">
+                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
                     </div>
 
                     <!-- 7. المبلغ الإجمالي (سعر البيع) -->
                     <div>
-                        <label class="block text-xs font-bold text-stone-600 mb-1">المبلغ الإجمالي (سعر البيع) *</label>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">المبلغ الإجمالي (سعر البيع) *</label>
                         <input type="number" id="total-price" placeholder="0.00" step="0.01" oninput="calculateLivePreview()"
-                               class="w-full px-3 py-2 rounded-xl border border-stone-300 focus:border-teal-700 outline-none text-sm">
+                               class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-sm">
                     </div>
 
                     <!-- 8. تاريخ إصدار التذكرة + زر الحفظ -->
                     <div class="flex items-end gap-2">
                         <div class="w-1/2">
-                            <label class="block text-xs font-bold text-stone-600 mb-1">تاريخ التذكرة *</label>
-                            <input type="date" id="sale-entry-date" class="w-full px-2.5 py-2 rounded-xl border border-stone-300 focus:border-teal-700 outline-none text-xs font-bold text-stone-700">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ التذكرة *</label>
+                            <input type="date" id="sale-entry-date" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 focus:border-blue-600 outline-none text-xs font-bold text-slate-700">
                         </div>
-                        <button onclick="addNewSale()" class="w-1/2 bg-teal-900 hover:bg-teal-800 text-amber-400 font-extrabold py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 text-sm">
+                        <button onclick="addNewSale()" class="w-1/2 bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-3 rounded-xl shadow transition flex items-center justify-center gap-1.5 text-sm">
                             <span>💾</span> إضافة
                         </button>
                     </div>
                 </div>
 
                 <!-- شريط الحساب التلقائي الفوري للتذكرة قبل الحفظ -->
-                <div class="mt-4 bg-stone-50 border border-dashed border-stone-300 rounded-xl p-3 flex flex-wrap justify-around items-center gap-4 text-sm">
+                <div class="mt-4 bg-slate-50 border border-dashed border-slate-300 rounded-xl p-3 flex flex-wrap justify-around items-center gap-4 text-sm">
                     <div>
-                        <span class="text-stone-500 font-semibold">صافي مربح التذكرة: </span>
-                        <span id="preview-profit" class="font-extrabold text-teal-900 text-base">0.00</span>
+                        <span class="text-slate-500 font-semibold">صافي مربح التذكرة: </span>
+                        <span id="preview-profit" class="font-extrabold text-blue-900 text-base">0.00</span>
                     </div>
                     <div>
-                        <span class="text-stone-500 font-semibold">عمولة الموظف من هذه التذكرة (10%): </span>
-                        <span id="preview-commission" class="font-extrabold text-amber-600 text-base">0.00</span>
+                        <span class="text-slate-500 font-semibold">عمولة الموظف من هذه التذكرة (10%): </span>
+                        <span id="preview-commission" class="font-extrabold text-emerald-600 text-base">0.00</span>
                     </div>
                 </div>
             </div>
 
-            <!-- بطاقات الملخص الإحصائي (تتحول في الطباعة إلى شريط أفقي واحد مدمج من 5 أعمدة) -->
+            <!-- بطاقات الملخص الإحصائي (بالألوان السابقة: الأزرق والزمردي) -->
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 print-summary-grid">
                 <!-- 1. عدد التذاكر -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-200 print-summary-card">
-                    <span class="text-xs font-bold text-stone-400 block mb-1 print-card-title">عدد التذاكر المباعة</span>
-                    <div id="sum-tickets" class="text-2xl font-extrabold text-stone-800 print-card-value">0</div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">عدد التذاكر المباعة</span>
+                    <div id="sum-tickets" class="text-2xl font-extrabold text-slate-800 print-card-value">0</div>
                 </div>
 
                 <!-- 2. إجمالي المبيعات -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-200 print-summary-card">
-                    <span class="text-xs font-bold text-stone-400 block mb-1 print-card-title">إجمالي المبيعات (كلي)</span>
-                    <div id="sum-total-sales" class="text-2xl font-extrabold text-teal-900 print-card-value">0.00</div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">إجمالي المبيعات (كلي)</span>
+                    <div id="sum-total-sales" class="text-2xl font-extrabold text-blue-900 print-card-value">0.00</div>
                 </div>
 
                 <!-- 3. تفصيل الكاش والشبكة -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-200 print-summary-card">
-                    <span class="text-xs font-bold text-stone-400 block mb-1 print-card-title">تفصيل طرق الدفع</span>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">تفصيل طرق الدفع</span>
                     <div class="text-xs font-bold space-y-0.5 mt-0.5">
-                        <div class="flex justify-between text-teal-800"><span>💵 كاش:</span> <span id="sum-cash">0.00</span></div>
-                        <div class="flex justify-between text-amber-700"><span>💳 شبكة/تحويل:</span> <span id="sum-card">0.00</span></div>
+                        <div class="flex justify-between text-emerald-700"><span>💵 كاش:</span> <span id="sum-cash">0.00</span></div>
+                        <div class="flex justify-between text-sky-700"><span>💳 شبكة/تحويل:</span> <span id="sum-card">0.00</span></div>
                     </div>
                 </div>
 
                 <!-- 4. إجمالي صافي المرابح -->
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-200 print-summary-card">
-                    <span class="text-xs font-bold text-stone-400 block mb-1 print-card-title">إجمالي صافي المرابح</span>
-                    <div id="sum-profit" class="text-2xl font-extrabold text-teal-700 print-card-value">0.00</div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 print-summary-card">
+                    <span class="text-xs font-bold text-slate-400 block mb-1 print-card-title">إجمالي صافي المرابح</span>
+                    <div id="sum-profit" class="text-2xl font-extrabold text-indigo-700 print-card-value">0.00</div>
                 </div>
 
                 <!-- 5. إجمالي عمولة الموظف (10%) -->
-                <div class="bg-gradient-to-br from-amber-500 to-amber-600 text-stone-950 p-4 rounded-2xl shadow-sm col-span-2 lg:col-span-1 print-summary-card print-commission-card">
-                    <span class="text-xs font-extrabold text-amber-950 block mb-1 print-card-title">إجمالي عمولة الموظف (10%)</span>
+                <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white p-4 rounded-2xl shadow-sm col-span-2 lg:col-span-1 print-summary-card print-commission-card">
+                    <span class="text-xs font-bold text-emerald-100 block mb-1 print-card-title">إجمالي عمولة الموظف (10%)</span>
                     <div id="sum-commission" class="text-2xl font-extrabold print-card-value">0.00</div>
                 </div>
             </div>
 
             <!-- جدول سجل المبيعات -->
-            <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden print-table-container">
-                <div class="p-4 md:p-5 border-b border-stone-100 flex justify-between items-center no-print">
-                    <h3 id="table-section-title" class="font-extrabold text-teal-950 text-base md:text-lg">📋 جدول التقرير المفصل</h3>
-                    <span id="table-count-badge" class="text-xs font-bold bg-teal-50 text-teal-900 border border-teal-200 px-3 py-1 rounded-full">0 حجز</span>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden print-table-container">
+                <div class="p-4 md:p-5 border-b border-slate-100 flex justify-between items-center no-print">
+                    <h3 id="table-section-title" class="font-extrabold text-blue-900 text-base md:text-lg">📋 جدول التقرير المفصل</h3>
+                    <span id="table-count-badge" class="text-xs font-bold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">0 حجز</span>
                 </div>
 
                 <div class="overflow-x-auto print-table-container">
                     <table class="w-full text-right border-collapse text-sm">
                         <thead>
-                            <tr class="bg-stone-100 text-teal-950 border-b border-stone-200 text-xs uppercase">
+                            <tr class="bg-slate-50 text-slate-600 border-b border-slate-200 text-xs uppercase">
                                 <th class="py-3.5 px-3 font-bold">#</th>
                                 <th id="th-sale-date" class="py-3.5 px-3 font-bold hidden">التاريخ</th>
                                 <th id="th-emp-name" class="py-3.5 px-3 font-bold hidden">الموظف</th>
@@ -557,15 +570,15 @@
                                 <th class="py-3.5 px-3 font-bold">طريقة الدفع</th>
                                 <th class="py-3.5 px-3 font-bold">الأساسي</th>
                                 <th class="py-3.5 px-3 font-bold">الإجمالي</th>
-                                <th class="py-3.5 px-3 font-bold text-teal-800">المربح</th>
-                                <th class="py-3.5 px-3 font-bold text-amber-700">العمولة (10%)</th>
+                                <th class="py-3.5 px-3 font-bold text-indigo-700">المربح</th>
+                                <th class="py-3.5 px-3 font-bold text-emerald-700">العمولة (10%)</th>
                                 <th class="py-3.5 px-3 font-bold no-print text-center">إجراء</th>
                             </tr>
                         </thead>
-                        <tbody id="sales-table-body" class="divide-y divide-stone-100">
+                        <tbody id="sales-table-body" class="divide-y divide-slate-100">
                             <!-- يتم تعبئة صفوف التذاكر برمجياً عبر JavaScript -->
                         </tbody>
-                        <tfoot id="sales-table-foot" class="bg-stone-100 font-extrabold text-stone-800 border-t-2 border-stone-300 text-xs">
+                        <tfoot id="sales-table-foot" class="bg-slate-50 font-extrabold text-slate-800 border-t-2 border-slate-300 text-xs">
                             <!-- يتم تعبئة صف الإجماليات السفلي برمجياً -->
                         </tfoot>
                     </table>
@@ -573,18 +586,18 @@
             </div>
 
             <!-- قسم التوقيعات الرسمي (يظهر فقط في أسفل ورقة الطباعة لاعتماد التقرير) -->
-            <div class="hidden print-flex justify-between items-center pt-6 mt-4 text-xs font-bold text-stone-700 px-4">
+            <div class="hidden print-flex justify-between items-center pt-6 mt-4 text-xs font-bold text-slate-700 px-4">
                 <div class="text-center">
                     <p class="mb-6">توقيع الموظف المختص</p>
-                    <p class="text-stone-400">............................................</p>
+                    <p class="text-slate-400">............................................</p>
                 </div>
                 <div class="text-center">
                     <p class="mb-6">المراجعة والمحاسبة (الصندوق)</p>
-                    <p class="text-stone-400">............................................</p>
+                    <p class="text-slate-400">............................................</p>
                 </div>
                 <div class="text-center">
                     <p class="mb-6">اعتماد المدير العام</p>
-                    <p class="text-stone-400">............................................</p>
+                    <p class="text-slate-400">............................................</p>
                 </div>
             </div>
 
@@ -595,11 +608,11 @@
          تذييل الصفحات الرسمي (Footer Signature)
          يظهر في أسفل جميع الصفحات وفي التقارير المطبوعة
          ========================================== -->
-    <footer class="bg-white border-t border-stone-200 py-4 px-6 text-center mt-auto print-border">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold text-stone-500">
+    <footer class="bg-white border-t border-slate-200 py-4 px-6 text-center mt-auto print-border">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold text-slate-500">
             <span>جميع الحقوق محفوظة © نظام مبيعات وعمولات مكتب الطيران</span>
-            <span class="text-stone-700 bg-stone-100 px-3 py-1 rounded-full border border-stone-200">
-                Designed by <strong class="text-teal-900">Eng. Bahaa Al-Sheikh</strong>
+            <span class="text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                Designed by <strong class="text-blue-900">Eng. Bahaa Al-Sheikh</strong>
             </span>
         </div>
     </footer>
@@ -640,13 +653,77 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // تحميل بيانات المستخدمين ورقم النسخة الاحتياطية من الذاكرة المحلية
+        // تحميل بيانات المستخدمين ورقم النسخة الاحتياطية ووضع شاشة الدخول (ليلي/فاتح)
         let usersDB = safeLoadStorage('airline_users_v3_db', DEFAULT_USERS);
         let backupVersionCounter = parseInt(localStorage.getItem('airline_backup_version_num') || '1', 10);
+        let loginThemeMode = localStorage.getItem('airline_login_theme') || 'dark';
 
         let currentUser = null;
         let ticketIdToDelete = null;
         let currentFilterMode = 'daily';
+
+        // ------------------------------------------
+        // دالة التحكم في مظهر شاشة تسجيل الدخول (ليلي Dark / فاتح Light)
+        // ------------------------------------------
+        function applyLoginTheme() {
+            const loginPage = document.getElementById('login-page');
+            const loginCard = document.getElementById('login-card');
+            const loginHeader = document.getElementById('login-card-header');
+            const loginSubtitle = document.getElementById('login-subtitle');
+            const lblUser = document.getElementById('lbl-username');
+            const lblPass = document.getElementById('lbl-password');
+            const inpUser = document.getElementById('username');
+            const inpPass = document.getElementById('password');
+            const eyeBtn = document.getElementById('eye-icon');
+            const submitBtn = document.getElementById('login-submit-btn');
+            const divider = document.getElementById('login-footer-divider');
+            const signature = document.getElementById('login-signature');
+            const themeBtn = document.getElementById('login-theme-btn');
+            const themeIcon = document.getElementById('login-theme-icon');
+            const themeText = document.getElementById('login-theme-text');
+
+            if (loginThemeMode === 'dark') {
+                // تطبيق النظام الليلي (Dark Mode) على شاشة الدخول
+                loginPage.className = "flex-grow flex flex-col items-center justify-center p-4 transition-colors duration-300 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 relative";
+                loginCard.className = "max-w-md w-full bg-slate-900/95 rounded-3xl shadow-2xl border border-slate-800 overflow-hidden transition-colors duration-300";
+                loginHeader.className = "bg-gradient-to-b from-blue-950 to-slate-900 p-8 text-center text-white relative border-b border-slate-800 transition-colors duration-300";
+                loginSubtitle.className = "text-sky-300 text-sm mt-1 font-bold";
+                lblUser.className = "block text-xs font-bold text-slate-300 mb-1.5";
+                lblPass.className = "block text-xs font-bold text-slate-300 mb-1.5";
+                inpUser.className = "w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-800 text-white placeholder-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm font-bold transition";
+                inpPass.className = "w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-800 text-white placeholder-slate-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none text-sm font-bold transition";
+                eyeBtn.className = "absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-sky-300 hover:text-white bg-slate-700 border border-slate-600 px-2.5 py-1 rounded-lg transition";
+                submitBtn.className = "w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition duration-200 text-sm";
+                divider.className = "pt-3 border-t border-slate-800 text-center";
+                signature.innerHTML = `Designed by <strong class="text-sky-400">Eng. Bahaa Al-Sheikh</strong>`;
+                themeBtn.className = "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-extrabold shadow-md transition duration-200 bg-slate-800 text-amber-400 border border-slate-700 hover:bg-slate-700";
+                themeIcon.innerText = "☀️";
+                themeText.innerText = "تحويل للوضع الفاتح";
+            } else {
+                // تطبيق النظام الفاتح (Light Mode) على شاشة الدخول
+                loginPage.className = "flex-grow flex flex-col items-center justify-center p-4 transition-colors duration-300 bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200 relative";
+                loginCard.className = "max-w-md w-full bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden transition-colors duration-300";
+                loginHeader.className = "bg-gradient-to-b from-blue-900 to-blue-950 p-8 text-center text-white relative border-b border-blue-800 transition-colors duration-300";
+                loginSubtitle.className = "text-blue-200 text-sm mt-1 font-bold";
+                lblUser.className = "block text-xs font-bold text-slate-600 mb-1.5";
+                lblPass.className = "block text-xs font-bold text-slate-600 mb-1.5";
+                inpUser.className = "w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 text-slate-800 placeholder-slate-400 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none text-sm font-bold transition";
+                inpPass.className = "w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 text-slate-800 placeholder-slate-400 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none text-sm font-bold transition";
+                eyeBtn.className = "absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-blue-800 hover:text-blue-600 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-lg transition";
+                submitBtn.className = "w-full bg-blue-900 hover:bg-blue-800 text-white font-extrabold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition duration-200 text-sm";
+                divider.className = "pt-3 border-t border-slate-100 text-center";
+                signature.innerHTML = `Designed by <strong class="text-blue-900">Eng. Bahaa Al-Sheikh</strong>`;
+                themeBtn.className = "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-extrabold shadow-md transition duration-200 bg-white text-slate-800 border border-slate-300 hover:bg-slate-50";
+                themeIcon.innerText = "🌙";
+                themeText.innerText = "تحويل للوضع الليلي";
+            }
+        }
+
+        function toggleLoginTheme() {
+            loginThemeMode = (loginThemeMode === 'dark') ? 'light' : 'dark';
+            localStorage.setItem('airline_login_theme', loginThemeMode);
+            applyLoginTheme();
+        }
 
         // دالة لإرجاع تاريخ اليوم حسب التوقيت المحلي للجهاز بصيغة YYYY-MM-DD
         function getTodayDateString() {
@@ -665,8 +742,9 @@
         // 3. تحميل قاعدة بيانات المبيعات بشكل آمن
         let salesDatabase = safeLoadStorage('airline_pos_v2_db', []);
 
-        // التحقق عند فتح الصفحة: هل هناك جلسة تسجيل دخول نشطة؟
+        // التحقق عند فتح الصفحة: تطبيق وضع شاشة الدخول وفحص الجلسة
         window.onload = function() {
+            applyLoginTheme();
             updateEmployeeFilterNames();
             try {
                 const savedSession = sessionStorage.getItem('airline_active_user');
@@ -727,7 +805,7 @@
             } else if (type === 'warning') {
                 box.classList.add('bg-amber-600');
             } else {
-                box.classList.add('bg-teal-800');
+                box.classList.add('bg-emerald-600');
             }
 
             container.classList.remove('hidden');
@@ -773,12 +851,12 @@
                 document.getElementById('admin-controls').classList.remove('hidden');
                 document.getElementById('th-emp-name').classList.remove('hidden');
                 roleBadge.innerText = 'صلاحية مدير النظام';
-                roleBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300';
+                roleBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800';
             } else {
                 document.getElementById('admin-controls').classList.add('hidden');
                 document.getElementById('th-emp-name').classList.add('hidden');
                 roleBadge.innerText = 'حساب موظف مبيعات';
-                roleBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-900 border border-teal-200';
+                roleBadge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800';
             }
 
             document.getElementById('login-page').classList.add('hidden');
@@ -797,10 +875,10 @@
                 const btn = document.getElementById(`btn-mode-${m}`);
                 const box = document.getElementById(`filter-box-${m}`);
                 if (m === mode) {
-                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition bg-teal-900 text-amber-400 shadow-sm";
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition bg-blue-900 text-white shadow-sm";
                     box.classList.remove('hidden');
                 } else {
-                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition text-stone-600 hover:bg-stone-100";
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-600 hover:bg-slate-100";
                     box.classList.add('hidden');
                 }
             });
@@ -1002,7 +1080,7 @@
 
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="${colSpan}" class="py-10 text-center text-stone-400 font-semibold">
+                        <td colspan="${colSpan}" class="py-10 text-center text-slate-400 font-semibold">
                             لا توجد تذاكر مسجلة ${periodLabel}.
                         </td>
                     </tr>`;
@@ -1021,32 +1099,32 @@
 
                     let paymentBadge = '';
                     if (sale.paymentMethod === 'كاش') {
-                        paymentBadge = `<span class="bg-teal-50 text-teal-800 border border-teal-200 px-2.5 py-0.5 rounded-full text-xs font-bold">💵 كاش</span>`;
+                        paymentBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-xs font-bold">💵 كاش</span>`;
                     } else if (sale.paymentMethod === 'شبكة') {
-                        paymentBadge = `<span class="bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full text-xs font-bold">💳 شبكة</span>`;
+                        paymentBadge = `<span class="bg-sky-50 text-sky-700 border border-sky-200 px-2.5 py-0.5 rounded-full text-xs font-bold">💳 شبكة</span>`;
                     } else {
-                        paymentBadge = `<span class="bg-stone-100 text-stone-700 border border-stone-300 px-2.5 py-0.5 rounded-full text-xs font-bold">🏦 تحويل</span>`;
+                        paymentBadge = `<span class="bg-purple-50 text-purple-700 border border-purple-200 px-2.5 py-0.5 rounded-full text-xs font-bold">🏦 تحويل</span>`;
                     }
 
                     const displayEmpName = usersDB[sale.employeeUsername] ? usersDB[sale.employeeUsername].name : sale.employeeName;
 
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-stone-50/80 transition";
+                    tr.className = "hover:bg-slate-50/80 transition";
                     tr.innerHTML = `
-                        <td class="py-3 px-3 font-bold text-stone-400">${index + 1}</td>
-                        ${currentFilterMode !== 'daily' ? `<td class="py-3 px-2 font-mono text-xs font-bold text-stone-600 whitespace-nowrap">${escapeHTML(sale.date)}</td>` : ''}
-                        ${currentUser.role === 'admin' ? `<td class="py-3 px-3 font-bold text-teal-900">${escapeHTML(displayEmpName)}</td>` : ''}
-                        <td class="py-3 px-3 font-bold text-stone-800">${escapeHTML(sale.clientName)}</td>
-                        <td class="py-3 px-3 text-stone-600 font-mono text-xs">${escapeHTML(sale.clientPhone)}</td>
+                        <td class="py-3 px-3 font-bold text-slate-400">${index + 1}</td>
+                        ${currentFilterMode !== 'daily' ? `<td class="py-3 px-2 font-mono text-xs font-bold text-slate-600 whitespace-nowrap">${escapeHTML(sale.date)}</td>` : ''}
+                        ${currentUser.role === 'admin' ? `<td class="py-3 px-3 font-bold text-blue-900">${escapeHTML(displayEmpName)}</td>` : ''}
+                        <td class="py-3 px-3 font-bold text-slate-800">${escapeHTML(sale.clientName)}</td>
+                        <td class="py-3 px-3 text-slate-600 font-mono text-xs">${escapeHTML(sale.clientPhone)}</td>
                         <td class="py-3 px-3">
-                            <span class="font-mono font-extrabold bg-stone-100 text-teal-900 px-2 py-1 rounded border border-stone-200 text-xs">${escapeHTML(sale.pnr || '-')}</span>
+                            <span class="font-mono font-extrabold bg-slate-100 text-blue-900 px-2 py-1 rounded border border-slate-200 text-xs">${escapeHTML(sale.pnr || '-')}</span>
                         </td>
-                        <td class="py-3 px-3 font-semibold text-stone-700">${escapeHTML(sale.airline || '-')}</td>
+                        <td class="py-3 px-3 font-semibold text-slate-700">${escapeHTML(sale.airline || '-')}</td>
                         <td class="py-3 px-3">${paymentBadge}</td>
-                        <td class="py-3 px-3 text-stone-600">${sale.basePrice.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-bold text-stone-800">${sale.totalPrice.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-extrabold text-teal-800">${sale.profit.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-extrabold text-amber-700 bg-amber-50/50">${sale.commission.toFixed(2)}</td>
+                        <td class="py-3 px-3 text-slate-600">${sale.basePrice.toFixed(2)}</td>
+                        <td class="py-3 px-3 font-bold text-slate-800">${sale.totalPrice.toFixed(2)}</td>
+                        <td class="py-3 px-3 font-extrabold text-indigo-700">${sale.profit.toFixed(2)}</td>
+                        <td class="py-3 px-3 font-extrabold text-emerald-600 bg-emerald-50/40">${sale.commission.toFixed(2)}</td>
                         <td class="py-3 px-3 text-center no-print">
                             <button onclick="openDeleteModal(${sale.id})" class="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition text-xs font-bold" title="حذف التذكرة">
                                 🗑️ حذف
@@ -1062,11 +1140,11 @@
 
                 tfoot.innerHTML = `
                     <tr>
-                        <td colspan="${labelColSpan}" class="py-3 px-3 text-left font-extrabold text-stone-700">الإجمالي الكلي للجدول:</td>
-                        <td class="py-3 px-3 font-bold text-stone-700">${totalBaseSum.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-extrabold text-teal-900">${totalSalesSum.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-extrabold text-teal-800">${totalProfitSum.toFixed(2)}</td>
-                        <td class="py-3 px-3 font-extrabold text-amber-800 bg-amber-100/60">${totalCommissionSum.toFixed(2)}</td>
+                        <td colspan="${labelColSpan}" class="py-3 px-3 text-left font-extrabold text-slate-700">الإجمالي الكلي للجدول:</td>
+                        <td class="py-3 px-3 font-bold text-slate-700">${totalBaseSum.toFixed(2)}</td>
+                        <td class="py-3 px-3 font-extrabold text-blue-900">${totalSalesSum.toFixed(2)}</td>
+                        <td class="py-3 px-3 font-extrabold text-indigo-700">${totalProfitSum.toFixed(2)}</td>
+                        <td class="py-3 px-3 font-extrabold text-emerald-700 bg-emerald-50/60">${totalCommissionSum.toFixed(2)}</td>
                         <td class="no-print"></td>
                     </tr>
                 `;
@@ -1091,7 +1169,6 @@
             const currentVer = backupVersionCounter;
             const empNameClean = currentUser.name.replace(/\s+/g, '_');
 
-            // تجهيز حزمة النسخة الاحتياطية مع كامل البيانات الوصفية (رقم النسخة، التاريخ، اسم الموظف)
             const backupPayload = {
                 backupVersion: currentVer,
                 backupDate: todayStr,
@@ -1107,7 +1184,6 @@
             const blob = new Blob([dataStr], { type: "application/json;charset=utf-8" });
             const url = URL.createObjectURL(blob);
 
-            // اسم الملف يحمل: رقم النسخة _ التاريخ _ اسم الموظف
             const fileName = `Backup_v${currentVer}_${todayStr}_${empNameClean}.json`;
 
             const downloadLink = document.createElement('a');
@@ -1118,7 +1194,6 @@
             document.body.removeChild(downloadLink);
             URL.revokeObjectURL(url);
 
-            // زيادة رقم النسخة للمرة القادمة وحفظه
             backupVersionCounter++;
             localStorage.setItem('airline_backup_version_num', String(backupVersionCounter));
             updateVersionBadgeUI();
@@ -1144,18 +1219,15 @@
                         return;
                     }
 
-                    // استعادة سجل التذاكر
                     salesDatabase = imported.salesDatabase;
                     localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
 
-                    // استعادة الحسابات إن وجدت
                     if (imported.usersDB && typeof imported.usersDB === 'object') {
                         usersDB = imported.usersDB;
                         localStorage.setItem('airline_users_v3_db', JSON.stringify(usersDB));
                         updateEmployeeFilterNames();
                     }
 
-                    // تحديث رقم النسخة الاحتياطية
                     if (imported.backupVersion) {
                         backupVersionCounter = parseInt(imported.backupVersion, 10) + 1;
                         localStorage.setItem('airline_backup_version_num', String(backupVersionCounter));
@@ -1175,7 +1247,6 @@
             reader.readAsText(file);
         }
 
-        // توليد نص وعنوان الإيميل شاملاً (رقم النسخة - التاريخ - اسم الموظف)
         function buildEmailReportData() {
             const { filteredSales, periodLabel, cleanDateTag } = getActiveFilteredData();
             const todayStr = getTodayDateString();
@@ -1257,20 +1328,20 @@
                 const roleLabel = u.role === 'admin' ? '👑 المدير العام' : '👤 موظف مبيعات';
                 
                 const item = document.createElement('div');
-                item.className = "p-3.5 bg-stone-50 rounded-xl border border-stone-200 space-y-3";
+                item.className = "p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-3";
                 item.innerHTML = `
-                    <div class="flex justify-between items-center border-b border-stone-200 pb-2">
-                        <span class="font-extrabold text-teal-900 text-sm">${roleLabel}</span>
-                        <span class="text-xs font-mono bg-white px-2 py-0.5 rounded border border-stone-300 text-stone-600">اسم الدخول: <strong>${usernameKey}</strong></span>
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                        <span class="font-extrabold text-blue-900 text-sm">${roleLabel}</span>
+                        <span class="text-xs font-mono bg-white px-2 py-0.5 rounded border border-slate-300 text-slate-600">اسم الدخول: <strong>${usernameKey}</strong></span>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-stone-600 mb-1">الاسم الظاهر في التقرير:</label>
-                            <input type="text" id="edit-name-${usernameKey}" value="${escapeHTML(u.name)}" class="w-full px-3 py-1.5 rounded-lg border border-stone-300 text-sm font-bold">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">الاسم الظاهر في التقرير:</label>
+                            <input type="text" id="edit-name-${usernameKey}" value="${escapeHTML(u.name)}" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-bold">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-stone-600 mb-1">كلمة المرور (Password):</label>
-                            <input type="text" id="edit-pass-${usernameKey}" value="${escapeHTML(u.password)}" class="w-full px-3 py-1.5 rounded-lg border border-stone-300 text-sm font-mono font-bold text-teal-800">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">كلمة المرور (Password):</label>
+                            <input type="text" id="edit-pass-${usernameKey}" value="${escapeHTML(u.password)}" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-mono font-bold text-blue-800">
                         </div>
                     </div>
                 `;

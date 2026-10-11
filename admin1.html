@@ -1,0 +1,3092 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام مبيعات وعمولات مكتب الطيران</title>
+    <!-- استدعاء مكتبة Tailwind CSS للتصميم المتجاوب -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- استدعاء خط Cairo من Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. الهوية اللونية الصارمة (French Navy & Seal Grey) وفصل المتغيرات (WCAG AAA)
+           ========================================================================== */
+        :root {
+            /* French Navy Palette */
+            --navy-primary: #192A3E;
+            --navy-hover: #2C425C;
+            --navy-dark: #0F1A28;
+
+            /* Seal Grey Palette */
+            --seal-border: #9E978E;
+            --seal-divider: #BEB8B0;
+            --seal-bg-main: #F6F4F0;
+            --seal-bg-sub: #EBE7E0;
+
+            /* Accent Gold */
+            --gold-accent: #C5A059;
+            --gold-bg-soft: #FDF9F0;
+
+            /* Strict Separation: Text vs Surface vs Input vs Buttons (Light Mode Default) */
+            --bg-body: #F6F4F0;
+            --surface-card: #FFFFFF;
+            --surface-sub: #EBE7E0;
+            --text-primary: #0F1A28;
+            --text-secondary: #334155;
+            --text-muted: #57534E;
+            --input-bg: #FFFFFF;
+            --input-text: #0F1A28;
+            --input-border: #9E978E;
+            --btn-primary-bg: #192A3E;
+            --btn-primary-hover: #2C425C;
+            --btn-primary-text: #FFFFFF;
+        }
+
+        /* الوضع الليلي الكامل (High-Contrast Dark Mode) */
+        body.dark-theme {
+            --bg-body: #0B131E;
+            --surface-card: #152232;
+            --surface-sub: #1E3045;
+            --text-primary: #F6F4F0;
+            --text-secondary: #E2E8F0;
+            --text-muted: #BEB8B0;
+            --input-bg: #0F1A28;
+            --input-text: #FFFFFF;
+            --input-border: #64748B;
+            --btn-primary-bg: #C5A059;
+            --btn-primary-hover: #D4B26F;
+            --btn-primary-text: #0F1A28;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            overflow-x: hidden;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        .uppercase-input {
+            text-transform: uppercase;
+        }
+
+        /* فئات مساعدة صارمة التباين للبطاقات والحقول والأزرار */
+        .theme-card {
+            background-color: var(--surface-card);
+            color: var(--text-primary);
+            border: 1.5px solid var(--seal-divider);
+        }
+
+        .theme-sub-surface {
+            background-color: var(--surface-sub);
+            color: var(--text-primary);
+            border: 1px solid var(--seal-border);
+        }
+
+        .theme-input {
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+            border: 1.5px solid var(--input-border) !important;
+            font-weight: 700;
+        }
+
+        .theme-input::placeholder {
+            color: var(--text-muted) !important;
+            opacity: 0.85;
+        }
+
+        .theme-label {
+            color: var(--text-primary) !important;
+            font-weight: 800;
+        }
+
+        .btn-french-navy {
+            background-color: var(--btn-primary-bg) !important;
+            color: var(--btn-primary-text) !important;
+            font-weight: 800;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-french-navy:hover {
+            background-color: var(--btn-primary-hover) !important;
+        }
+
+        /* ==========================================================================
+           2. حلقة التركيز الذكية للوحة المفاتيح (Focus Ring via :focus-visible)
+           ========================================================================== */
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible,
+        [role="switch"]:focus-visible,
+        [tabindex]:focus-visible {
+            outline: 3px solid var(--gold-accent) !important;
+            outline-offset: 2px !important;
+            box-shadow: 0 0 0 5px rgba(25, 42, 62, 0.25) !important;
+        }
+
+        /* ==========================================================================
+           3. تأثير العمق البصري للخلفية (Parallax Scrolling via animation-timeline)
+              تجنب background-attachment: fixed غير المدعوم في iOS Safari
+           ========================================================================== */
+        .parallax-bg-layer {
+            position: fixed;
+            inset: -15vh 0 0 0;
+            height: 130vh;
+            z-index: -1;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(197, 160, 89, 0.10) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(25, 42, 62, 0.08) 0%, transparent 50%),
+                repeating-linear-gradient(45deg, rgba(158, 151, 142, 0.04) 0px, rgba(158, 151, 142, 0.04) 2px, transparent 2px, transparent 24px);
+            will-change: transform;
+            transform: translate3d(0, var(--parallax-offset, 0px), 0);
+        }
+
+        @keyframes parallax-scroll-shift {
+            from { transform: translate3d(0, 0, 0); }
+            to   { transform: translate3d(0, -12vh, 0); }
+        }
+
+        @supports (animation-timeline: scroll()) {
+            .parallax-bg-layer {
+                animation: parallax-scroll-shift linear both;
+                animation-timeline: scroll(root);
+            }
+        }
+
+        /* ==========================================================================
+           4. المفتاح الثنائي الفوري (Toggle Switch - role="switch")
+           ========================================================================== */
+        .ui-switch {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            width: 46px;
+            height: 25px;
+            border-radius: 9999px;
+            background-color: #9E978E;
+            border: 2px solid #0F1A28;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            padding: 2px;
+            flex-shrink: 0;
+        }
+
+        .ui-switch[aria-checked="true"] {
+            background-color: #192A3E;
+            border-color: #C5A059;
+        }
+
+        body.dark-theme .ui-switch[aria-checked="true"] {
+            background-color: #C5A059;
+            border-color: #FFFFFF;
+        }
+
+        .ui-switch-thumb {
+            width: 17px;
+            height: 17px;
+            background-color: #FFFFFF;
+            border-radius: 50%;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(0);
+        }
+
+        body.dark-theme .ui-switch[aria-checked="true"] .ui-switch-thumb {
+            background-color: #0F1A28;
+        }
+
+        /* في اتجاه RTL يتحرك المقبض لليسار عند التفعيل */
+        .ui-switch[aria-checked="true"] .ui-switch-thumb {
+            transform: translateX(-21px);
+        }
+
+        /* ==========================================================================
+           5. شريط التتبع الداخلي (Scrollspy / In-Page Navigation)
+           ========================================================================== */
+        .scrollspy-link {
+            color: var(--text-primary);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .scrollspy-link[aria-current="location"] {
+            background-color: var(--navy-primary);
+            color: #FFFFFF !important;
+            border-bottom-color: var(--gold-accent);
+        }
+
+        body.dark-theme .scrollspy-link[aria-current="location"] {
+            background-color: var(--gold-accent);
+            color: #0F1A28 !important;
+            border-bottom-color: #FFFFFF;
+        }
+
+        /* ==========================================================================
+           6. العجلة الدوارة لاختيار الوقت (iOS Slot-Machine Drum Wheel Picker)
+              UIDatePicker in .wheels style with gray selection band
+           ========================================================================== */
+        .ios-wheel-drum {
+            position: relative;
+            height: 132px;
+            background: linear-gradient(180deg, #E5E2DC 0%, #FFFFFF 35%, #FFFFFF 65%, #E5E2DC 100%);
+            border: 1.5px solid var(--seal-border);
+            border-radius: 14px;
+            overflow: hidden;
+            user-select: none;
+            box-shadow: inset 0 4px 10px rgba(15, 26, 40, 0.08);
+        }
+
+        body.dark-theme .ios-wheel-drum {
+            background: linear-gradient(180deg, #0B131E 0%, #1E3045 35%, #1E3045 65%, #0B131E 100%);
+        }
+
+        /* الشريط الرمادي الأوسط (Gray Selection Band) */
+        .ios-wheel-highlight-band {
+            position: absolute;
+            top: 50%;
+            left: 6px;
+            right: 6px;
+            height: 36px;
+            transform: translateY(-50%);
+            background-color: rgba(158, 151, 142, 0.24);
+            border-top: 1.5px solid rgba(25, 42, 62, 0.35);
+            border-bottom: 1.5px solid rgba(25, 42, 62, 0.35);
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        body.dark-theme .ios-wheel-highlight-band {
+            background-color: rgba(197, 160, 89, 0.22);
+            border-color: rgba(197, 160, 89, 0.65);
+        }
+
+        .ios-wheel-column {
+            height: 132px;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            position: relative;
+            z-index: 2;
+            padding-top: 48px;
+            padding-bottom: 48px;
+        }
+
+        .ios-wheel-column::-webkit-scrollbar {
+            display: none;
+        }
+
+        .ios-wheel-item {
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            scroll-snap-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: transform 0.15s ease, color 0.15s ease, font-weight 0.15s ease;
+        }
+
+        .ios-wheel-item.wheel-selected {
+            color: var(--text-primary);
+            font-weight: 900;
+            font-size: 16px;
+            transform: scale(1.08);
+        }
+
+        /* ==========================================================================
+           7. إعدادات الطباعة الرسمية المدمجة (A4 Print Layout)
+              تضمن إظهار الملخص والجدول دائماً في الطباعة حتى لو كانت الصفحة مخفية
+           ========================================================================== */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 8mm;
+            }
+            body {
+                background-color: #ffffff !important;
+                color: #0F1A28 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 10.5px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .print-flex {
+                display: flex !important;
+            }
+            /* إجبار قسم الملخص وقسم الجدول على الظهور دائماً عند الطباعة */
+            #section-kpi-summary,
+            #section-report-table {
+                display: block !important;
+            }
+            #section-ticket-entry {
+                display: none !important;
+            }
+            #dashboard-page {
+                padding: 0 !important;
+            }
+            .max-w-7xl {
+                max-width: 100% !important;
+            }
+            .print-summary-grid {
+                display: grid !important;
+                grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+                gap: 6px !important;
+                margin-bottom: 10px !important;
+            }
+            .print-summary-card {
+                padding: 6px 8px !important;
+                border: 1px solid #9E978E !important;
+                border-radius: 8px !important;
+                box-shadow: none !important;
+                background-color: #F6F4F0 !important;
+                color: #0F1A28 !important;
+            }
+            .print-summary-card .print-card-title {
+                color: #334155 !important;
+                font-size: 9.5px !important;
+                margin-bottom: 2px !important;
+            }
+            .print-summary-card .print-card-value {
+                color: #0F1A28 !important;
+                font-size: 14px !important;
+                font-weight: 800 !important;
+            }
+            .print-commission-card {
+                background-color: #ecfdf5 !important;
+                border: 1.5px solid #059669 !important;
+            }
+            .print-commission-card .print-card-value {
+                color: #047857 !important;
+            }
+            .print-debt-card {
+                background-color: #fef2f2 !important;
+                border: 1.5px solid #dc2626 !important;
+            }
+            .print-debt-card .print-card-value {
+                color: #b91c1c !important;
+            }
+            .print-table-container {
+                overflow: visible !important;
+                border: 1px solid #9E978E !important;
+                border-radius: 8px !important;
+            }
+            table {
+                width: 100% !important;
+                table-layout: auto !important;
+                font-size: 9.5px !important;
+            }
+            th, td {
+                padding: 5px 4px !important;
+                border: 1px solid #BEB8B0 !important;
+                white-space: normal !important;
+                word-break: break-word !important;
+                color: #0F1A28 !important;
+            }
+            th {
+                background-color: #EBE7E0 !important;
+                color: #192A3E !important;
+                font-size: 9.5px !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative">
+
+    <!-- طبقة العمق البصري المتحركة (Parallax Scrolling Layer) -->
+    <div id="parallax-bg" class="parallax-bg-layer no-print" aria-hidden="true"></div>
+
+    <!-- ==========================================================================
+         إشعارات الزاوية العابرة غير الحاجبة (Compact Non-Modal Corner Toast)
+         تظهر في الزاوية السفلية اليسرى دون حجب أو مقاطعة سير عمل الموظف
+         ========================================================================== -->
+    <div id="toast-container" role="status" aria-live="polite" aria-atomic="true"
+         class="fixed bottom-5 left-5 z-50 hidden no-print pointer-events-none max-w-sm">
+        <div id="toast-box" class="pointer-events-auto px-4 py-3 rounded-xl shadow-2xl text-white font-extrabold text-xs sm:text-sm flex items-center gap-3 border-2 border-[#C5A059] transition-all duration-300">
+            <span id="toast-icon" class="text-base">✅</span>
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         الدرج الجانبي المنزلق مع طبقة التعتيم (Off-Canvas Navigation Drawer & Scrim)
+         ========================================================================== -->
+    <div id="drawer-scrim" onclick="closeNavDrawer()"
+         class="fixed inset-0 bg-[#0F1A28]/60 backdrop-blur-xs z-40 hidden opacity-0 transition-opacity duration-300 no-print"
+         aria-hidden="true"></div>
+
+    <nav id="off-canvas-drawer" aria-label="القائمة الجانبية للتنقل السريع"
+         class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-[#192A3E] text-[#F6F4F0] z-50 transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl border-l-2 border-[#C5A059] flex flex-col justify-between no-print">
+        <div>
+            <!-- رأس الدرج الجانبي -->
+            <div class="p-5 bg-[#0F1A28] border-b border-[#2C425C] flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1 border border-[#C5A059]">
+                        <img src="logo1.jpg" alt="Logo" class="w-full h-full object-contain rounded-lg"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div style="display:none;" class="w-full h-full items-center justify-center text-lg text-[#192A3E] font-extrabold">✈️</div>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-sm text-white">قائمة التنقل السريع</h3>
+                        <p class="text-[11px] text-[#C5A059] font-bold">اختر الصفحة المطلوب فتحها</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeNavDrawer()" aria-label="إغلاق القائمة الجانبية"
+                        class="w-8 h-8 rounded-lg bg-[#2C425C] hover:bg-[#C5A059] hover:text-[#0F1A28] text-white font-extrabold flex items-center justify-center transition">
+                    ✕
+                </button>
+            </div>
+
+            <!-- روابط الصفحات المستقلة داخل الدرج الجانبي -->
+            <div class="p-4 space-y-2">
+                <p class="text-[11px] font-extrabold text-[#BEB8B0] px-2 mb-1 uppercase">الصفحات الرئيسية المستقلة:</p>
+                
+                <button type="button" onclick="switchDedicatedPage('section-ticket-entry', true)" id="drawer-btn-entry"
+                        class="w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition bg-[#C5A059] text-[#0F1A28]">
+                    <span class="flex items-center gap-2.5"><span>➕</span> تسجيل عملية تذكرة طيران</span>
+                    <span class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-[#0F1A28] text-white">الرئيسية</span>
+                </button>
+
+                <button type="button" onclick="switchDedicatedPage('section-report-table', true)" id="drawer-btn-table"
+                        class="w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition hover:bg-[#2C425C] text-white">
+                    <span class="flex items-center gap-2.5"><span>📋</span> جدول التقرير المفصل والبحث</span>
+                    <span id="drawer-badge-count" class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-[#2C425C] text-[#C5A059]">0</span>
+                </button>
+
+                <button type="button" onclick="switchDedicatedPage('section-kpi-summary', true)" id="drawer-btn-kpi"
+                        class="w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition hover:bg-[#2C425C] text-white">
+                    <span class="flex items-center gap-2.5"><span>📊</span> الملخص المالي والعمولات</span>
+                    <span class="text-[10px] text-[#BEB8B0]">6 بطاقات</span>
+                </button>
+
+                <button type="button" onclick="switchDedicatedPage('ALL', true)" id="drawer-btn-all"
+                        class="w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition hover:bg-[#2C425C] text-white border border-[#2C425C]">
+                    <span class="flex items-center gap-2.5"><span>🖥️</span> وضع العرض الشامل (كل الأقسام)</span>
+                </button>
+
+                <div class="pt-4 mt-4 border-t border-[#2C425C] space-y-2">
+                    <p class="text-[11px] font-extrabold text-[#BEB8B0] px-2 mb-1 uppercase">أدوات الأرشفة والتقارير:</p>
+                    <button type="button" onclick="closeNavDrawer(); printReport();"
+                            class="w-full text-right px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2.5 bg-emerald-700 hover:bg-emerald-600 text-white transition">
+                        <span>🖨️</span> طباعة التقرير الرسمي (A4)
+                    </button>
+                    <button type="button" onclick="closeNavDrawer(); exportBackupFile();"
+                            class="w-full text-right px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2.5 bg-[#2C425C] hover:bg-[#3b5575] text-white transition">
+                        <span>📥</span> تحميل نسخة احتياطية
+                    </button>
+                    <button type="button" onclick="closeNavDrawer(); openEmailModal();"
+                            class="w-full text-right px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2.5 bg-[#2C425C] hover:bg-[#3b5575] text-white transition">
+                        <span>✉️</span> إرسال التقرير إلى الإيميل
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 bg-[#0F1A28] border-t border-[#2C425C] text-center text-[11px] text-[#BEB8B0] font-bold">
+            Designed by <strong class="text-[#C5A059]">Eng. Bahaa Al-Sheikh</strong>
+        </div>
+    </nav>
+
+    <!-- ==========================================================================
+         نافذة الحوار المركزية لتأكيد الحذف مع إدارة وحصر التركيز
+         (Centered Modal Dialog with Managed Focus & Escape Key Support)
+         ========================================================================== -->
+    <div id="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title" aria-describedby="delete-modal-desc"
+         class="fixed inset-0 bg-[#0F1A28]/75 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="theme-card rounded-2xl max-w-sm w-full p-6 shadow-2xl border-2 border-red-600 text-center">
+            <div class="w-14 h-14 bg-red-100 text-red-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-red-300">
+                ⚠️
+            </div>
+            <h3 id="delete-modal-title" class="text-lg font-extrabold mb-2">تأكيد حذف التذكرة نهائياً</h3>
+            <p id="delete-modal-desc" class="text-xs sm:text-sm font-semibold opacity-85 mb-6 leading-relaxed">
+                هل أنت متأكد من رغبتك في حذف هذا الحجز نهائياً من السجل؟ (يفضل تحويل حالته إلى "مسترجعة" أو "ملغاة" لحفظه في الأرشيف).
+            </p>
+            <div class="flex gap-3 justify-center">
+                <button type="button" id="delete-confirm-btn" onclick="confirmDeleteAction()"
+                        class="bg-red-700 hover:bg-red-800 text-white font-extrabold py-2.5 px-5 rounded-xl transition text-xs sm:text-sm">
+                    نعم، احذف نهائياً
+                </button>
+                <button type="button" id="delete-cancel-btn" onclick="closeDeleteModal()"
+                        class="bg-[#EBE7E0] hover:bg-[#BEB8B0] text-[#0F1A28] font-extrabold py-2.5 px-5 rounded-xl border border-[#9E978E] transition text-xs sm:text-sm">
+                    إلغاء (Esc)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة ونظام التعديل الموجّه الشامل -->
+    <div id="status-debt-modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title"
+         class="fixed inset-0 bg-[#0F1A28]/75 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 no-print overflow-y-auto">
+        <div class="theme-card rounded-2xl max-w-xl w-full p-6 shadow-2xl my-8">
+            <div class="flex justify-between items-center pb-3 mb-4 border-b border-[#BEB8B0]">
+                <h3 id="edit-modal-title" class="text-lg font-extrabold flex items-center gap-2">
+                    <span>🛠️</span> نافذة التعديل الموجهة وإدارة التذكرة
+                </h3>
+                <button type="button" onclick="closeStatusDebtModal()" class="w-8 h-8 rounded-lg bg-[#EBE7E0] text-[#0F1A28] font-extrabold hover:bg-[#BEB8B0]">✕</button>
+            </div>
+
+            <div id="modal-ticket-info" class="theme-sub-surface p-3.5 rounded-xl text-xs font-bold mb-4 space-y-1.5">
+                <!-- يتم تعبئة معلومات التذكرة المختارة برمجياً -->
+            </div>
+
+            <div class="mb-5 bg-[#192A3E] text-white p-4 rounded-2xl border border-[#C5A059]">
+                <label for="edit-action-type" class="block text-xs font-extrabold text-[#C5A059] mb-2">👇 اختر نوع التعديل أو الإجراء المطلوب تنفيذه على التذكرة:</label>
+                <select id="edit-action-type" onchange="handleEditActionTypeChange()" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#C5A059] bg-white font-extrabold text-xs sm:text-sm text-[#0F1A28] cursor-pointer">
+                    <option value="EDIT_INFO">📝 1. تصحيح بيانات الحجز (العميل / الجوال / PNR / شركة الطيران / التاريخ والوقت)</option>
+                    <option value="PAY_DEBT">💵 2. تحصيل دفعة مالية / تسديد مديونية على العميل</option>
+                    <option value="EDIT_PRICES">🔄 3. تعديل أسعار التذكرة أو إعادة إصدار (Reissue)</option>
+                    <option value="MAKE_REFUND">↩️ 4. استرجاع التذكرة (Refund - حذف عمولة الـ 10% تلقائياً)</option>
+                    <option value="MAKE_VOID">🚫 5. إلغاء التذكرة بالكامل (Void - تصفير التذكرة وحذف العمولة)</option>
+                </select>
+            </div>
+
+            <div class="space-y-4">
+                <!-- القسم 1: تصحيح بيانات الحجز الأساسية -->
+                <div id="section-edit-info" class="theme-sub-surface p-4 rounded-xl space-y-3 hidden">
+                    <div class="text-xs font-extrabold border-b border-[#9E978E] pb-2 mb-2">
+                        📝 تعديل البيانات الأساسية للحجز (بدون تغيير الحسابات المالية):
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs theme-label mb-1">اسم العميل / الشركة:</label>
+                            <input type="text" id="modal-client-name" class="w-full px-3 py-2 rounded-lg theme-input text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs theme-label mb-1">رقم الجوال:</label>
+                            <input type="text" id="modal-client-phone" dir="ltr" class="w-full px-3 py-2 rounded-lg theme-input text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs theme-label mb-1">رقم الحجز (PNR):</label>
+                            <input type="text" id="modal-pnr" dir="ltr" maxlength="12" class="w-full px-3 py-2 rounded-lg theme-input text-sm font-mono uppercase-input">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs theme-label mb-1">تاريخ العملية:</label>
+                                <input type="date" id="modal-date" class="w-full px-2 py-2 rounded-lg theme-input text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-xs theme-label mb-1">وقت العملية:</label>
+                                <input type="time" id="modal-time" class="w-full px-2 py-2 rounded-lg theme-input text-xs" dir="ltr">
+                            </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs theme-label mb-1">شركة الطيران:</label>
+                            <select id="modal-airline-select" onchange="toggleModalCustomAirline()" class="w-full px-3 py-2 rounded-lg theme-input text-sm">
+                                <option value="الخطوط السعودية (Saudia)">الخطوط السعودية (Saudia)</option>
+                                <option value="طيران ناس (Flynas)">طيران ناس (Flynas)</option>
+                                <option value="طيران أديل (Flyadeal)">طيران أديل (Flyadeal)</option>
+                                <option value="طيران الإمارات (Emirates)">طيران الإمارات (Emirates)</option>
+                                <option value="الخطوط القطرية (Qatar Airways)">الخطوط القطرية (Qatar Airways)</option>
+                                <option value="مصر للطيران (EgyptAir)">مصر للطيران (EgyptAir)</option>
+                                <option value="طيران الخليج (Gulf Air)">طيران الخليج (Gulf Air)</option>
+                                <option value="فلاي دبي (Flydubai)">فلاي دبي (Flydubai)</option>
+                                <option value="العربية للطيران (Air Arabia)">العربية للطيران (Air Arabia)</option>
+                                <option value="الخطوط التركية (Turkish Airlines)">الخطوط التركية (Turkish Airlines)</option>
+                                <option value="OTHER">➕ أخرى (كتابة يدوية...)</option>
+                            </select>
+                            <input type="text" id="modal-airline-custom" placeholder="اكتب اسم شركة الطيران هنا..." class="hidden mt-2 w-full px-3 py-2 rounded-lg theme-input text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- القسم 2: تحصيل دفعة مالية / تسديد مديونية -->
+                <div id="section-pay-debt" class="theme-sub-surface p-4 rounded-xl space-y-3 hidden">
+                    <div class="flex justify-between items-center border-b border-[#9E978E] pb-2">
+                        <span class="text-xs font-extrabold">💵 تحديث المبلغ المقبوض من العميل وتسديد الذمم:</span>
+                        <button type="button" onclick="payFullTicketAmountInModal()" class="text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold px-3 py-1 rounded-lg shadow-xs transition">
+                            ✅ تسديد كامل المبلغ فوراً
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs theme-label mb-1">إجمالي المبلغ المدفوع فعلياً حتى الآن:</label>
+                            <input type="number" id="edit-paid-amount" step="0.01" oninput="updateModalLiveImpact()"
+                                   class="w-full px-3 py-2 rounded-lg theme-input text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs theme-label mb-1">طريقة الدفع المعتمدة:</label>
+                            <select id="edit-payment-method" class="w-full px-3 py-2 rounded-lg theme-input text-sm">
+                                <option value="شبكة">💳 شبكة (مدى / فيزا)</option>
+                                <option value="كاش">💵 كاش (نقدي)</option>
+                                <option value="تحويل">🏦 تحويل بنكي</option>
+                                <option value="آجل">📒 آجل / ذمم (حساب شركات أو عملاء)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- القسم 3: تعديل الأسعار أو إعادة الإصدار (Reissue) -->
+                <div id="section-edit-prices" class="theme-sub-surface p-4 rounded-xl space-y-3 hidden">
+                    <div class="text-xs font-extrabold border-b border-[#9E978E] pb-2">
+                        🔄 تعديل التكلفة وسعر البيع (أو إعادة إصدار التذكرة Reissue):
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs theme-label mb-1">حالة العملية:</label>
+                            <select id="modal-price-status" onchange="updateModalLiveImpact()" class="w-full px-3 py-2 rounded-lg theme-input text-sm">
+                                <option value="reissue">🔄 تعديل / إعادة إصدار (Reissue)</option>
+                                <option value="issue">✅ إصدار مؤكد (Issue)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs theme-label mb-1">طريقة الدفع:</label>
+                            <select id="modal-price-payment" class="w-full px-3 py-2 rounded-lg theme-input text-sm">
+                                <option value="شبكة">💳 شبكة (مدى / فيزا)</option>
+                                <option value="كاش">💵 كاش (نقدي)</option>
+                                <option value="تحويل">🏦 تحويل بنكي</option>
+                                <option value="آجل">📒 آجل / ذمم</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs theme-label mb-1">المبلغ الأساسي الجديد (التكلفة):</label>
+                            <input type="number" id="modal-base-price" step="0.01" oninput="updateModalLiveImpact()" class="w-full px-3 py-2 rounded-lg theme-input text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs theme-label mb-1">المبلغ الإجمالي الجديد (سعر البيع):</label>
+                            <input type="number" id="modal-total-price" step="0.01" oninput="onModalTotalPriceChange()" class="w-full px-3 py-2 rounded-lg theme-input text-sm">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs theme-label mb-1">المبلغ المدفوع فعلياً من العميل:</label>
+                            <input type="number" id="modal-price-paid" step="0.01" oninput="updateModalLiveImpact()" class="w-full px-3 py-2 rounded-lg theme-input text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- القسم 4: تحويل التذكرة إلى مسترجعة (Refund) -->
+                <div id="section-make-refund" class="bg-amber-50 text-[#0F1A28] p-4 rounded-xl border-2 border-amber-500 space-y-3 hidden">
+                    <div class="text-xs font-extrabold border-b border-amber-300 pb-2">
+                        ↩️ إجراءات استرجاع التذكرة (Refund):
+                    </div>
+                    <p class="text-xs font-bold leading-relaxed">
+                        عند تأكيد استرجاع التذكرة، سيقوم النظام تلقائياً بـ <strong class="text-red-700 underline">حذف عمولة الموظف (10% ⬅ 0.00)</strong> واستبعاد سعر التذكرة من المبيعات الفعالة.
+                    </p>
+                    <div>
+                        <label class="block text-xs font-extrabold text-[#0F1A28] mb-1">صافي رسوم الاسترجاع المحتجزة كربح للمكتب (إن وجدت):</label>
+                        <input type="number" id="edit-refund-fee" placeholder="0.00" step="0.01" value="0" oninput="updateModalLiveImpact()"
+                               class="w-full px-3 py-2 rounded-lg border-2 border-amber-600 bg-white text-sm font-extrabold text-[#0F1A28]">
+                    </div>
+                </div>
+
+                <!-- القسم 5: إلغاء التذكرة بالكامل (Void) -->
+                <div id="section-make-void" class="bg-red-50 text-[#0F1A28] p-4 rounded-xl border-2 border-red-500 space-y-2 hidden">
+                    <div class="text-xs font-extrabold text-red-900 border-b border-red-300 pb-2">
+                        🚫 تأكيد إلغاء التذكرة بالكامل (Void):
+                    </div>
+                    <p class="text-xs text-red-900 font-bold leading-relaxed">
+                        تحويل التذكرة إلى (ملغاة Void) سيقوم بتصفير المبلغ المدفوع والمربح، و<strong class="underline">حذف عمولة الموظف (0.00)</strong>، مع بقاء التذكرة في الجدول كسجل أرشيفي مشطوب عليه.
+                    </p>
+                </div>
+
+                <!-- شريط المعاينة المحاسبية الحية لنتيجة التعديل قبل الحفظ -->
+                <div class="theme-sub-surface p-3.5 rounded-xl flex flex-wrap justify-around items-center gap-3 text-xs">
+                    <div>
+                        <span class="font-bold">الحالة بعد الحفظ: </span>
+                        <span id="modal-preview-status" class="font-extrabold underline">-</span>
+                    </div>
+                    <div>
+                        <span class="font-bold">صافي المربح: </span>
+                        <span id="modal-preview-profit" class="font-extrabold text-sm">0.00</span>
+                    </div>
+                    <div>
+                        <span class="font-bold">عمولة الموظف (10%): </span>
+                        <span id="modal-preview-comm" class="font-extrabold text-emerald-700 text-sm">0.00</span>
+                    </div>
+                    <div>
+                        <span class="font-bold">الدين المتبقي: </span>
+                        <span id="modal-preview-debt" class="font-extrabold text-red-600 text-sm">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-[#BEB8B0] flex justify-end gap-2">
+                <button type="button" onclick="saveStatusAndDebtChanges()" class="btn-french-navy py-2.5 px-6 rounded-xl text-sm shadow-md">💾 اعتماد وحفظ التعديل</button>
+                <button type="button" onclick="closeStatusDebtModal()" class="bg-[#EBE7E0] hover:bg-[#BEB8B0] text-[#0F1A28] font-extrabold py-2.5 px-4 rounded-xl text-sm border border-[#9E978E] transition">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إدارة حسابات الموظفين (للمدير) -->
+    <div id="users-modal" role="dialog" aria-modal="true" class="fixed inset-0 bg-[#0F1A28]/75 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="theme-card rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+            <div class="flex justify-between items-center pb-3 mb-4 border-b border-[#BEB8B0]">
+                <h3 class="text-lg font-extrabold flex items-center gap-2">
+                    <span>🔐</span> إدارة حسابات وصلاحيات الدخول
+                </h3>
+                <button type="button" onclick="closeUsersModal()" class="w-8 h-8 rounded-lg bg-[#EBE7E0] text-[#0F1A28] font-extrabold">✕</button>
+            </div>
+            <p class="text-xs font-bold opacity-80 mb-4">يمكنك من هنا تعديل الاسم الظاهر لكل موظف أو تغيير كلمة المرور الخاصة بحسابه في النظام:</p>
+            <div id="users-settings-list" class="space-y-4 max-h-80 overflow-y-auto pr-1"></div>
+            <div class="mt-6 pt-4 border-t border-[#BEB8B0] flex justify-end gap-3">
+                <button type="button" onclick="saveUsersSettings()" class="btn-french-navy py-2 px-6 rounded-xl">💾 حفظ التعديلات</button>
+                <button type="button" onclick="closeUsersModal()" class="bg-[#EBE7E0] text-[#0F1A28] font-extrabold py-2 px-5 rounded-xl border border-[#9E978E]">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إرسال التقرير عبر الإيميل -->
+    <div id="email-modal" role="dialog" aria-modal="true" class="fixed inset-0 bg-[#0F1A28]/75 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 no-print">
+        <div class="theme-card rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+            <div class="flex justify-between items-center pb-3 mb-4 border-b border-[#BEB8B0]">
+                <h3 class="text-lg font-extrabold flex items-center gap-2">
+                    <span>✉️</span> إرسال التقرير وبيانات النسخة إلى الإيميل
+                </h3>
+                <button type="button" onclick="closeEmailModal()" class="w-8 h-8 rounded-lg bg-[#EBE7E0] text-[#0F1A28] font-extrabold">✕</button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="recipient-email" class="block text-xs theme-label mb-1">البريد الإلكتروني المستلم (إيميل المدير أو الأرشيف):</label>
+                    <input type="email" id="recipient-email" placeholder="example@company.com" class="w-full px-3.5 py-2 rounded-xl theme-input text-sm" dir="ltr">
+                </div>
+                <div class="theme-sub-surface p-3.5 rounded-xl space-y-2 text-xs">
+                    <div class="flex justify-between items-center border-b border-[#9E978E] pb-2">
+                        <span class="font-bold">معرف النسخة والتاريخ والموظف:</span>
+                        <span id="email-meta-preview" class="font-extrabold bg-[#192A3E] text-white px-2.5 py-0.5 rounded-lg"></span>
+                    </div>
+                    <label for="email-body-preview" class="block font-extrabold pt-1">معاينة محتوى الرسالة المرسلة:</label>
+                    <textarea id="email-body-preview" rows="7" readonly class="w-full p-2.5 rounded-lg theme-input text-xs resize-none"></textarea>
+                </div>
+            </div>
+            <div class="mt-5 pt-4 border-t border-[#BEB8B0] flex flex-wrap justify-end gap-2">
+                <button type="button" onclick="copyEmailReportContent()" class="bg-[#EBE7E0] hover:bg-[#BEB8B0] text-[#0F1A28] font-extrabold py-2 px-4 rounded-xl text-xs border border-[#9E978E]">
+                    📋 نسخ النص
+                </button>
+                <button type="button" onclick="sendEmailNow(true)" class="bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold py-2 px-4 rounded-xl text-xs">
+                    📥 تحميل النسخة + فتح الإيميل
+                </button>
+                <button type="button" onclick="sendEmailNow(false)" class="btn-french-navy py-2 px-5 rounded-xl text-xs">
+                    ✉️ فتح برنامج الإيميل وإرسال
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         الصفحة الأولى: بوابة تسجيل الدخول الرسمية (French Navy & Seal Grey)
+         ========================================================================== -->
+    <div id="login-page" class="flex-grow flex flex-col items-center justify-center p-4 transition-colors duration-300 relative">
+        
+        <!-- شريط تبديل الوضع الليلي باستخدام Toggle Switch القياسي (role="switch") -->
+        <div class="w-full max-w-md flex justify-end mb-3">
+            <div class="theme-card px-3.5 py-2 rounded-full flex items-center gap-3 shadow-md">
+                <span id="login-theme-label" class="text-xs font-extrabold">🌙 الوضع الليلي الفوري</span>
+                <button type="button" role="switch" id="login-theme-switch" aria-checked="true" aria-labelledby="login-theme-label"
+                        onclick="toggleGlobalTheme()" class="ui-switch">
+                    <span class="ui-switch-thumb"></span>
+                </button>
+            </div>
+        </div>
+
+        <div id="login-card" class="max-w-md w-full theme-card rounded-3xl shadow-2xl overflow-hidden">
+            <!-- رأس بطاقة تسجيل الدخول بالكحلي الفرنسي والذهبي -->
+            <div class="bg-[#192A3E] p-8 text-center text-white relative border-b-4 border-[#C5A059]">
+                <div class="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg overflow-hidden border-2 border-[#C5A059] p-1">
+                    <img src="logo1.jpg" alt="شعار المكتب" class="w-full h-full object-contain rounded-xl"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display:none;" class="w-full h-full items-center justify-center text-4xl bg-[#F6F4F0] text-[#192A3E] rounded-xl font-extrabold">
+                        ✈️
+                    </div>
+                </div>
+                <h1 class="text-2xl font-extrabold tracking-wide text-white">نظام مبيعات الطيران</h1>
+                <p class="text-[#C5A059] text-sm mt-1 font-extrabold">بوابة الدخول الرسمية للموظفين والإدارة</p>
+            </div>
+
+            <form onsubmit="event.preventDefault(); handleLogin();" class="p-8 space-y-5">
+                <div id="login-error-alert" class="hidden bg-red-100 border-2 border-red-600 text-red-900 px-4 py-3 rounded-xl text-xs font-extrabold flex items-center gap-2">
+                    <span>❌</span>
+                    <span>اسم المستخدم أو كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.</span>
+                </div>
+
+                <div>
+                    <label for="username" class="block text-xs theme-label mb-1.5">اسم المستخدم (Username)</label>
+                    <input type="text" id="username" required autocomplete="username" placeholder="أدخل اسم المستخدم (empA / empB / admin)"
+                           class="w-full px-4 py-3 rounded-xl theme-input text-sm">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-xs theme-label mb-1.5">كلمة المرور (Password)</label>
+                    <div class="relative">
+                        <input type="password" id="password" required autocomplete="current-password" placeholder="••••••••"
+                               class="w-full px-4 py-3 rounded-xl theme-input text-sm">
+                        <button type="button" onclick="togglePasswordVisibility()" id="eye-icon"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-extrabold bg-[#EBE7E0] text-[#0F1A28] border border-[#9E978E] px-2.5 py-1 rounded-lg">
+                            إظهار
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full btn-french-navy py-3.5 rounded-xl shadow-lg text-sm">
+                    تسجيل الدخول للنظام ⬅
+                </button>
+
+                <div class="pt-3 border-t border-[#BEB8B0] text-center">
+                    <span class="text-[11px] font-extrabold opacity-80">Designed by <strong class="text-[#C5A059]">Eng. Bahaa Al-Sheikh</strong></span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         الصفحة الثانية: لوحة التحكم بنظام الصفحات المستقلة (Dedicated Page View Switcher)
+         ========================================================================== -->
+    <div id="dashboard-page" class="hidden flex-grow p-3 sm:p-5 md:p-6">
+        <div class="max-w-7xl mx-auto space-y-5">
+
+            <!-- ترويسة رسمية خاصة بالطباعة الورقية فقط (A4 Print Header) -->
+            <div class="hidden print-flex justify-between items-center border-b-2 border-[#192A3E] pb-2.5 mb-2">
+                <div class="flex items-center gap-3 text-right">
+                    <img src="logo1.jpg" alt="Logo" class="w-12 h-12 object-contain rounded-lg border border-[#9E978E] p-0.5"
+                         onerror="this.style.display='none';">
+                    <div>
+                        <h1 id="print-main-title" class="text-lg font-extrabold text-[#192A3E]">✈️ تقرير المبيعات والعمولات - مكتب الطيران</h1>
+                        <p id="print-meta-info" class="text-xs font-bold text-[#0F1A28] mt-0.5"></p>
+                    </div>
+                </div>
+                <div class="text-left text-xs font-bold text-[#0F1A28] bg-[#EBE7E0] px-3 py-1.5 rounded-lg border border-[#9E978E]">
+                    <div>فترة التقرير: <span id="print-date-badge" class="font-extrabold"></span></div>
+                    <div class="text-[10px] mt-0.5">رقم النسخة: <span id="print-version-badge" class="font-mono font-extrabold">v1</span> | العمولة: 10% (تُحذف للمسترجع)</div>
+                </div>
+            </div>
+
+            <!-- الترويسة العلوية الرئيسية (تضم زر الخطوط الثلاثة Hamburger + القائمة المنسدلة للصفحات المستقلة) -->
+            <header class="theme-card rounded-2xl shadow-md p-4 md:p-5 flex flex-col gap-4 no-print">
+                <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+                    
+                    <!-- يمين الهيدر: زر الهامبرغر (3 خطوط أفقية) + الشعار + اسم الموظف -->
+                    <div class="flex items-center gap-3 w-full xl:w-auto">
+                        <!-- زر القائمة الجانبية (Hamburger Button - 3 Horizontal Bars) -->
+                        <button type="button" id="hamburger-btn" onclick="openNavDrawer()" aria-label="فتح القائمة الجانبية للتنقل" aria-expanded="false" aria-controls="off-canvas-drawer"
+                                class="w-12 h-12 rounded-xl bg-[#192A3E] hover:bg-[#2C425C] text-white flex flex-col items-center justify-center gap-1.5 shrink-0 shadow-sm border border-[#C5A059] transition">
+                            <span class="w-6 h-0.5 bg-white rounded-full"></span>
+                            <span class="w-6 h-0.5 bg-[#C5A059] rounded-full"></span>
+                            <span class="w-6 h-0.5 bg-white rounded-full"></span>
+                        </button>
+
+                        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-xs border-2 border-[#192A3E] overflow-hidden p-1 shrink-0">
+                            <img src="logo1.jpg" alt="شعار المكتب" class="w-full h-full object-contain rounded-lg"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none;" class="w-full h-full items-center justify-center text-xl bg-[#192A3E] text-white rounded-lg font-bold">
+                                ✈️
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h2 id="welcome-title" class="text-lg sm:text-xl font-extrabold">صفحة المبيعات</h2>
+                                <span id="role-badge" class="text-xs font-extrabold px-2.5 py-0.5 rounded-full"></span>
+                                <span id="backup-version-pill" class="text-[11px] font-mono font-extrabold theme-sub-surface px-2.5 py-0.5 rounded-full"></span>
+                            </div>
+                            <p id="report-date-subtitle" class="text-xs sm:text-sm font-bold opacity-80 mt-0.5"></p>
+                        </div>
+                    </div>
+
+                    <!-- يسار الهيدر: القائمة المنسدلة لفتح الصفحات المستقلة + مفتاح الوضع الليلي + أزرار التحكم -->
+                    <div class="flex flex-wrap items-center gap-2.5 w-full xl:w-auto justify-between xl:justify-end">
+                        
+                        <!-- القائمة المنسدلة الرئيسية للتنقل بين الصفحات المستقلة (Dedicated Page View Switcher) -->
+                        <div class="flex items-center gap-2 bg-[#192A3E] text-white px-3 py-1.5 rounded-xl border-2 border-[#C5A059] shadow-sm">
+                            <label for="dedicated-page-switcher" class="text-xs font-extrabold text-[#C5A059] whitespace-nowrap">📂 الانتقال لصفحة:</label>
+                            <select id="dedicated-page-switcher" onchange="switchDedicatedPage(this.value, false)"
+                                    class="bg-white text-[#0F1A28] font-extrabold text-xs sm:text-sm px-2.5 py-1.5 rounded-lg border border-[#9E978E] cursor-pointer">
+                                <option value="section-ticket-entry">➕ 1. تسجيل عملية تذكرة طيران (الرئيسية)</option>
+                                <option value="section-report-table">📋 2. جدول التقرير المفصل والبحث</option>
+                                <option value="section-kpi-summary">📊 3. الملخص المالي والعمولات (6 بطاقات)</option>
+                                <option value="ALL">🖥️ 4. عرض شامل (جميع الأقسام معاً)</option>
+                            </select>
+                        </div>
+
+                        <!-- مفتاح الوضع الليلي الفوري داخل النظام (Toggle Switch - role="switch") -->
+                        <div class="theme-sub-surface px-3 py-1.5 rounded-xl flex items-center gap-2">
+                            <span id="dash-theme-label" class="text-xs font-extrabold">🌙 ليلي</span>
+                            <button type="button" role="switch" id="dash-theme-switch" aria-checked="false" aria-labelledby="dash-theme-label"
+                                    onclick="toggleGlobalTheme()" class="ui-switch">
+                                <span class="ui-switch-thumb"></span>
+                            </button>
+                        </div>
+
+                        <!-- أدوات المدير فقط -->
+                        <div id="admin-controls" class="hidden flex flex-wrap items-center gap-2">
+                            <select id="employee-filter" onchange="renderDashboard()" aria-label="فلترة حسب الموظف"
+                                    class="px-3 py-2 rounded-xl theme-input text-xs cursor-pointer">
+                                <option value="ALL">👥 جميع الموظفين</option>
+                                <option value="empA" id="filter-opt-empA">👤 الموظف أ فقط</option>
+                                <option value="empB" id="filter-opt-empB">👤 الموظف ب فقط</option>
+                            </select>
+
+                            <button type="button" onclick="openUsersModal()" class="bg-[#FDF9F0] hover:bg-[#EBE7E0] text-[#0F1A28] border-2 border-[#C5A059] font-extrabold px-3 py-2 rounded-xl text-xs flex items-center gap-1 transition">
+                                <span>🔐</span> الحسابات
+                            </button>
+                        </div>
+
+                        <button type="button" onclick="exportBackupFile()" class="theme-sub-surface hover:opacity-90 font-extrabold px-3 py-2 rounded-xl text-xs flex items-center gap-1 transition">
+                            <span>📥</span> نسخة احتياطية
+                        </button>
+
+                        <button type="button" onclick="triggerRestoreFile()" class="theme-sub-surface hover:opacity-90 font-extrabold px-3 py-2 rounded-xl text-xs flex items-center gap-1 transition">
+                            <span>📤</span> استعادة
+                        </button>
+                        <input type="file" id="restore-file-input" accept=".json" onchange="handleRestoreFile(event)" class="hidden">
+
+                        <button type="button" onclick="openEmailModal()" class="btn-french-navy px-3 py-2 rounded-xl text-xs flex items-center gap-1 shadow-xs">
+                            <span>✉️</span> إيميل
+                        </button>
+
+                        <button type="button" onclick="printReport()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold px-3 py-2 rounded-xl text-xs flex items-center gap-1 shadow-xs transition">
+                            <span>🖨️</span> طباعة
+                        </button>
+
+                        <button type="button" onclick="handleLogout()" class="bg-red-700 hover:bg-red-800 text-white font-extrabold px-3 py-2 rounded-xl text-xs transition">
+                            خروج
+                        </button>
+                    </div>
+                </div>
+
+                <!-- الصف الثاني: اختيار نطاق التقرير الزمني باستخدام أزرار الاختيار الأحادي المتبادلة (Radio Buttons - Named Group) -->
+                <div class="theme-sub-surface p-3 rounded-xl flex flex-wrap items-center justify-between gap-3">
+                    
+                    <fieldset class="flex flex-wrap items-center gap-2">
+                        <legend class="sr-only">نطاق التقرير الزمني</legend>
+                        <span class="text-xs font-extrabold px-1">📊 نطاق التقرير (Radio Group):</span>
+                        
+                        <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-[#9E978E] bg-white text-[#0F1A28] has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
+                            <input type="radio" name="reportPeriodRadio" value="daily" checked onchange="setFilterMode(this.value)" class="accent-[#C5A059]">
+                            <span>📅 يومي منفرد</span>
+                        </label>
+
+                        <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-[#9E978E] bg-white text-[#0F1A28] has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
+                            <input type="radio" name="reportPeriodRadio" value="monthly" onchange="setFilterMode(this.value)" class="accent-[#C5A059]">
+                            <span>🗓️ الشهر كامل</span>
+                        </label>
+
+                        <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-[#9E978E] bg-white text-[#0F1A28] has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
+                            <input type="radio" name="reportPeriodRadio" value="range" onchange="setFilterMode(this.value)" class="accent-[#C5A059]">
+                            <span>⏳ فترة مخصصة (من - إلى)</span>
+                        </label>
+                    </fieldset>
+
+                    <!-- محددات التواريخ التقويمية (Calendar Grid Date Pickers) -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div id="filter-box-daily" class="flex items-center gap-2 px-3 py-1 rounded-xl theme-card">
+                            <label for="date-picker" class="text-xs font-extrabold">اختر اليوم:</label>
+                            <input type="date" id="date-picker" onchange="renderDashboard()" class="theme-input px-2 py-1 rounded-lg text-xs cursor-pointer">
+                        </div>
+
+                        <div id="filter-box-monthly" class="hidden flex items-center gap-2 px-3 py-1 rounded-xl theme-card">
+                            <label for="month-picker" class="text-xs font-extrabold">اختر الشهر:</label>
+                            <input type="month" id="month-picker" onchange="renderDashboard()" class="theme-input px-2 py-1 rounded-lg text-xs cursor-pointer">
+                        </div>
+
+                        <div id="filter-box-range" class="hidden flex flex-wrap items-center gap-2 px-3 py-1 rounded-xl theme-card">
+                            <div class="flex items-center gap-1">
+                                <label for="date-from" class="text-xs font-extrabold">من:</label>
+                                <input type="date" id="date-from" onchange="renderDashboard()" class="theme-input px-2 py-1 rounded-lg text-xs cursor-pointer">
+                            </div>
+                            <span>|</span>
+                            <div class="flex items-center gap-1">
+                                <label for="date-to" class="text-xs font-extrabold">إلى:</label>
+                                <input type="date" id="date-to" onchange="renderDashboard()" class="theme-input px-2 py-1 rounded-lg text-xs cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ==========================================================================
+                 شريط التتبع الداخلي اللاصق (Sticky Scrollspy / In-Page Navigation)
+                 يحتوي على روابط حقيقية (#section-id) ويحدث aria-current="location"
+                 ========================================================================== -->
+            <nav id="scrollspy-nav" aria-label="التنقل السريع وتتبع القسم الحالي"
+                 class="sticky top-2 z-30 theme-card rounded-2xl shadow-md px-3 py-2 flex flex-wrap items-center justify-between gap-2 no-print">
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-[11px] font-extrabold px-2 py-1 rounded bg-[#EBE7E0] text-[#0F1A28] border border-[#9E978E]">📍 القسم النشط:</span>
+                    
+                    <a href="#section-ticket-entry" id="spy-link-entry" onclick="handleScrollspyClick(event, 'section-ticket-entry')"
+                       aria-current="location"
+                       class="scrollspy-link px-3.5 py-1.5 rounded-xl font-extrabold text-xs flex items-center gap-1.5">
+                        <span>➕</span> تسجيل عملية تذكرة طيران
+                    </a>
+
+                    <a href="#section-report-table" id="spy-link-table" onclick="handleScrollspyClick(event, 'section-report-table')"
+                       class="scrollspy-link px-3.5 py-1.5 rounded-xl font-extrabold text-xs flex items-center gap-1.5">
+                        <span>📋</span> جدول التقرير المفصل (<span id="spy-count-badge">0</span>)
+                    </a>
+
+                    <a href="#section-kpi-summary" id="spy-link-kpi" onclick="handleScrollspyClick(event, 'section-kpi-summary')"
+                       class="scrollspy-link px-3.5 py-1.5 rounded-xl font-extrabold text-xs flex items-center gap-1.5">
+                        <span>📊</span> الملخص المالي والعمولات
+                    </a>
+                </div>
+
+                <div class="text-[11px] font-bold opacity-80 hidden md:block px-2">
+                    💡 يمكنك فتح كل قسم كصفحة مستقلة أو التمرير التلقائي
+                </div>
+            </nav>
+
+            <!-- ==========================================================================
+                 الصفحة المستقلة (1): تسجيل عملية تذكرة طيران (#section-ticket-entry)
+                 هي الصفحة الرئيسية الافتراضية عند تسجيل الدخول
+                 ========================================================================== -->
+            <section id="section-ticket-entry" aria-labelledby="heading-ticket-entry" class="theme-card rounded-2xl shadow-md p-5 md:p-6 no-print scroll-mt-20">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-5 pb-3 border-b-2 border-[#BEB8B0]">
+                    <div>
+                        <h3 id="heading-ticket-entry" class="text-lg sm:text-xl font-extrabold flex items-center gap-2">
+                            <span>➕</span> تسجيل عملية تذكرة طيران (الصفحة الرئيسية لإدخال المبيعات)
+                        </h3>
+                        <p class="text-xs font-bold opacity-75 mt-0.5">أدخل بيانات تذكرة العميل ثم اضغط حفظ، أو انتقل لصفحة الجدول لعرض السجلات السابقة</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs bg-[#FDF9F0] text-[#0F1A28] font-extrabold px-3 py-1.5 rounded-xl border-2 border-[#C5A059]">
+                            العمولة: 10% للإصدار والتعديل | 0% للمسترجع والملغي
+                        </span>
+                        <button type="button" onclick="switchDedicatedPage('section-report-table', false)"
+                                class="btn-french-navy px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 shadow-xs">
+                            <span>📋</span> عرض صفحة الجدول ⬅
+                        </button>
+                    </div>
+                </div>
+
+                <!-- شبكة الحقول الأساسية -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- 1. اسم العميل -->
+                    <div>
+                        <label for="client-name" class="block text-xs theme-label mb-1">اسم العميل / الشركة *</label>
+                        <input type="text" id="client-name" placeholder="الاسم الثلاثي للعميل" 
+                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                    </div>
+
+                    <!-- 2. رقم الجوال -->
+                    <div>
+                        <label for="client-phone" class="block text-xs theme-label mb-1">رقم جوال العميل (لواتساب) *</label>
+                        <input type="text" id="client-phone" placeholder="05xxxxxxxx" dir="ltr"
+                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                    </div>
+
+                    <!-- 3. رقم الحجز PNR -->
+                    <div>
+                        <label for="pnr-code" class="block text-xs theme-label mb-1">رقم الحجز (PNR) *</label>
+                        <input type="text" id="pnr-code" placeholder="مثال: XY789Z" maxlength="12" dir="ltr"
+                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm uppercase-input font-mono">
+                    </div>
+
+                    <!-- 4. شركة الطيران مع خيار "أخرى" -->
+                    <div>
+                        <label for="airline-select" class="block text-xs theme-label mb-1">شركة الطيران *</label>
+                        <select id="airline-select" onchange="toggleCustomAirlineInput()" class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm cursor-pointer">
+                            <option value="الخطوط السعودية (Saudia)">الخطوط السعودية (Saudia)</option>
+                            <option value="طيران ناس (Flynas)">طيران ناس (Flynas)</option>
+                            <option value="طيران أديل (Flyadeal)">طيران أديل (Flyadeal)</option>
+                            <option value="طيران الإمارات (Emirates)">طيران الإمارات (Emirates)</option>
+                            <option value="الخطوط القطرية (Qatar Airways)">الخطوط القطرية (Qatar Airways)</option>
+                            <option value="مصر للطيران (EgyptAir)">مصر للطيران (EgyptAir)</option>
+                            <option value="طيران الخليج (Gulf Air)">طيران الخليج (Gulf Air)</option>
+                            <option value="فلاي دبي (Flydubai)">فلاي دبي (Flydubai)</option>
+                            <option value="العربية للطيران (Air Arabia)">العربية للطيران (Air Arabia)</option>
+                            <option value="الخطوط التركية (Turkish Airlines)">الخطوط التركية (Turkish Airlines)</option>
+                            <option value="OTHER">➕ أخرى (إضافة يدوية...)</option>
+                        </select>
+                        <input type="text" id="airline-custom" placeholder="اكتب اسم شركة الطيران هنا..." 
+                               class="hidden mt-2 w-full px-3.5 py-2 rounded-xl theme-input text-sm">
+                    </div>
+
+                    <!-- 5. حالة التذكرة -->
+                    <div>
+                        <label for="ticket-status" class="block text-xs theme-label mb-1">حالة التذكرة *</label>
+                        <select id="ticket-status" onchange="handleFormStatusOrPaymentChange()" class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm cursor-pointer">
+                            <option value="issue">✅ إصدار جديد (Issue)</option>
+                            <option value="reissue">🔄 تعديل (Reissue)</option>
+                            <option value="refund">↩️ مسترجعة (Refund - بدون عمولة)</option>
+                            <option value="void">🚫 ملغاة (Void - بدون عمولة)</option>
+                        </select>
+                    </div>
+
+                    <!-- 6. المبلغ الأساسي (التكلفة) -->
+                    <div>
+                        <label for="base-price" class="block text-xs theme-label mb-1">المبلغ الأساسي (التكلفة) *</label>
+                        <input type="number" id="base-price" placeholder="0.00" step="0.01" oninput="onTotalPriceOrBaseInput()"
+                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                    </div>
+
+                    <!-- 7. المبلغ الإجمالي (سعر البيع) -->
+                    <div>
+                        <label for="total-price" class="block text-xs theme-label mb-1">المبلغ الإجمالي (سعر البيع) *</label>
+                        <input type="number" id="total-price" placeholder="0.00" step="0.01" oninput="onTotalPriceOrBaseInput()"
+                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                    </div>
+
+                    <!-- 8. المبلغ المدفوع فعلياً -->
+                    <div>
+                        <label for="paid-amount" class="block text-xs theme-label mb-1">المبلغ المدفوع فعلياً *</label>
+                        <input type="number" id="paid-amount" placeholder="يُملأ تلقائياً أو عدله للآجل" step="0.01" oninput="onPaidAmountManualInput()"
+                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                    </div>
+                </div>
+
+                <!-- ==========================================================================
+                     الفصل الدلالي الدقيق:
+                     1. أزرار الاختيار الأحادي المتبادلة لطريقة الدفع (Radio Buttons - type="radio")
+                     2. مربعات الاختيار المستقلة لإضافات التذكرة (Checkboxes - type="checkbox")
+                     3. محدد التاريخ التقويمي (Calendar Date Picker) + العجلة الدوارة للوقت (iOS Wheel Picker & <input type="time">)
+                     ========================================================================== -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-5 pt-4 border-t border-[#BEB8B0]">
+                    
+                    <!-- أولاً: مجموعة أزرار الاختيار الأحادي لطريقة الدفع (Radio Buttons Named Group) -->
+                    <fieldset class="lg:col-span-4 theme-sub-surface p-3.5 rounded-xl">
+                        <legend class="text-xs theme-label px-1 mb-2">💳 طريقة الدفع المعتمدة (Radio Group - اختيار أحادي) *:</legend>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg border border-[#9E978E] bg-white text-[#0F1A28] font-extrabold text-xs has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
+                                <input type="radio" name="entryPaymentMethodRadio" value="شبكة" checked onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
+                                <span>💳 شبكة / فيزا</span>
+                            </label>
+                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg border border-[#9E978E] bg-white text-[#0F1A28] font-extrabold text-xs has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
+                                <input type="radio" name="entryPaymentMethodRadio" value="كاش" onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
+                                <span>💵 كاش (نقدي)</span>
+                            </label>
+                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg border border-[#9E978E] bg-white text-[#0F1A28] font-extrabold text-xs has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
+                                <input type="radio" name="entryPaymentMethodRadio" value="تحويل" onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
+                                <span>🏦 تحويل بنكي</span>
+                            </label>
+                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg border border-[#9E978E] bg-white text-[#0F1A28] font-extrabold text-xs has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
+                                <input type="radio" name="entryPaymentMethodRadio" value="آجل" onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
+                                <span>📒 آجل / ذمم</span>
+                            </label>
+                        </div>
+                        <!-- حقل متوافق مع الدوال المحاسبية الأصلية -->
+                        <input type="hidden" id="payment-method" value="شبكة">
+                    </fieldset>
+
+                    <!-- ثانياً: مربعات الاختيار المستقلة لإضافات التذكرة (Checkboxes - تنتظر زر الحفظ) -->
+                    <fieldset class="lg:col-span-4 theme-sub-surface p-3.5 rounded-xl">
+                        <legend class="text-xs theme-label px-1 mb-2">🧳 إضافات ومرفقات التذكرة (Checkboxes - خيارات مستقلة):</legend>
+                        <div class="grid grid-cols-2 gap-2 text-xs font-extrabold">
+                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg bg-white text-[#0F1A28] border border-[#9E978E]">
+                                <input type="checkbox" id="addon-baggage" value="وزن إضافي" class="w-4 h-4 accent-[#192A3E] rounded">
+                                <span>🧳 وزن إضافي</span>
+                            </label>
+                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg bg-white text-[#0F1A28] border border-[#9E978E]">
+                                <input type="checkbox" id="addon-meal" value="وجبة" class="w-4 h-4 accent-[#192A3E] rounded">
+                                <span>🍽️ وجبة طيران</span>
+                            </label>
+                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg bg-white text-[#0F1A28] border border-[#9E978E]">
+                                <input type="checkbox" id="addon-seat" value="مقعد مميز" class="w-4 h-4 accent-[#192A3E] rounded">
+                                <span>💺 مقعد مميز</span>
+                            </label>
+                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg bg-white text-[#0F1A28] border border-[#9E978E]">
+                                <input type="checkbox" id="addon-auto-whatsapp" value="AUTO_WA" class="w-4 h-4 accent-emerald-700 rounded">
+                                <span>💬 واتساب بعد الحفظ</span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <!-- ثالثاً: تاريخ العملية (Calendar Date Picker) + وقت العملية (Time Field + Scrollable iOS Wheel Picker) -->
+                    <div class="lg:col-span-4 theme-sub-surface p-3.5 rounded-xl space-y-2.5">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label for="sale-entry-date" class="block text-xs theme-label mb-1">📅 تاريخ العملية *</label>
+                                <input type="date" id="sale-entry-date" class="w-full px-2.5 py-2 rounded-xl theme-input text-xs cursor-pointer">
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label for="sale-entry-time" class="text-xs theme-label">⏰ وقت العملية</label>
+                                    <button type="button" onclick="toggleWheelTimePicker()"
+                                            class="text-[11px] font-extrabold px-2 py-0.5 rounded bg-[#192A3E] text-[#C5A059] border border-[#C5A059] hover:bg-[#2C425C] transition"
+                                            title="فتح/إغلاق العجلة الدوارة لاختيار الوقت (iOS Wheel Picker)">
+                                        🎡 عجلة الوقت
+                                    </button>
+                                </div>
+                                <!-- حقل الوقت القياسي المقسم إلى ساعات ودقائق و ص/م (<input type="time">) -->
+                                <input type="time" id="sale-entry-time" oninput="syncTimeInputToWheel()" dir="ltr"
+                                       class="w-full px-2.5 py-2 rounded-xl theme-input text-xs cursor-pointer">
+                            </div>
+                        </div>
+
+                        <!-- العجلة الدوارة لاختيار الوقت (Scrollable Wheel Picker - iOS Slot-Machine Drum with Gray Band) -->
+                        <div id="ios-wheel-picker-box" class="hidden pt-1">
+                            <div class="flex items-center justify-between text-[11px] font-extrabold mb-1 px-1">
+                                <span>🎡 أدر العجلة لاختيار الوقت (الساعة : الدقيقة : ص/م):</span>
+                                <span id="wheel-live-readout" class="font-mono bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded">12:00 PM</span>
+                            </div>
+                            <div class="ios-wheel-drum" dir="ltr" aria-label="عجلة اختيار الوقت الدوارة">
+                                <div class="ios-wheel-highlight-band"></div>
+                                <div class="grid grid-cols-3 h-full text-center">
+                                    <!-- عمود الساعات (01 - 12) -->
+                                    <div id="wheel-col-hour" class="ios-wheel-column" onscroll="onWheelColumnScroll('hour')"></div>
+                                    <!-- عمود الدقائق (00 - 59) -->
+                                    <div id="wheel-col-minute" class="ios-wheel-column" onscroll="onWheelColumnScroll('minute')"></div>
+                                    <!-- عمود الفترة (AM / PM) -->
+                                    <div id="wheel-col-ampm" class="ios-wheel-column" onscroll="onWheelColumnScroll('ampm')">
+                                        <div class="ios-wheel-item" data-val="AM" onclick="snapWheelToValue('ampm', 'AM')">AM (ص)</div>
+                                        <div class="ios-wheel-item" data-val="PM" onclick="snapWheelToValue('ampm', 'PM')">PM (م)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- شريط المعاينة المحاسبية الفورية + زر حفظ التذكرة -->
+                <div class="mt-5 theme-sub-surface rounded-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex flex-wrap justify-around items-center gap-6 text-xs sm:text-sm w-full md:w-auto">
+                        <div>
+                            <span class="font-bold">صافي مربح التذكرة: </span>
+                            <span id="preview-profit" class="font-extrabold text-base sm:text-lg underline">0.00</span>
+                        </div>
+                        <div>
+                            <span class="font-bold">عمولة الموظف (10%): </span>
+                            <span id="preview-commission" class="font-extrabold text-emerald-700 text-base sm:text-lg">0.00</span>
+                            <span id="preview-status-note" class="text-[11px] font-extrabold text-red-700 mr-1 hidden">(محذوفة للاسترجاع/الإلغاء)</span>
+                        </div>
+                        <div>
+                            <span class="font-bold">المتبقي على العميل (دين/ذمم): </span>
+                            <span id="preview-debt" class="font-extrabold text-red-700 text-base sm:text-lg">0.00</span>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="addNewSale()"
+                            class="w-full md:w-auto btn-french-navy py-3 px-8 rounded-xl shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base">
+                        <span>💾</span> حفظ العملية وإضافتها للسجل
+                    </button>
+                </div>
+            </section>
+
+            <!-- ==========================================================================
+                 الصفحة المستقلة (2): الملخص المالي والعمولات (#section-kpi-summary)
+                 تفتح كصفحة مستقلة عند اختيارها من القائمة المنسدلة أو الدرج الجانبي، وتظهر دائماً في الطباعة
+                 ========================================================================== -->
+            <section id="section-kpi-summary" aria-labelledby="heading-kpi-summary" class="hidden space-y-4 scroll-mt-20">
+                <div class="theme-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-2 no-print">
+                    <div>
+                        <h3 id="heading-kpi-summary" class="text-lg font-extrabold flex items-center gap-2">
+                            <span>📊</span> الملخص المالي وإحصائيات العمولات والذمم
+                        </h3>
+                        <p class="text-xs font-bold opacity-75">ملخص المؤشرات المالية للفترة المحددة مع استبعاد التذاكر المسترجعة والملغاة من العمولة</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="switchDedicatedPage('section-ticket-entry', false)"
+                                class="theme-sub-surface px-3 py-1.5 rounded-xl text-xs font-extrabold">
+                            ➕ العودة لتسجيل تذكرة
+                        </button>
+                        <button type="button" onclick="switchDedicatedPage('section-report-table', false)"
+                                class="btn-french-navy px-3.5 py-1.5 rounded-xl text-xs">
+                            📋 عرض جدول التقرير المفصل
+                        </button>
+                    </div>
+                </div>
+
+                <!-- بطاقات الملخص الإحصائي الـ 6 -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 print-summary-grid">
+                    <!-- 1. عدد التذاكر -->
+                    <div class="theme-card p-4 rounded-2xl shadow-xs print-summary-card">
+                        <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي التذاكر</span>
+                        <div id="sum-tickets" class="text-2xl font-extrabold print-card-value">0</div>
+                        <div id="sum-tickets-sub" class="text-[11px] font-bold opacity-80 mt-1">فعالة: 0 | مسترجع/ملغي: 0</div>
+                    </div>
+
+                    <!-- 2. إجمالي المبيعات الفعالة -->
+                    <div class="theme-card p-4 rounded-2xl shadow-xs print-summary-card">
+                        <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي المبيعات الفعالة</span>
+                        <div id="sum-total-sales" class="text-xl font-extrabold print-card-value">0.00</div>
+                        <div class="text-[11px] font-bold opacity-75 mt-1">بعد استبعاد المسترجع</div>
+                    </div>
+
+                    <!-- 3. المقبوض الفعلي في الصندوق -->
+                    <div class="theme-card p-4 rounded-2xl shadow-xs print-summary-card">
+                        <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">المقبوض فعلياً بالصندوق</span>
+                        <div class="text-xs font-extrabold space-y-1 mt-1">
+                            <div class="flex justify-between text-emerald-700"><span>💵 كاش:</span> <span id="sum-cash">0.00</span></div>
+                            <div class="flex justify-between"><span>💳 شبكة/تحويل:</span> <span id="sum-card">0.00</span></div>
+                        </div>
+                    </div>
+
+                    <!-- 4. إجمالي الديون المتبقية -->
+                    <div class="bg-red-50 text-[#0F1A28] p-4 rounded-2xl shadow-xs border-2 border-red-600 print-summary-card print-debt-card">
+                        <span class="text-xs font-extrabold text-red-900 block mb-1 print-card-title">ديون متبقية (ذمم/آجل)</span>
+                        <div id="sum-debt" class="text-xl font-extrabold text-red-700 print-card-value">0.00</div>
+                        <div class="text-[11px] font-extrabold text-red-800 mt-1">مبالغ غير محصلة بعد</div>
+                    </div>
+
+                    <!-- 5. إجمالي صافي المرابح -->
+                    <div class="theme-card p-4 rounded-2xl shadow-xs print-summary-card">
+                        <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي صافي المرابح</span>
+                        <div id="sum-profit" class="text-xl font-extrabold print-card-value">0.00</div>
+                        <div class="text-[11px] font-bold opacity-75 mt-1">صافي ربح المكتب</div>
+                    </div>
+
+                    <!-- 6. صافي عمولة الموظف (10%) -->
+                    <div class="bg-[#192A3E] text-white p-4 rounded-2xl shadow-md border-2 border-[#C5A059] print-summary-card print-commission-card">
+                        <span class="text-xs font-extrabold text-[#C5A059] block mb-1 print-card-title">صافي عمولة الموظف (10%)</span>
+                        <div id="sum-commission" class="text-xl font-extrabold text-white print-card-value">0.00</div>
+                        <div class="text-[11px] font-bold text-[#EBE7E0] mt-1">محذوف منها المسترجع</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================================================
+                 الصفحة المستقلة (3): جدول التقرير المفصل والبحث (#section-report-table)
+                 تفتح كصفحة مستقلة عند اختيارها، وتظهر دائماً في الطباعة
+                 ========================================================================== -->
+            <section id="section-report-table" aria-labelledby="table-section-title" class="hidden theme-card rounded-2xl shadow-md overflow-hidden print-table-container scroll-mt-20">
+                
+                <!-- شريط البحث الفوري الشامل + المفتاح الثنائي الفوري (Toggle Switch - role="switch") -->
+                <div class="p-4 md:p-5 border-b-2 border-[#BEB8B0] flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 no-print">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h3 id="table-section-title" class="font-extrabold text-base md:text-lg">📋 جدول التقرير المفصل</h3>
+                        <span id="table-count-badge" class="text-xs font-extrabold bg-[#192A3E] text-[#C5A059] px-3 py-1 rounded-full border border-[#C5A059]">0 حجز</span>
+                        <button type="button" onclick="switchDedicatedPage('section-ticket-entry', false)"
+                                class="theme-sub-surface px-3 py-1 rounded-xl text-xs font-extrabold hover:opacity-90">
+                            ➕ إضافة تذكرة جديدة
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <div class="relative flex-grow sm:w-64">
+                            <input type="text" id="global-search-input" oninput="renderDashboard()" placeholder="🔍 ابحث برقم PNR، اسم العميل، الجوال..."
+                                   aria-label="البحث الفوري في السجل"
+                                   class="w-full px-3.5 py-2 rounded-xl theme-input text-xs">
+                        </div>
+
+                        <!-- المفتاح الثنائي الفوري لخيار "شامل كل التواريخ" (Toggle Switch - role="switch") -->
+                        <div class="theme-sub-surface px-3 py-1.5 rounded-xl flex items-center gap-2">
+                            <span id="all-dates-switch-label" class="text-xs font-extrabold">شامل كل التواريخ</span>
+                            <button type="button" role="switch" id="search-all-dates-switch" aria-checked="false" aria-labelledby="all-dates-switch-label"
+                                    onclick="toggleSearchAllDatesSwitch()" class="ui-switch">
+                                <span class="ui-switch-thumb"></span>
+                            </button>
+                            <!-- حقل متوافق مع الدوال البرمجية -->
+                            <input type="checkbox" id="search-all-dates" class="hidden">
+                        </div>
+
+                        <select id="status-filter" onchange="renderDashboard()" aria-label="فلترة حسب حالة التذكرة"
+                                class="px-3 py-2 rounded-xl theme-input text-xs cursor-pointer">
+                            <option value="ALL">كل الحالات</option>
+                            <option value="ACTIVE">✅ الفعالة فقط (إصدار/تعديل)</option>
+                            <option value="DEBT">📒 عليها مديونية (ذمم متبقية)</option>
+                            <option value="REFUND_VOID">↩️ المسترجعة والملغاة فقط</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto print-table-container">
+                    <table class="w-full text-right border-collapse text-xs sm:text-sm">
+                        <thead>
+                            <tr class="theme-sub-surface border-b-2 border-[#9E978E] text-[11px] uppercase">
+                                <th class="py-3 px-2 font-extrabold">#</th>
+                                <th id="th-sale-date" class="py-3 px-2 font-extrabold hidden">التاريخ والوقت</th>
+                                <th id="th-emp-name" class="py-3 px-2 font-extrabold hidden">الموظف</th>
+                                <th class="py-3 px-2 font-extrabold">العميل والجوال</th>
+                                <th class="py-3 px-2 font-extrabold">PNR والطيران والمرفقات</th>
+                                <th class="py-3 px-2 font-extrabold">الحالة</th>
+                                <th class="py-3 px-2 font-extrabold">الدفع</th>
+                                <th class="py-3 px-2 font-extrabold">الأساسي</th>
+                                <th class="py-3 px-2 font-extrabold">الإجمالي</th>
+                                <th class="py-3 px-2 font-extrabold text-emerald-800">المدفوع</th>
+                                <th class="py-3 px-2 font-extrabold text-red-700">المتبقي (دين)</th>
+                                <th class="py-3 px-2 font-extrabold">المربح</th>
+                                <th class="py-3 px-2 font-extrabold text-emerald-800">العمولة (10%)</th>
+                                <th class="py-3 px-2 font-extrabold no-print text-center">إجراءات وواتساب</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-table-body" class="divide-y divide-[#BEB8B0]">
+                            <!-- يتم تعبئة صفوف التذاكر برمجياً -->
+                        </tbody>
+                        <tfoot id="sales-table-foot" class="theme-sub-surface font-extrabold border-t-2 border-[#192A3E] text-xs">
+                            <!-- يتم تعبئة صف الإجماليات السفلي برمجياً -->
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- قسم التوقيعات الرسمي للطباعة الورقية فقط -->
+            <div class="hidden print-flex justify-between items-center pt-6 mt-4 text-xs font-extrabold text-[#0F1A28] px-4">
+                <div class="text-center">
+                    <p class="mb-6">توقيع الموظف المختص</p>
+                    <p class="text-[#9E978E]">............................................</p>
+                </div>
+                <div class="text-center">
+                    <p class="mb-6">المراجعة والمحاسبة (الصندوق والذمم)</p>
+                    <p class="text-[#9E978E]">............................................</p>
+                </div>
+                <div class="text-center">
+                    <p class="mb-6">اعتماد المدير العام</p>
+                    <p class="text-[#9E978E]">............................................</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         تذييل الصفحات الرسمي (French Navy Footer Signature)
+         ========================================================================== -->
+    <footer class="bg-[#0F1A28] text-[#F6F4F0] border-t-2 border-[#C5A059] py-4 px-6 text-center mt-auto print-border">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold">
+            <span>جميع الحقوق محفوظة © نظام مبيعات وعمولات مكتب الطيران</span>
+            <span class="bg-[#192A3E] text-white px-3.5 py-1 rounded-full border border-[#C5A059]">
+                Designed by <strong class="text-[#C5A059]">Eng. Bahaa Al-Sheikh</strong>
+            </span>
+        </div>
+    </footer>
+
+    <script>
+        /* ==========================================================================
+           البرمجة التفاعلية، المنطق المحاسبي الصارم (100% محفوظ)، وأنماط UI/UX القياسية
+           ========================================================================== */
+
+        // 1. إعداد نسبة العمولة الثابتة (10% للتذاكر الفعالة فقط، و 0% للمسترجع والملغي)
+        const COMMISSION_RATE = 0.10;
+
+        // 2. الحسابات الافتراضية للنظام
+        const DEFAULT_USERS = {
+            "empA":  { password: "123",      name: "الموظف أ",    role: "employee" },
+            "empB":  { password: "123",      name: "الموظف ب",    role: "employee" },
+            "admin": { password: "admin123", name: "المدير العام", role: "admin" }
+        };
+
+        // دالة آمنة لقراءة البيانات من localStorage (نفس المفاتيح الأصلية 100%)
+        function safeLoadStorage(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch (e) {
+                console.error("Storage load error:", e);
+                return fallback;
+            }
+        }
+
+        function escapeHTML(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // تحميل بيانات المستخدمين ورقم النسخة الاحتياطية ووضع الألوان
+        let usersDB = safeLoadStorage('airline_users_v3_db', DEFAULT_USERS);
+        let backupVersionCounter = parseInt(localStorage.getItem('airline_backup_version_num') || '1', 10);
+        let globalThemeMode = localStorage.getItem('airline_login_theme') || 'light';
+
+        let currentUser = null;
+        let ticketIdToDelete = null;
+        let ticketIdToEditStatus = null;
+        let currentFilterMode = 'daily';
+        let isPaidManuallyEdited = false;
+        let activeDedicatedPage = 'section-ticket-entry';
+        let lastFocusedElementBeforeModal = null;
+        let toastTimeoutId = null;
+
+        // دالة تطبيع بيانات التذاكر لضمان سلامة المعادلات المحاسبية 100%
+        function normalizeTicketRecord(t) {
+            const status = t.status || 'issue';
+            const basePrice = parseFloat(t.basePrice) || 0;
+            const totalPrice = parseFloat(t.totalPrice) || 0;
+
+            let paidAmount = (t.paidAmount !== undefined && t.paidAmount !== null)
+                ? parseFloat(t.paidAmount)
+                : ((status === 'refund' || status === 'void') ? 0 : totalPrice);
+
+            let remainingDebt = 0;
+            let profit = 0;
+            let commission = 0;
+
+            if (status === 'void') {
+                paidAmount = 0;
+                remainingDebt = 0;
+                profit = 0;
+                commission = 0;
+            } else if (status === 'refund') {
+                remainingDebt = 0;
+                profit = parseFloat(t.profit) || 0;
+                commission = 0;
+            } else {
+                remainingDebt = Math.max(0, totalPrice - paidAmount);
+                profit = totalPrice - basePrice;
+                commission = profit > 0 ? (profit * COMMISSION_RATE) : 0;
+            }
+
+            return {
+                ...t,
+                status: status,
+                basePrice: basePrice,
+                totalPrice: totalPrice,
+                paidAmount: paidAmount,
+                remainingDebt: remainingDebt,
+                profit: profit,
+                commission: commission,
+                time: t.time || '12:00',
+                addons: Array.isArray(t.addons) ? t.addons : []
+            };
+        }
+
+        let rawSalesDB = safeLoadStorage('airline_pos_v2_db', []);
+        let salesDatabase = Array.isArray(rawSalesDB) ? rawSalesDB.map(normalizeTicketRecord) : [];
+
+        // ==========================================================================
+        // إدارة الوضع الفاتح / الليلي الفوري عبر Toggle Switch (role="switch")
+        // ==========================================================================
+        function applyGlobalTheme() {
+            const isDark = (globalThemeMode === 'dark');
+            if (isDark) {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+
+            const loginSwitch = document.getElementById('login-theme-switch');
+            const dashSwitch = document.getElementById('dash-theme-switch');
+            const loginLabel = document.getElementById('login-theme-label');
+            const dashLabel = document.getElementById('dash-theme-label');
+
+            if (loginSwitch) loginSwitch.setAttribute('aria-checked', String(isDark));
+            if (dashSwitch) dashSwitch.setAttribute('aria-checked', String(isDark));
+            if (loginLabel) loginLabel.innerText = isDark ? '🌙 الوضع الليلي مفعل' : '☀️ الوضع الفاتح مفعل';
+            if (dashLabel) dashLabel.innerText = isDark ? '🌙 ليلي' : '☀️ فاتح';
+        }
+
+        function toggleGlobalTheme() {
+            globalThemeMode = (globalThemeMode === 'dark') ? 'light' : 'dark';
+            localStorage.setItem('airline_login_theme', globalThemeMode);
+            applyGlobalTheme();
+            showToast(globalThemeMode === 'dark' ? 'تم تفعيل الوضع الليلي عالي التباين' : 'تم تفعيل الوضع الفاتح (French Navy & Seal Grey)');
+        }
+
+        // ==========================================================================
+        // نظام الصفحات المستقلة عبر القائمة المنسدلة والدرج الجانبي (Dedicated Page Switcher)
+        // ==========================================================================
+        function switchDedicatedPage(targetPageId, closeDrawerAfter = false) {
+            activeDedicatedPage = targetPageId;
+
+            const secEntry = document.getElementById('section-ticket-entry');
+            const secTable = document.getElementById('section-report-table');
+            const secKpi   = document.getElementById('section-kpi-summary');
+
+            if (targetPageId === 'ALL') {
+                secEntry.classList.remove('hidden');
+                secKpi.classList.remove('hidden');
+                secTable.classList.remove('hidden');
+            } else {
+                secEntry.classList.toggle('hidden', targetPageId !== 'section-ticket-entry');
+                secTable.classList.toggle('hidden', targetPageId !== 'section-report-table');
+                secKpi.classList.toggle('hidden', targetPageId !== 'section-kpi-summary');
+            }
+
+            // مزامنة القائمة المنسدلة في الهيدر
+            const headerSelect = document.getElementById('dedicated-page-switcher');
+            if (headerSelect && headerSelect.value !== targetPageId) {
+                headerSelect.value = targetPageId;
+            }
+
+            // مزامنة أزرار الدرج الجانبي
+            const drawerMap = {
+                'section-ticket-entry': 'drawer-btn-entry',
+                'section-report-table': 'drawer-btn-table',
+                'section-kpi-summary': 'drawer-btn-kpi',
+                'ALL': 'drawer-btn-all'
+            };
+            Object.keys(drawerMap).forEach(key => {
+                const btn = document.getElementById(drawerMap[key]);
+                if (!btn) return;
+                if (key === targetPageId) {
+                    btn.className = "w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition bg-[#C5A059] text-[#0F1A28]";
+                } else {
+                    btn.className = "w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition hover:bg-[#2C425C] text-white";
+                }
+            });
+
+            // تحديث مؤشر Scrollspy النشط
+            updateScrollspyIndicator(targetPageId === 'ALL' ? 'section-ticket-entry' : targetPageId);
+
+            if (closeDrawerAfter) {
+                closeNavDrawer();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================================================
+        // زر الخطوط الثلاثة والدرج الجانبي المنزلق (Hamburger & Off-Canvas Drawer)
+        // ==========================================================================
+        function openNavDrawer() {
+            const drawer = document.getElementById('off-canvas-drawer');
+            const scrim = document.getElementById('drawer-scrim');
+            const hamBtn = document.getElementById('hamburger-btn');
+
+            scrim.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                scrim.classList.remove('opacity-0');
+                drawer.classList.remove('translate-x-full');
+            });
+            if (hamBtn) hamBtn.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeNavDrawer() {
+            const drawer = document.getElementById('off-canvas-drawer');
+            const scrim = document.getElementById('drawer-scrim');
+            const hamBtn = document.getElementById('hamburger-btn');
+
+            scrim.classList.add('opacity-0');
+            drawer.classList.add('translate-x-full');
+            if (hamBtn) hamBtn.setAttribute('aria-expanded', 'false');
+            setTimeout(() => {
+                scrim.classList.add('hidden');
+            }, 300);
+        }
+
+        // ==========================================================================
+        // شريط التتبع الداخلي (Scrollspy with IntersectionObserver & aria-current="location")
+        // ==========================================================================
+        function updateScrollspyIndicator(activeSectionId) {
+            const map = {
+                'section-ticket-entry': 'spy-link-entry',
+                'section-report-table': 'spy-link-table',
+                'section-kpi-summary': 'spy-link-kpi'
+            };
+            Object.keys(map).forEach(secId => {
+                const link = document.getElementById(map[secId]);
+                if (!link) return;
+                if (secId === activeSectionId) {
+                    link.setAttribute('aria-current', 'location');
+                } else {
+                    link.removeAttribute('aria-current');
+                }
+            });
+        }
+
+        function handleScrollspyClick(event, sectionId) {
+            event.preventDefault();
+            if (activeDedicatedPage !== 'ALL' && activeDedicatedPage !== sectionId) {
+                switchDedicatedPage(sectionId, false);
+            } else {
+                const targetEl = document.getElementById(sectionId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    updateScrollspyIndicator(sectionId);
+                }
+            }
+        }
+
+        function initScrollspyObserver() {
+            if (!('IntersectionObserver' in window)) return;
+            const sections = ['section-ticket-entry', 'section-kpi-summary', 'section-report-table']
+                .map(id => document.getElementById(id))
+                .filter(Boolean);
+
+            const observer = new IntersectionObserver((entries) => {
+                if (activeDedicatedPage !== 'ALL') return;
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        updateScrollspyIndicator(entry.target.id);
+                    }
+                });
+            }, { rootMargin: '-25% 0px -55% 0px', threshold: 0.1 });
+
+            sections.forEach(sec => observer.observe(sec));
+        }
+
+        // بديل داعم لتأثير Parallax في المتصفحات التي لا تدعم animation-timeline: scroll()
+        function initParallaxFallback() {
+            if (CSS.supports && CSS.supports('animation-timeline: scroll()')) return;
+            window.addEventListener('scroll', () => {
+                const offset = window.scrollY * -0.15;
+                const layer = document.getElementById('parallax-bg');
+                if (layer) {
+                    layer.style.setProperty('--parallax-offset', `${offset}px`);
+                }
+            }, { passive: true });
+        }
+
+        // ==========================================================================
+        // العجلة الدوارة لاختيار الوقت (iOS Slot-Machine Drum Wheel Picker + <input type="time">)
+        // ==========================================================================
+        let wheelSelectedHour = '12';
+        let wheelSelectedMinute = '00';
+        let wheelSelectedAmPm = 'PM';
+        let wheelScrollTimers = {};
+
+        function initWheelTimePickerColumns() {
+            const hourCol = document.getElementById('wheel-col-hour');
+            const minCol = document.getElementById('wheel-col-minute');
+            if (!hourCol || !minCol) return;
+
+            hourCol.innerHTML = '';
+            for (let h = 1; h <= 12; h++) {
+                const val = String(h).padStart(2, '0');
+                const div = document.createElement('div');
+                div.className = 'ios-wheel-item';
+                div.dataset.val = val;
+                div.innerText = val;
+                div.onclick = () => snapWheelToValue('hour', val);
+                hourCol.appendChild(div);
+            }
+
+            minCol.innerHTML = '';
+            for (let m = 0; m < 60; m++) {
+                const val = String(m).padStart(2, '0');
+                const div = document.createElement('div');
+                div.className = 'ios-wheel-item';
+                div.dataset.val = val;
+                div.innerText = val;
+                div.onclick = () => snapWheelToValue('minute', val);
+                minCol.appendChild(div);
+            }
+
+            const now = new Date();
+            const hh24 = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const timeInput = document.getElementById('sale-entry-time');
+            if (timeInput) {
+                timeInput.value = `${hh24}:${mm}`;
+                syncTimeInputToWheel();
+            }
+        }
+
+        function toggleWheelTimePicker() {
+            const box = document.getElementById('ios-wheel-picker-box');
+            if (!box) return;
+            box.classList.toggle('hidden');
+            if (!box.classList.contains('hidden')) {
+                syncTimeInputToWheel();
+            }
+        }
+
+        function onWheelColumnScroll(type) {
+            clearTimeout(wheelScrollTimers[type]);
+            wheelScrollTimers[type] = setTimeout(() => {
+                const colId = type === 'hour' ? 'wheel-col-hour' : (type === 'minute' ? 'wheel-col-minute' : 'wheel-col-ampm');
+                const col = document.getElementById(colId);
+                if (!col) return;
+                const itemHeight = 36;
+                const index = Math.round(col.scrollTop / itemHeight);
+                const items = col.querySelectorAll('.ios-wheel-item');
+                if (items[index]) {
+                    const chosenVal = items[index].dataset.val;
+                    if (type === 'hour') wheelSelectedHour = chosenVal;
+                    else if (type === 'minute') wheelSelectedMinute = chosenVal;
+                    else if (type === 'ampm') wheelSelectedAmPm = chosenVal;
+
+                    highlightWheelActiveItems();
+                    syncWheelToTimeInput();
+                }
+            }, 60);
+        }
+
+        function snapWheelToValue(type, val) {
+            const colId = type === 'hour' ? 'wheel-col-hour' : (type === 'minute' ? 'wheel-col-minute' : 'wheel-col-ampm');
+            const col = document.getElementById(colId);
+            if (!col) return;
+            const items = Array.from(col.querySelectorAll('.ios-wheel-item'));
+            const idx = items.findIndex(el => el.dataset.val === val);
+            if (idx !== -1) {
+                col.scrollTo({ top: idx * 36, behavior: 'smooth' });
+                if (type === 'hour') wheelSelectedHour = val;
+                else if (type === 'minute') wheelSelectedMinute = val;
+                else if (type === 'ampm') wheelSelectedAmPm = val;
+                highlightWheelActiveItems();
+                syncWheelToTimeInput();
+            }
+        }
+
+        function highlightWheelActiveItems() {
+            const mapping = [
+                { id: 'wheel-col-hour', val: wheelSelectedHour },
+                { id: 'wheel-col-minute', val: wheelSelectedMinute },
+                { id: 'wheel-col-ampm', val: wheelSelectedAmPm }
+            ];
+            mapping.forEach(({ id, val }) => {
+                const col = document.getElementById(id);
+                if (!col) return;
+                col.querySelectorAll('.ios-wheel-item').forEach(item => {
+                    item.classList.toggle('wheel-selected', item.dataset.val === val);
+                });
+            });
+            const readout = document.getElementById('wheel-live-readout');
+            if (readout) {
+                readout.innerText = `${wheelSelectedHour}:${wheelSelectedMinute} ${wheelSelectedAmPm}`;
+            }
+        }
+
+        function syncWheelToTimeInput() {
+            let h = parseInt(wheelSelectedHour, 10);
+            if (wheelSelectedAmPm === 'PM' && h < 12) h += 12;
+            if (wheelSelectedAmPm === 'AM' && h === 12) h = 0;
+            const hh24 = String(h).padStart(2, '0');
+            const timeInput = document.getElementById('sale-entry-time');
+            if (timeInput) {
+                timeInput.value = `${hh24}:${wheelSelectedMinute}`;
+            }
+        }
+
+        function syncTimeInputToWheel() {
+            const timeInput = document.getElementById('sale-entry-time');
+            if (!timeInput || !timeInput.value) return;
+            const parts = timeInput.value.split(':');
+            if (parts.length < 2) return;
+            let h24 = parseInt(parts[0], 10);
+            const m = parts[1];
+            const ampm = h24 >= 12 ? 'PM' : 'AM';
+            let h12 = h24 % 12;
+            if (h12 === 0) h12 = 12;
+
+            wheelSelectedHour = String(h12).padStart(2, '0');
+            wheelSelectedMinute = String(m).padStart(2, '0');
+            wheelSelectedAmPm = ampm;
+
+            highlightWheelActiveItems();
+
+            const hourCol = document.getElementById('wheel-col-hour');
+            const minCol = document.getElementById('wheel-col-minute');
+            const ampmCol = document.getElementById('wheel-col-ampm');
+            if (hourCol) hourCol.scrollTop = (h12 - 1) * 36;
+            if (minCol) minCol.scrollTop = parseInt(m, 10) * 36;
+            if (ampmCol) ampmCol.scrollTop = (ampm === 'PM' ? 1 : 0) * 36;
+        }
+
+        // ==========================================================================
+        // إشعارات الزاوية العابرة غير الحاجبة (Compact Non-Modal Corner Toast)
+        // ==========================================================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const box = document.getElementById('toast-box');
+            const msgSpan = document.getElementById('toast-message');
+            const iconSpan = document.getElementById('toast-icon');
+
+            msgSpan.innerText = message;
+            box.className = 'pointer-events-auto px-4 py-3 rounded-xl shadow-2xl text-white font-extrabold text-xs sm:text-sm flex items-center gap-2.5 border-2 border-[#C5A059] transition-all duration-300 ';
+            
+            if (type === 'error') {
+                box.classList.add('bg-red-800');
+                iconSpan.innerText = '❌';
+            } else if (type === 'warning') {
+                box.classList.add('bg-amber-700');
+                iconSpan.innerText = '⚠️';
+            } else {
+                box.classList.add('bg-[#192A3E]');
+                iconSpan.innerText = '✅';
+            }
+
+            container.classList.remove('hidden');
+            if (toastTimeoutId) clearTimeout(toastTimeoutId);
+            toastTimeoutId = setTimeout(() => {
+                container.classList.add('hidden');
+            }, 3400);
+        }
+
+        // ==========================================================================
+        // نافذة الحوار المركزية لتأكيد الحذف مع إدارة وحصر التركيز (Managed Focus Trap)
+        // ==========================================================================
+        function openDeleteModal(ticketId) {
+            ticketIdToDelete = ticketId;
+            lastFocusedElementBeforeModal = document.activeElement;
+            const modal = document.getElementById('delete-modal');
+            modal.classList.remove('hidden');
+
+            // نقل التركيز تلقائياً إلى زر الإلغاء أو التأكيد داخل النافذة
+            const cancelBtn = document.getElementById('delete-cancel-btn');
+            if (cancelBtn) {
+                setTimeout(() => cancelBtn.focus(), 30);
+            }
+        }
+
+        function closeDeleteModal() {
+            ticketIdToDelete = null;
+            const modal = document.getElementById('delete-modal');
+            modal.classList.add('hidden');
+
+            // إعادة التركيز للعنصر الذي فتح النافذة
+            if (lastFocusedElementBeforeModal && typeof lastFocusedElementBeforeModal.focus === 'function') {
+                lastFocusedElementBeforeModal.focus();
+            }
+        }
+
+        // حصر التركيز (Focus Trap) ودعم زر Escape لإغلاق النوافذ الحوارية
+        document.addEventListener('keydown', function(e) {
+            const deleteModal = document.getElementById('delete-modal');
+            const isDeleteOpen = deleteModal && !deleteModal.classList.contains('hidden');
+
+            if (isDeleteOpen) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeDeleteModal();
+                    return;
+                }
+                if (e.key === 'Tab') {
+                    const focusables = deleteModal.querySelectorAll('button:not([disabled])');
+                    if (focusables.length > 0) {
+                        const first = focusables[0];
+                        const last = focusables[focusables.length - 1];
+                        if (e.shiftKey && document.activeElement === first) {
+                            e.preventDefault();
+                            last.focus();
+                        } else if (!e.shiftKey && document.activeElement === last) {
+                            e.preventDefault();
+                            first.focus();
+                        }
+                    }
+                }
+            } else if (e.key === 'Escape') {
+                const editModal = document.getElementById('status-debt-modal');
+                if (editModal && !editModal.classList.contains('hidden')) closeStatusDebtModal();
+                closeNavDrawer();
+            }
+        });
+
+        // ==========================================================================
+        // أدوات الاختيار الدلالية: Radio Buttons & Instant Toggle Switch
+        // ==========================================================================
+        function syncPaymentRadioToHidden(val) {
+            const hiddenInput = document.getElementById('payment-method');
+            if (hiddenInput) {
+                hiddenInput.value = val;
+            }
+            handleFormStatusOrPaymentChange();
+        }
+
+        function toggleSearchAllDatesSwitch() {
+            const sw = document.getElementById('search-all-dates-switch');
+            const chk = document.getElementById('search-all-dates');
+            if (!sw || !chk) return;
+            const nextState = !chk.checked;
+            chk.checked = nextState;
+            sw.setAttribute('aria-checked', String(nextState));
+            renderDashboard();
+            showToast(nextState ? 'تم تفعيل البحث الشامل في كل التواريخ فوراً' : 'تم حصر البحث في الفترة المحددة فقط');
+        }
+
+        function getTodayDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function getCurrentMonthString() {
+            return getTodayDateString().slice(0, 7);
+        }
+
+        window.onload = function() {
+            applyGlobalTheme();
+            initWheelTimePickerColumns();
+            initScrollspyObserver();
+            initParallaxFallback();
+            updateEmployeeFilterNames();
+            try {
+                const savedSession = sessionStorage.getItem('airline_active_user');
+                if (savedSession) {
+                    const parsedUser = JSON.parse(savedSession);
+                    if (parsedUser && usersDB[parsedUser.username]) {
+                        currentUser = {
+                            username: parsedUser.username,
+                            name: usersDB[parsedUser.username].name,
+                            role: usersDB[parsedUser.username].role
+                        };
+                        enterDashboardView();
+                    }
+                }
+            } catch (e) {
+                sessionStorage.removeItem('airline_active_user');
+            }
+        };
+
+        function updateVersionBadgeUI() {
+            if (!currentUser) return;
+            const todayStr = getTodayDateString();
+            const pill = document.getElementById('backup-version-pill');
+            const printVer = document.getElementById('print-version-badge');
+            if (pill) {
+                pill.innerText = `نسخة رقم #${backupVersionCounter} | ${todayStr} | ${currentUser.name}`;
+            }
+            if (printVer) {
+                printVer.innerText = `#${backupVersionCounter}`;
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.innerText = 'إخفاء';
+            } else {
+                passInput.type = 'password';
+                eyeIcon.innerText = 'إظهار';
+            }
+        }
+
+        function handleLogin() {
+            const userInp = document.getElementById('username').value.trim();
+            const passInp = document.getElementById('password').value.trim();
+            const errorAlert = document.getElementById('login-error-alert');
+
+            if (usersDB[userInp] && usersDB[userInp].password === passInp) {
+                errorAlert.classList.add('hidden');
+                currentUser = {
+                    username: userInp,
+                    name: usersDB[userInp].name,
+                    role: usersDB[userInp].role
+                };
+
+                sessionStorage.setItem('airline_active_user', JSON.stringify(currentUser));
+                enterDashboardView();
+                showToast(`مرحباً بك، ${currentUser.name}`);
+            } else {
+                errorAlert.classList.remove('hidden');
+            }
+        }
+
+        function enterDashboardView() {
+            const todayStr = getTodayDateString();
+            document.getElementById('date-picker').value = todayStr;
+            document.getElementById('sale-entry-date').value = todayStr;
+            document.getElementById('month-picker').value = getCurrentMonthString();
+            document.getElementById('date-from').value = todayStr.slice(0, 8) + '01';
+            document.getElementById('date-to').value = todayStr;
+
+            const roleBadge = document.getElementById('role-badge');
+            if (currentUser.role === 'admin') {
+                document.getElementById('admin-controls').classList.remove('hidden');
+                document.getElementById('th-emp-name').classList.remove('hidden');
+                roleBadge.innerText = 'صلاحية مدير النظام';
+                roleBadge.className = 'text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-[#C5A059] text-[#0F1A28]';
+            } else {
+                document.getElementById('admin-controls').classList.add('hidden');
+                document.getElementById('th-emp-name').classList.add('hidden');
+                roleBadge.innerText = 'حساب موظف مبيعات';
+                roleBadge.className = 'text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-[#192A3E] text-white border border-[#C5A059]';
+            }
+
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('dashboard-page').classList.remove('hidden');
+
+            updateVersionBadgeUI();
+            setFilterMode('daily');
+            // فتح صفحة تسجيل التذكرة كصفحة رئيسية مستقلة افتراضياً عند الدخول
+            switchDedicatedPage('section-ticket-entry', false);
+        }
+
+        function setFilterMode(mode) {
+            currentFilterMode = mode;
+
+            // مزامنة أزرار الراديو الخاصة بنطاق التقرير الزمني
+            const radios = document.querySelectorAll('input[name="reportPeriodRadio"]');
+            radios.forEach(r => {
+                r.checked = (r.value === mode);
+            });
+
+            const modes = ['daily', 'monthly', 'range'];
+            modes.forEach(m => {
+                const box = document.getElementById(`filter-box-${m}`);
+                if (box) {
+                    box.classList.toggle('hidden', m !== mode);
+                }
+            });
+
+            renderDashboard();
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            sessionStorage.removeItem('airline_active_user');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('login-error-alert').classList.add('hidden');
+            
+            document.getElementById('dashboard-page').classList.add('hidden');
+            document.getElementById('login-page').classList.remove('hidden');
+            showToast("تم تسجيل الخروج بنجاح");
+        }
+
+        function toggleCustomAirlineInput() {
+            const selectVal = document.getElementById('airline-select').value;
+            const customInput = document.getElementById('airline-custom');
+            if (selectVal === 'OTHER') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+                customInput.value = '';
+            }
+        }
+
+        function onTotalPriceOrBaseInput() {
+            const totalPrice = parseFloat(document.getElementById('total-price').value) || 0;
+            const paymentMethod = document.getElementById('payment-method').value;
+            const status = document.getElementById('ticket-status').value;
+
+            if (!isPaidManuallyEdited) {
+                if (paymentMethod === 'آجل' || status === 'void' || status === 'refund') {
+                    document.getElementById('paid-amount').value = '0';
+                } else {
+                    document.getElementById('paid-amount').value = totalPrice > 0 ? totalPrice : '';
+                }
+            }
+            calculateLivePreview();
+        }
+
+        function onPaidAmountManualInput() {
+            isPaidManuallyEdited = true;
+            calculateLivePreview();
+        }
+
+        function handleFormStatusOrPaymentChange() {
+            const paymentMethod = document.getElementById('payment-method').value;
+            const status = document.getElementById('ticket-status').value;
+            const totalPrice = parseFloat(document.getElementById('total-price').value) || 0;
+
+            if (paymentMethod === 'آجل' || status === 'void' || status === 'refund') {
+                document.getElementById('paid-amount').value = '0';
+                isPaidManuallyEdited = false;
+            } else if (!isPaidManuallyEdited) {
+                document.getElementById('paid-amount').value = totalPrice > 0 ? totalPrice : '';
+            }
+            calculateLivePreview();
+        }
+
+        function calculateLivePreview() {
+            const basePrice = parseFloat(document.getElementById('base-price').value) || 0;
+            const totalPrice = parseFloat(document.getElementById('total-price').value) || 0;
+            const paidInputVal = document.getElementById('paid-amount').value;
+            const paidAmount = paidInputVal !== '' ? (parseFloat(paidInputVal) || 0) : totalPrice;
+            const status = document.getElementById('ticket-status').value;
+
+            const statusNote = document.getElementById('preview-status-note');
+            let profit = 0;
+            let commission = 0;
+            let debt = 0;
+
+            if (status === 'void') {
+                profit = 0;
+                commission = 0;
+                debt = 0;
+                statusNote.classList.remove('hidden');
+            } else if (status === 'refund') {
+                profit = Math.max(0, totalPrice - basePrice);
+                commission = 0;
+                debt = 0;
+                statusNote.classList.remove('hidden');
+            } else {
+                profit = totalPrice - basePrice;
+                commission = profit > 0 ? (profit * COMMISSION_RATE) : 0;
+                debt = Math.max(0, totalPrice - paidAmount);
+                statusNote.classList.add('hidden');
+            }
+
+            document.getElementById('preview-profit').innerText = profit.toFixed(2);
+            document.getElementById('preview-commission').innerText = commission.toFixed(2);
+            document.getElementById('preview-debt').innerText = debt.toFixed(2);
+        }
+
+        // دالة إضافة التذكرة الجديدة (مع قراءة مربعات الاختيار Checkboxes ووقت العملية)
+        function addNewSale() {
+            const clientName = document.getElementById('client-name').value.trim();
+            const clientPhone = document.getElementById('client-phone').value.trim();
+            const pnrCode = document.getElementById('pnr-code').value.trim().toUpperCase();
+            
+            const airlineSelect = document.getElementById('airline-select').value;
+            const airlineCustom = document.getElementById('airline-custom').value.trim();
+            const airlineName = (airlineSelect === 'OTHER') ? airlineCustom : airlineSelect;
+
+            const status = document.getElementById('ticket-status').value;
+            const paymentMethod = document.getElementById('payment-method').value;
+            const basePrice = parseFloat(document.getElementById('base-price').value);
+            const totalPrice = parseFloat(document.getElementById('total-price').value);
+            const paidRaw = document.getElementById('paid-amount').value;
+            const saleEntryDate = document.getElementById('sale-entry-date').value || getTodayDateString();
+            const saleEntryTime = document.getElementById('sale-entry-time').value || '12:00';
+
+            if (!clientName || !clientPhone || !pnrCode || !airlineName || isNaN(basePrice) || isNaN(totalPrice)) {
+                showToast("يرجى تعبئة كافة الحقول المطلوبة (العميل، الجوال، PNR، شركة الطيران، والمبالغ)", "error");
+                return;
+            }
+
+            // قراءة مربعات الاختيار المستقلة (Checkboxes)
+            const selectedAddons = [];
+            if (document.getElementById('addon-baggage').checked) selectedAddons.push('وزن إضافي');
+            if (document.getElementById('addon-meal').checked) selectedAddons.push('وجبة');
+            if (document.getElementById('addon-seat').checked) selectedAddons.push('مقعد مميز');
+            const autoSendWA = document.getElementById('addon-auto-whatsapp').checked;
+
+            let paidAmount = paidRaw !== '' ? parseFloat(paidRaw) : totalPrice;
+            if (isNaN(paidAmount) || paidAmount < 0) paidAmount = 0;
+
+            const newTicket = normalizeTicketRecord({
+                id: Date.now(),
+                date: saleEntryDate,
+                time: saleEntryTime,
+                employeeUsername: currentUser.username,
+                employeeName: currentUser.name,
+                clientName: clientName,
+                clientPhone: clientPhone,
+                pnr: pnrCode,
+                airline: airlineName,
+                status: status,
+                paymentMethod: paymentMethod,
+                basePrice: basePrice,
+                totalPrice: totalPrice,
+                paidAmount: paidAmount,
+                profit: totalPrice - basePrice,
+                addons: selectedAddons
+            });
+
+            salesDatabase.push(newTicket);
+            localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
+
+            if (currentFilterMode === 'daily') {
+                document.getElementById('date-picker').value = saleEntryDate;
+            }
+
+            // تفريغ الحقول بعد الإضافة
+            document.getElementById('client-name').value = '';
+            document.getElementById('client-phone').value = '';
+            document.getElementById('pnr-code').value = '';
+            document.getElementById('base-price').value = '';
+            document.getElementById('total-price').value = '';
+            document.getElementById('paid-amount').value = '';
+            document.getElementById('ticket-status').value = 'issue';
+            document.getElementById('addon-baggage').checked = false;
+            document.getElementById('addon-meal').checked = false;
+            document.getElementById('addon-seat').checked = false;
+
+            if (airlineSelect === 'OTHER') {
+                document.getElementById('airline-custom').value = '';
+            }
+            isPaidManuallyEdited = false;
+            calculateLivePreview();
+
+            renderDashboard();
+            showToast("تم حفظ العملية وتحديث حسابات التقرير والعمولة بنجاح!");
+
+            if (autoSendWA) {
+                sendWhatsAppReceipt(newTicket.id);
+            }
+        }
+
+        function handleQuickTableAction(selectElem, ticketId) {
+            const chosenAction = selectElem.value;
+            selectElem.value = "";
+            if (!chosenAction) return;
+
+            if (chosenAction === 'DELETE') {
+                openDeleteModal(ticketId);
+            } else {
+                openStatusDebtModal(ticketId, chosenAction);
+            }
+        }
+
+        function openStatusDebtModal(ticketId, defaultAction = 'EDIT_INFO') {
+            const ticket = salesDatabase.find(t => t.id === ticketId);
+            if (!ticket) return;
+
+            ticketIdToEditStatus = ticketId;
+
+            const statusLabels = {
+                'issue': 'إصدار مؤكد ✅',
+                'reissue': 'تعديل Reissue 🔄',
+                'refund': 'مسترجعة Refund ↩️',
+                'void': 'ملغاة Void 🚫'
+            };
+
+            document.getElementById('modal-ticket-info').innerHTML = `
+                <div class="flex flex-wrap justify-between gap-2">
+                    <span>👤 العميل: <strong>${escapeHTML(ticket.clientName)}</strong> (${escapeHTML(ticket.clientPhone)})</span>
+                    <span>✈️ الحجز: <strong class="font-mono bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded">${escapeHTML(ticket.pnr)}</strong> — ${escapeHTML(ticket.airline)}</span>
+                </div>
+                <div class="flex flex-wrap justify-between gap-2 pt-1 border-t border-[#9E978E]">
+                    <span>الحالة الحالية: <strong>${statusLabels[ticket.status] || 'إصدار'}</strong></span>
+                    <span>الإجمالي: <strong>${ticket.totalPrice.toFixed(2)}</strong></span>
+                    <span>المدفوع: <strong class="text-emerald-700">${ticket.paidAmount.toFixed(2)}</strong></span>
+                    <span>الدين المتبقي: <strong class="text-red-700">${ticket.remainingDebt.toFixed(2)}</strong></span>
+                </div>
+            `;
+
+            document.getElementById('modal-client-name').value = ticket.clientName || '';
+            document.getElementById('modal-client-phone').value = ticket.clientPhone || '';
+            document.getElementById('modal-pnr').value = ticket.pnr || '';
+            document.getElementById('modal-date').value = ticket.date || getTodayDateString();
+            document.getElementById('modal-time').value = ticket.time || '12:00';
+
+            const airlineSel = document.getElementById('modal-airline-select');
+            const airlineCust = document.getElementById('modal-airline-custom');
+            const existingOptions = Array.from(airlineSel.options).map(o => o.value);
+            if (existingOptions.includes(ticket.airline)) {
+                airlineSel.value = ticket.airline;
+                airlineCust.classList.add('hidden');
+                airlineCust.value = '';
+            } else {
+                airlineSel.value = 'OTHER';
+                airlineCust.classList.remove('hidden');
+                airlineCust.value = ticket.airline || '';
+            }
+
+            document.getElementById('edit-paid-amount').value = ticket.paidAmount.toFixed(2);
+            document.getElementById('edit-payment-method').value = ticket.paymentMethod || 'شبكة';
+
+            document.getElementById('modal-price-status').value = (ticket.status === 'reissue') ? 'reissue' : 'issue';
+            document.getElementById('modal-price-payment').value = ticket.paymentMethod || 'شبكة';
+            document.getElementById('modal-base-price').value = ticket.basePrice.toFixed(2);
+            document.getElementById('modal-total-price').value = ticket.totalPrice.toFixed(2);
+            document.getElementById('modal-price-paid').value = ticket.paidAmount.toFixed(2);
+
+            document.getElementById('edit-refund-fee').value = (ticket.status === 'refund') ? ticket.profit.toFixed(2) : '0';
+
+            document.getElementById('edit-action-type').value = defaultAction;
+            handleEditActionTypeChange();
+
+            document.getElementById('status-debt-modal').classList.remove('hidden');
+        }
+
+        function toggleModalCustomAirline() {
+            const sel = document.getElementById('modal-airline-select').value;
+            const cust = document.getElementById('modal-airline-custom');
+            if (sel === 'OTHER') {
+                cust.classList.remove('hidden');
+                cust.focus();
+            } else {
+                cust.classList.add('hidden');
+            }
+        }
+
+        function onModalTotalPriceChange() {
+            const newTotal = parseFloat(document.getElementById('modal-total-price').value) || 0;
+            const payMethod = document.getElementById('modal-price-payment').value;
+            if (payMethod !== 'آجل') {
+                document.getElementById('modal-price-paid').value = newTotal.toFixed(2);
+            }
+            updateModalLiveImpact();
+        }
+
+        function handleEditActionTypeChange() {
+            const action = document.getElementById('edit-action-type').value;
+            const sections = {
+                'EDIT_INFO': 'section-edit-info',
+                'PAY_DEBT': 'section-pay-debt',
+                'EDIT_PRICES': 'section-edit-prices',
+                'MAKE_REFUND': 'section-make-refund',
+                'MAKE_VOID': 'section-make-void'
+            };
+
+            Object.keys(sections).forEach(key => {
+                const el = document.getElementById(sections[key]);
+                if (key === action) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+
+            updateModalLiveImpact();
+        }
+
+        function updateModalLiveImpact() {
+            const ticket = salesDatabase.find(t => t.id === ticketIdToEditStatus);
+            if (!ticket) return;
+
+            const action = document.getElementById('edit-action-type').value;
+            let statusText = '';
+            let profit = ticket.profit;
+            let comm = ticket.commission;
+            let debt = ticket.remainingDebt;
+
+            if (action === 'EDIT_INFO') {
+                statusText = 'تعديل بيانات فقط (نفس الحالة)';
+            } else if (action === 'PAY_DEBT') {
+                const newPaid = parseFloat(document.getElementById('edit-paid-amount').value) || 0;
+                debt = Math.max(0, ticket.totalPrice - newPaid);
+                profit = ticket.totalPrice - ticket.basePrice;
+                comm = profit > 0 ? (profit * COMMISSION_RATE) : 0;
+                statusText = debt === 0 ? 'مسددة بالكامل ✅' : 'متبقي ذمم 📒';
+            } else if (action === 'EDIT_PRICES') {
+                const bPrice = parseFloat(document.getElementById('modal-base-price').value) || 0;
+                const tPrice = parseFloat(document.getElementById('modal-total-price').value) || 0;
+                const pAmount = parseFloat(document.getElementById('modal-price-paid').value) || 0;
+                const st = document.getElementById('modal-price-status').value;
+                profit = tPrice - bPrice;
+                comm = profit > 0 ? (profit * COMMISSION_RATE) : 0;
+                debt = Math.max(0, tPrice - pAmount);
+                statusText = st === 'reissue' ? 'معاد إصدارها Reissue 🔄' : 'إصدار مؤكد ✅';
+            } else if (action === 'MAKE_REFUND') {
+                const fee = parseFloat(document.getElementById('edit-refund-fee').value) || 0;
+                profit = fee;
+                comm = 0;
+                debt = 0;
+                statusText = 'مسترجعة Refund ↩️ (العمولة محذوفة)';
+            } else if (action === 'MAKE_VOID') {
+                profit = 0;
+                comm = 0;
+                debt = 0;
+                statusText = 'ملغاة Void 🚫 (العمولة محذوفة)';
+            }
+
+            document.getElementById('modal-preview-status').innerText = statusText;
+            document.getElementById('modal-preview-profit').innerText = profit.toFixed(2);
+            document.getElementById('modal-preview-comm').innerText = comm.toFixed(2);
+            document.getElementById('modal-preview-debt').innerText = debt.toFixed(2);
+        }
+
+        function payFullTicketAmountInModal() {
+            const ticket = salesDatabase.find(t => t.id === ticketIdToEditStatus);
+            if (!ticket) return;
+            document.getElementById('edit-paid-amount').value = ticket.totalPrice.toFixed(2);
+            if (document.getElementById('edit-payment-method').value === 'آجل') {
+                document.getElementById('edit-payment-method').value = 'كاش';
+            }
+            updateModalLiveImpact();
+        }
+
+        function saveStatusAndDebtChanges() {
+            const idx = salesDatabase.findIndex(t => t.id === ticketIdToEditStatus);
+            if (idx === -1) return;
+
+            const ticket = { ...salesDatabase[idx] };
+            const action = document.getElementById('edit-action-type').value;
+
+            if (action === 'EDIT_INFO') {
+                const cName = document.getElementById('modal-client-name').value.trim();
+                const cPhone = document.getElementById('modal-client-phone').value.trim();
+                const cPnr = document.getElementById('modal-pnr').value.trim().toUpperCase();
+                const cDate = document.getElementById('modal-date').value;
+                const cTime = document.getElementById('modal-time').value;
+                const airSel = document.getElementById('modal-airline-select').value;
+                const airCust = document.getElementById('modal-airline-custom').value.trim();
+                const finalAirline = (airSel === 'OTHER') ? airCust : airSel;
+
+                if (!cName || !cPhone || !cPnr || !finalAirline) {
+                    showToast("يرجى التأكد من عدم ترك اسم العميل أو الجوال أو PNR أو الطيران فارغاً!", "error");
+                    return;
+                }
+                ticket.clientName = cName;
+                ticket.clientPhone = cPhone;
+                ticket.pnr = cPnr;
+                ticket.date = cDate || ticket.date;
+                ticket.time = cTime || ticket.time || '12:00';
+                ticket.airline = finalAirline;
+
+            } else if (action === 'PAY_DEBT') {
+                const newPaid = parseFloat(document.getElementById('edit-paid-amount').value) || 0;
+                const newMethod = document.getElementById('edit-payment-method').value;
+                if (ticket.status === 'refund' || ticket.status === 'void') {
+                    ticket.status = 'issue';
+                }
+                ticket.paidAmount = newPaid;
+                ticket.paymentMethod = newMethod;
+
+            } else if (action === 'EDIT_PRICES') {
+                const newBase = parseFloat(document.getElementById('modal-base-price').value);
+                const newTotal = parseFloat(document.getElementById('modal-total-price').value);
+                const newPaid = parseFloat(document.getElementById('modal-price-paid').value) || 0;
+                if (isNaN(newBase) || isNaN(newTotal)) {
+                    showToast("يرجى إدخال المبلغ الأساسي والإجمالي بشكل صحيح!", "error");
+                    return;
+                }
+                ticket.status = document.getElementById('modal-price-status').value;
+                ticket.paymentMethod = document.getElementById('modal-price-payment').value;
+                ticket.basePrice = newBase;
+                ticket.totalPrice = newTotal;
+                ticket.paidAmount = newPaid;
+
+            } else if (action === 'MAKE_REFUND') {
+                const refundFee = parseFloat(document.getElementById('edit-refund-fee').value) || 0;
+                ticket.status = 'refund';
+                ticket.paidAmount = 0;
+                ticket.remainingDebt = 0;
+                ticket.profit = refundFee;
+                ticket.commission = 0;
+
+            } else if (action === 'MAKE_VOID') {
+                ticket.status = 'void';
+                ticket.paidAmount = 0;
+                ticket.remainingDebt = 0;
+                ticket.profit = 0;
+                ticket.commission = 0;
+            }
+
+            salesDatabase[idx] = normalizeTicketRecord(ticket);
+            localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
+
+            closeStatusDebtModal();
+            renderDashboard();
+            showToast("تم تنفيذ التعديل المختار وتحديث حسابات التقرير والعمولة بنجاح!");
+        }
+
+        function closeStatusDebtModal() {
+            ticketIdToEditStatus = null;
+            document.getElementById('status-debt-modal').classList.add('hidden');
+        }
+
+        function sendWhatsAppReceipt(ticketId) {
+            const ticket = salesDatabase.find(t => t.id === ticketId);
+            if (!ticket) return;
+
+            let cleanPhone = String(ticket.clientPhone || '').replace(/\D/g, '');
+            if (cleanPhone.startsWith('00')) {
+                cleanPhone = cleanPhone.slice(2);
+            } else if (cleanPhone.startsWith('05')) {
+                cleanPhone = '966' + cleanPhone.slice(1);
+            } else if (cleanPhone.length === 9 && cleanPhone.startsWith('5')) {
+                cleanPhone = '966' + cleanPhone;
+            }
+
+            const statusLabels = {
+                'issue': 'إصدار مؤكد ✅',
+                'reissue': 'تعديل حجز 🔄',
+                'refund': 'تذكرة مسترجعة ↩️',
+                'void': 'حجز ملغي 🚫'
+            };
+
+            const addonsText = (ticket.addons && ticket.addons.length > 0)
+                ? `• الإضافات: ${ticket.addons.join(' + ')}`
+                : '';
+
+            const msgLines = [
+                `✈️ *إيصال وتأكيد حجز - مكتب الطيران*`,
+                `--------------------------------`,
+                `مرحباً بك أستاذ/ة: *${ticket.clientName}*`,
+                `• رقم الحجز (PNR): *${ticket.pnr}*`,
+                `• شركة الطيران: *${ticket.airline}*`,
+                `• حالة التذكرة: *${statusLabels[ticket.status] || 'إصدار مؤكد'}*`,
+                `• التاريخ والوقت: ${ticket.date} (${ticket.time || '12:00'})`,
+                addonsText,
+                `--------------------------------`,
+                `💰 *التفاصيل المالية:*`,
+                `• إجمالي قيمة التذكرة: ${ticket.totalPrice.toFixed(2)}`,
+                `• المبلغ المدفوع: ${ticket.paidAmount.toFixed(2)} (${ticket.paymentMethod})`,
+                ticket.remainingDebt > 0 ? `• *المبلغ المتبقي (ذمم): ${ticket.remainingDebt.toFixed(2)}*` : `• حالة السداد: خالص بالكامل ✅`,
+                `--------------------------------`,
+                `شكراً لاختياركم مكتبنا، نتمنى لكم رحلة سعيدة وموفقة! 🌍`
+            ].filter(Boolean);
+
+            const whatsappURL = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msgLines.join('\n'))}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        function getActiveFilteredData() {
+            const empFilter = document.getElementById('employee-filter').value;
+            const selectedDay = document.getElementById('date-picker').value;
+            const selectedMonth = document.getElementById('month-picker').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+            const searchQuery = (document.getElementById('global-search-input').value || '').trim().toLowerCase();
+            const searchAllDates = document.getElementById('search-all-dates').checked;
+            const statusFilter = document.getElementById('status-filter').value;
+
+            let periodLabel = '';
+            let cleanDateTag = selectedDay || getTodayDateString();
+
+            if (searchQuery && searchAllDates) {
+                periodLabel = `نتائج البحث الشامل عن: "${searchQuery}" في كل التواريخ`;
+                cleanDateTag = `All_Dates_Search`;
+            } else if (currentFilterMode === 'daily') {
+                periodLabel = `ليوم: ${selectedDay}`;
+                cleanDateTag = selectedDay;
+            } else if (currentFilterMode === 'monthly') {
+                periodLabel = `لشهر: ${selectedMonth} بالكامل`;
+                cleanDateTag = selectedMonth;
+            } else if (currentFilterMode === 'range') {
+                periodLabel = `للفترة من (${dateFrom}) إلى (${dateTo})`;
+                cleanDateTag = `${dateFrom}_to_${dateTo}`;
+            }
+
+            const filteredSales = salesDatabase.map(normalizeTicketRecord).filter(sale => {
+                let matchPeriod = true;
+                if (!(searchQuery && searchAllDates)) {
+                    if (currentFilterMode === 'daily') {
+                        matchPeriod = (sale.date === selectedDay);
+                    } else if (currentFilterMode === 'monthly') {
+                        matchPeriod = sale.date && sale.date.startsWith(selectedMonth);
+                    } else if (currentFilterMode === 'range') {
+                        matchPeriod = sale.date && (sale.date >= dateFrom && sale.date <= dateTo);
+                    }
+                }
+
+                let matchEmp = true;
+                if (currentUser.role === 'admin') {
+                    matchEmp = (empFilter === 'ALL') || (sale.employeeUsername === empFilter);
+                } else {
+                    matchEmp = (sale.employeeUsername === currentUser.username);
+                }
+
+                let matchStatus = true;
+                if (statusFilter === 'ACTIVE') {
+                    matchStatus = (sale.status === 'issue' || sale.status === 'reissue');
+                } else if (statusFilter === 'DEBT') {
+                    matchStatus = (sale.remainingDebt > 0);
+                } else if (statusFilter === 'REFUND_VOID') {
+                    matchStatus = (sale.status === 'refund' || sale.status === 'void');
+                }
+
+                let matchSearch = true;
+                if (searchQuery) {
+                    const haystack = `${sale.pnr} ${sale.clientName} ${sale.clientPhone} ${sale.airline} ${sale.employeeName}`.toLowerCase();
+                    matchSearch = haystack.includes(searchQuery);
+                }
+
+                return matchPeriod && matchEmp && matchStatus && matchSearch;
+            });
+
+            filteredSales.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+            return { filteredSales, periodLabel, cleanDateTag, empFilter, selectedDay, selectedMonth, dateFrom, dateTo, searchQuery, searchAllDates };
+        }
+
+        function renderDashboard() {
+            const { filteredSales, periodLabel, empFilter, selectedDay, selectedMonth, dateFrom, dateTo, searchQuery, searchAllDates } = getActiveFilteredData();
+
+            if (currentFilterMode === 'daily' && selectedDay) {
+                document.getElementById('sale-entry-date').value = selectedDay;
+            }
+
+            const showDateColumn = (currentFilterMode !== 'daily') || (searchQuery && searchAllDates);
+            const thDate = document.getElementById('th-sale-date');
+            if (showDateColumn) {
+                thDate.classList.remove('hidden');
+            } else {
+                thDate.classList.add('hidden');
+            }
+
+            currentUser.name = usersDB[currentUser.username].name;
+            updateVersionBadgeUI();
+
+            let targetReportOwner = currentUser.name;
+            if (currentUser.role === 'admin') {
+                if (empFilter === 'ALL') {
+                    targetReportOwner = 'المدير العام (شامل جميع الموظفين)';
+                } else if (usersDB[empFilter]) {
+                    targetReportOwner = `تقرير الموظف: ${usersDB[empFilter].name}`;
+                }
+            }
+
+            let reportMainTitle = '✈️ تقرير المبيعات والعمولات والذمم - مكتب الطيران';
+            if (currentFilterMode === 'daily') {
+                document.getElementById('print-date-badge').innerText = selectedDay;
+            } else if (currentFilterMode === 'monthly') {
+                document.getElementById('print-date-badge').innerText = `شهر ${selectedMonth}`;
+            } else if (currentFilterMode === 'range') {
+                if (dateFrom && dateTo && dateFrom > dateTo) {
+                    showToast("تنبيه: تاريخ البداية (من) أحدث من تاريخ النهاية (إلى)!", "warning");
+                }
+                document.getElementById('print-date-badge').innerText = `${dateFrom} ⬅ ${dateTo}`;
+            }
+
+            document.getElementById('welcome-title').innerText = `سجل المبيعات - ${currentUser.name}`;
+            document.getElementById('report-date-subtitle').innerText = `التقرير المعتمد ${periodLabel}`;
+            document.getElementById('table-section-title').innerText = `📋 جدول التقرير المفصل (${periodLabel})`;
+            document.getElementById('print-main-title').innerText = reportMainTitle;
+            document.getElementById('print-meta-info').innerText = `المسؤول / نطاق التقرير: ${targetReportOwner} | حرر بواسطة: ${currentUser.name}`;
+
+            const tbody = document.getElementById('sales-table-body');
+            const tfoot = document.getElementById('sales-table-foot');
+            tbody.innerHTML = '';
+            tfoot.innerHTML = '';
+
+            let activeCount = 0;
+            let refundVoidCount = 0;
+            let totalBaseSum = 0;
+            let totalSalesSum = 0;
+            let totalPaidSum = 0;
+            let totalDebtSum = 0;
+            let totalCashSum = 0;
+            let totalCardSum = 0;
+            let totalProfitSum = 0;
+            let totalCommissionSum = 0;
+
+            if (filteredSales.length === 0) {
+                let colSpan = 12;
+                if (currentUser.role === 'admin') colSpan++;
+                if (showDateColumn) colSpan++;
+
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="${colSpan}" class="py-10 text-center opacity-75 font-bold">
+                            لا توجد تذاكر مطابقة ${periodLabel}.
+                        </td>
+                    </tr>`;
+            } else {
+                filteredSales.forEach((sale, index) => {
+                    const isRefundOrVoid = (sale.status === 'refund' || sale.status === 'void');
+
+                    if (isRefundOrVoid) {
+                        refundVoidCount++;
+                        totalProfitSum += sale.profit;
+                    } else {
+                        activeCount++;
+                        totalBaseSum += sale.basePrice;
+                        totalSalesSum += sale.totalPrice;
+                        totalPaidSum += sale.paidAmount;
+                        totalDebtSum += sale.remainingDebt;
+                        totalProfitSum += sale.profit;
+                        totalCommissionSum += sale.commission;
+
+                        if (sale.paymentMethod === 'كاش') {
+                            totalCashSum += sale.paidAmount;
+                        } else if (sale.paymentMethod === 'شبكة' || sale.paymentMethod === 'تحويل') {
+                            totalCardSum += sale.paidAmount;
+                        }
+                    }
+
+                    let statusBadge = '';
+                    if (sale.status === 'issue') {
+                        statusBadge = `<span class="bg-emerald-100 text-emerald-950 border border-emerald-400 px-2 py-0.5 rounded-full text-[11px] font-extrabold">✅ إصدار</span>`;
+                    } else if (sale.status === 'reissue') {
+                        statusBadge = `<span class="bg-sky-100 text-sky-950 border border-sky-400 px-2 py-0.5 rounded-full text-[11px] font-extrabold">🔄 تعديل</span>`;
+                    } else if (sale.status === 'refund') {
+                        statusBadge = `<span class="bg-amber-200 text-amber-950 border border-amber-500 px-2 py-0.5 rounded-full text-[11px] font-extrabold">↩️ مسترجعة</span>`;
+                    } else if (sale.status === 'void') {
+                        statusBadge = `<span class="bg-red-200 text-red-950 border border-red-500 px-2 py-0.5 rounded-full text-[11px] font-extrabold">🚫 ملغاة</span>`;
+                    }
+
+                    let paymentBadge = '';
+                    if (sale.paymentMethod === 'كاش') {
+                        paymentBadge = `<span class="bg-emerald-100 text-emerald-950 border border-emerald-400 px-2 py-0.5 rounded-md text-[11px] font-extrabold">💵 كاش</span>`;
+                    } else if (sale.paymentMethod === 'شبكة') {
+                        paymentBadge = `<span class="bg-[#EBE7E0] text-[#0F1A28] border border-[#9E978E] px-2 py-0.5 rounded-md text-[11px] font-extrabold">💳 شبكة</span>`;
+                    } else if (sale.paymentMethod === 'تحويل') {
+                        paymentBadge = `<span class="bg-amber-100 text-[#0F1A28] border border-[#C5A059] px-2 py-0.5 rounded-md text-[11px] font-extrabold">🏦 تحويل</span>`;
+                    } else {
+                        paymentBadge = `<span class="bg-red-100 text-red-950 border border-red-400 px-2 py-0.5 rounded-md text-[11px] font-extrabold">📒 آجل/ذمم</span>`;
+                    }
+
+                    const addonsBadges = (sale.addons && sale.addons.length > 0)
+                        ? `<div class="flex flex-wrap gap-1 mt-1">${sale.addons.map(a => `<span class="text-[10px] font-extrabold bg-[#FDF9F0] text-[#0F1A28] border border-[#C5A059] px-1.5 py-0.2 rounded">${escapeHTML(a)}</span>`).join('')}</div>`
+                        : '';
+
+                    const displayEmpName = usersDB[sale.employeeUsername] ? usersDB[sale.employeeUsername].name : sale.employeeName;
+
+                    const tr = document.createElement('tr');
+                    tr.className = isRefundOrVoid ? "bg-red-500/10 opacity-80 transition" : "hover:bg-[#9E978E]/15 transition";
+                    tr.innerHTML = `
+                        <td class="py-2.5 px-2 font-extrabold">${index + 1}</td>
+                        ${showDateColumn ? `<td class="py-2.5 px-2 font-mono text-[11px] font-extrabold whitespace-nowrap">${escapeHTML(sale.date)} <span class="opacity-75">${escapeHTML(sale.time || '')}</span></td>` : ''}
+                        ${currentUser.role === 'admin' ? `<td class="py-2.5 px-2 font-extrabold">${escapeHTML(displayEmpName)}</td>` : ''}
+                        <td class="py-2.5 px-2">
+                            <div class="font-extrabold">${escapeHTML(sale.clientName)}</div>
+                            <div class="text-[11px] font-mono font-bold opacity-80">${escapeHTML(sale.clientPhone)}</div>
+                        </td>
+                        <td class="py-2.5 px-2">
+                            <span class="font-mono font-extrabold bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded text-[11px]">${escapeHTML(sale.pnr || '-')}</span>
+                            <div class="text-[11px] font-bold mt-0.5">${escapeHTML(sale.airline || '-')}</div>
+                            ${addonsBadges}
+                        </td>
+                        <td class="py-2.5 px-2">${statusBadge}</td>
+                        <td class="py-2.5 px-2">${paymentBadge}</td>
+                        <td class="py-2.5 px-2 font-bold ${isRefundOrVoid ? 'line-through opacity-60' : ''}">${sale.basePrice.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-extrabold ${isRefundOrVoid ? 'line-through opacity-60' : ''}">${sale.totalPrice.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-extrabold text-emerald-700">${sale.paidAmount.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-extrabold ${sale.remainingDebt > 0 ? 'text-red-700 underline' : 'opacity-60'}">${sale.remainingDebt.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-extrabold">${sale.profit.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-extrabold ${isRefundOrVoid ? 'text-red-700' : 'text-emerald-700'}">
+                            ${sale.commission.toFixed(2)}
+                            ${isRefundOrVoid ? '<span class="block text-[9px] text-red-700">محذوفة</span>' : ''}
+                        </td>
+                        <td class="py-2.5 px-2 text-center no-print">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <button type="button" onclick="sendWhatsAppReceipt(${sale.id})" class="bg-emerald-700 hover:bg-emerald-800 text-white px-2.5 py-1 rounded-lg transition text-[11px] font-extrabold shrink-0" title="إرسال إيصال للعميل عبر واتساب">
+                                    💬 واتساب
+                                </button>
+                                <select onchange="handleQuickTableAction(this, ${sale.id})" aria-label="اختر تعديل للتذكرة"
+                                        class="bg-[#192A3E] text-white border border-[#C5A059] px-2 py-1 rounded-lg text-[11px] font-extrabold cursor-pointer">
+                                    <option value="" class="bg-white text-[#0F1A28]">🛠️ اختر تعديل...</option>
+                                    <option value="EDIT_INFO" class="bg-white text-[#0F1A28]">📝 تصحيح بيانات الحجز</option>
+                                    <option value="PAY_DEBT" class="bg-white text-[#0F1A28]">💵 تسديد دفعة / دين</option>
+                                    <option value="EDIT_PRICES" class="bg-white text-[#0F1A28]">🔄 تعديل الأسعار / Reissue</option>
+                                    <option value="MAKE_REFUND" class="bg-white text-[#0F1A28]">↩️ استرجاع (Refund)</option>
+                                    <option value="MAKE_VOID" class="bg-white text-[#0F1A28]">🚫 إلغاء التذكرة (Void)</option>
+                                    <option value="DELETE" class="bg-white text-red-700">🗑️ حذف نهائي</option>
+                                </select>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                let labelColSpan = 5;
+                if (showDateColumn) labelColSpan++;
+                if (currentUser.role === 'admin') labelColSpan++;
+
+                tfoot.innerHTML = `
+                    <tr>
+                        <td colspan="${labelColSpan}" class="py-3 px-2 text-left font-extrabold">الإجمالي الصافي (للتذاكر الفعالة):</td>
+                        <td class="py-3 px-2 font-extrabold">${totalBaseSum.toFixed(2)}</td>
+                        <td class="py-3 px-2 font-extrabold">${totalSalesSum.toFixed(2)}</td>
+                        <td class="py-3 px-2 font-extrabold text-emerald-700">${totalPaidSum.toFixed(2)}</td>
+                        <td class="py-3 px-2 font-extrabold text-red-700">${totalDebtSum.toFixed(2)}</td>
+                        <td class="py-3 px-2 font-extrabold">${totalProfitSum.toFixed(2)}</td>
+                        <td class="py-3 px-2 font-extrabold text-emerald-700">${totalCommissionSum.toFixed(2)}</td>
+                        <td class="no-print"></td>
+                    </tr>
+                `;
+            }
+
+            document.getElementById('table-count-badge').innerText = `${filteredSales.length} حجز`;
+            const spyBadge = document.getElementById('spy-count-badge');
+            const drawerBadge = document.getElementById('drawer-badge-count');
+            if (spyBadge) spyBadge.innerText = filteredSales.length;
+            if (drawerBadge) drawerBadge.innerText = filteredSales.length;
+
+            document.getElementById('sum-tickets').innerText = filteredSales.length;
+            document.getElementById('sum-tickets-sub').innerText = `فعالة: ${activeCount} | مسترجع/ملغي: ${refundVoidCount}`;
+            document.getElementById('sum-total-sales').innerText = totalSalesSum.toFixed(2);
+            document.getElementById('sum-cash').innerText = totalCashSum.toFixed(2);
+            document.getElementById('sum-card').innerText = totalCardSum.toFixed(2);
+            document.getElementById('sum-debt').innerText = totalDebtSum.toFixed(2);
+            document.getElementById('sum-profit').innerText = totalProfitSum.toFixed(2);
+            document.getElementById('sum-commission').innerText = totalCommissionSum.toFixed(2);
+        }
+
+        function exportBackupFile() {
+            const todayStr = getTodayDateString();
+            const currentVer = backupVersionCounter;
+            const empNameClean = currentUser.name.replace(/\s+/g, '_');
+
+            const backupPayload = {
+                backupVersion: currentVer,
+                backupDate: todayStr,
+                exportedAtTime: new Date().toLocaleTimeString('ar-SA'),
+                employeeUsername: currentUser.username,
+                employeeName: currentUser.name,
+                systemSignature: "Designed by Eng. Bahaa Al-Sheikh",
+                usersDB: usersDB,
+                salesDatabase: salesDatabase
+            };
+
+            const dataStr = JSON.stringify(backupPayload, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+
+            const fileName = `Backup_v${currentVer}_${todayStr}_${empNameClean}.json`;
+
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = fileName;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+
+            backupVersionCounter++;
+            localStorage.setItem('airline_backup_version_num', String(backupVersionCounter));
+            updateVersionBadgeUI();
+
+            showToast(`تم تحميل النسخة الاحتياطية (نسخة #${currentVer} - ${todayStr} - ${currentUser.name})`);
+        }
+
+        function triggerRestoreFile() {
+            document.getElementById('restore-file-input').value = '';
+            document.getElementById('restore-file-input').click();
+        }
+
+        function handleRestoreFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (!imported || !Array.isArray(imported.salesDatabase)) {
+                        showToast("ملف النسخة الاحتياطية غير صالح أو تالف!", "error");
+                        return;
+                    }
+
+                    salesDatabase = imported.salesDatabase.map(normalizeTicketRecord);
+                    localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
+
+                    if (imported.usersDB && typeof imported.usersDB === 'object') {
+                        usersDB = imported.usersDB;
+                        localStorage.setItem('airline_users_v3_db', JSON.stringify(usersDB));
+                        updateEmployeeFilterNames();
+                    }
+
+                    if (imported.backupVersion) {
+                        backupVersionCounter = parseInt(imported.backupVersion, 10) + 1;
+                        localStorage.setItem('airline_backup_version_num', String(backupVersionCounter));
+                    }
+
+                    const verInfo = imported.backupVersion ? `نسخة #${imported.backupVersion}` : 'نسخة مستردة';
+                    const dateInfo = imported.backupDate || 'تاريخ غير محدد';
+                    const empInfo = imported.employeeName || 'غير محدد';
+
+                    renderDashboard();
+                    showToast(`تمت الاستعادة بنجاح (${verInfo} | ${dateInfo} | ${empInfo})`);
+                } catch (err) {
+                    console.error("Restore error:", err);
+                    showToast("حدث خطأ أثناء قراءة ملف النسخة الاحتياطية!", "error");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function buildEmailReportData() {
+            const { filteredSales, periodLabel, cleanDateTag } = getActiveFilteredData();
+            const todayStr = getTodayDateString();
+            const verNum = backupVersionCounter;
+            const empName = currentUser.name;
+
+            let activeCount = 0, refundCount = 0, totalSales = 0, totalProfit = 0, totalComm = 0, totalCash = 0, totalCard = 0, totalDebt = 0;
+            filteredSales.forEach(s => {
+                if (s.status === 'refund' || s.status === 'void') {
+                    refundCount++;
+                    totalProfit += s.profit;
+                } else {
+                    activeCount++;
+                    totalSales += s.totalPrice;
+                    totalProfit += s.profit;
+                    totalComm += s.commission;
+                    totalDebt += s.remainingDebt;
+                    if (s.paymentMethod === 'كاش') totalCash += s.paidAmount;
+                    else if (s.paymentMethod === 'شبكة' || s.paymentMethod === 'تحويل') totalCard += s.paidAmount;
+                }
+            });
+
+            const subject = `تقرير مبيعات الطيران | نسخة #${verNum} - التاريخ: ${todayStr} - الموظف: ${empName}`;
+            const bodyLines = [
+                `=== تقرير نظام مبيعات وعمولات مكتب الطيران ===`,
+                `• رقم النسخة: v${verNum}`,
+                `• تاريخ الإرسال: ${todayStr}`,
+                `• اسم الموظف: ${empName}`,
+                `• نطاق التقرير: ${periodLabel}`,
+                `----------------------------------------`,
+                `📊 ملخص الإحصائيات والمبالغ:`,
+                `- إجمالي التذاكر: ${filteredSales.length} (فعالة: ${activeCount} | مسترجعة/ملغاة: ${refundCount})`,
+                `- إجمالي المبيعات الفعالة: ${totalSales.toFixed(2)}`,
+                `- المقبوض كاش: ${totalCash.toFixed(2)} | المقبوض شبكة وتحويل: ${totalCard.toFixed(2)}`,
+                `- إجمالي الديون المتبقية (الذمم/الآجل): ${totalDebt.toFixed(2)}`,
+                `- إجمالي صافي المرابح: ${totalProfit.toFixed(2)}`,
+                `- صافي عمولة الموظف المستحقة (10%): ${totalComm.toFixed(2)} (تم حذف عمولة المسترجع)`,
+                `----------------------------------------`,
+                `Designed by Eng. Bahaa Al-Sheikh`
+            ];
+
+            return {
+                subject,
+                body: bodyLines.join('\n'),
+                metaLabel: `نسخة #${verNum} — ${cleanDateTag} — ${empName}`
+            };
+        }
+
+        function openEmailModal() {
+            const reportData = buildEmailReportData();
+            document.getElementById('email-meta-preview').innerText = reportData.metaLabel;
+            document.getElementById('email-body-preview').value = reportData.body;
+            document.getElementById('email-modal').classList.remove('hidden');
+        }
+
+        function closeEmailModal() {
+            document.getElementById('email-modal').classList.add('hidden');
+        }
+
+        function copyEmailReportContent() {
+            const textarea = document.getElementById('email-body-preview');
+            textarea.select();
+            document.execCommand('copy');
+            showToast("تم نسخ تفاصيل التقرير والنسخة للحافظة بنجاح!");
+        }
+
+        function sendEmailNow(alsoDownloadBackup) {
+            const recipient = document.getElementById('recipient-email').value.trim();
+            const reportData = buildEmailReportData();
+
+            if (alsoDownloadBackup) {
+                exportBackupFile();
+            }
+
+            const mailtoLink = `mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(reportData.subject)}&body=${encodeURIComponent(reportData.body)}`;
+            window.location.href = mailtoLink;
+            closeEmailModal();
+        }
+
+        function openUsersModal() {
+            const listDiv = document.getElementById('users-settings-list');
+            listDiv.innerHTML = '';
+
+            Object.keys(usersDB).forEach(usernameKey => {
+                const u = usersDB[usernameKey];
+                const roleLabel = u.role === 'admin' ? '👑 المدير العام' : '👤 موظف مبيعات';
+                
+                const item = document.createElement('div');
+                item.className = "p-3.5 theme-sub-surface rounded-xl space-y-3";
+                item.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-[#9E978E] pb-2">
+                        <span class="font-extrabold text-sm">${roleLabel}</span>
+                        <span class="text-xs font-mono bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded">اسم الدخول: <strong>${usernameKey}</strong></span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs theme-label mb-1">الاسم الظاهر في التقرير:</label>
+                            <input type="text" id="edit-name-${usernameKey}" value="${escapeHTML(u.name)}" class="w-full px-3 py-1.5 rounded-lg theme-input text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs theme-label mb-1">كلمة المرور (Password):</label>
+                            <input type="text" id="edit-pass-${usernameKey}" value="${escapeHTML(u.password)}" class="w-full px-3 py-1.5 rounded-lg theme-input text-sm font-mono">
+                        </div>
+                    </div>
+                `;
+                listDiv.appendChild(item);
+            });
+
+            document.getElementById('users-modal').classList.remove('hidden');
+        }
+
+        function closeUsersModal() {
+            document.getElementById('users-modal').classList.add('hidden');
+        }
+
+        function saveUsersSettings() {
+            Object.keys(usersDB).forEach(usernameKey => {
+                const newName = document.getElementById(`edit-name-${usernameKey}`).value.trim();
+                const newPass = document.getElementById(`edit-pass-${usernameKey}`).value.trim();
+
+                if (newName && newPass) {
+                    usersDB[usernameKey].name = newName;
+                    usersDB[usernameKey].password = newPass;
+                }
+            });
+
+            localStorage.setItem('airline_users_v3_db', JSON.stringify(usersDB));
+            updateEmployeeFilterNames();
+            closeUsersModal();
+            renderDashboard();
+            showToast("تم حفظ بيانات الحسابات وكلمات المرور الجديدة بنجاح!");
+        }
+
+        function updateEmployeeFilterNames() {
+            if (usersDB['empA']) {
+                document.getElementById('filter-opt-empA').innerText = `👤 ${usersDB['empA'].name} فقط`;
+            }
+            if (usersDB['empB']) {
+                document.getElementById('filter-opt-empB').innerText = `👤 ${usersDB['empB'].name} فقط`;
+            }
+        }
+
+        function confirmDeleteAction() {
+            if (ticketIdToDelete !== null) {
+                salesDatabase = salesDatabase.filter(sale => sale.id !== ticketIdToDelete);
+                localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
+                closeDeleteModal();
+                showToast("تم حذف التذكرة من السجل بنجاح", "warning");
+                renderDashboard();
+            }
+        }
+
+        function printReport() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

@@ -210,24 +210,34 @@
         }
 
         /* ==========================================================================
-           5. شريط التتبع الداخلي (Scrollspy / In-Page Navigation)
+           5. التبويب الجانبي الأيمن الأساسي (Right Sidebar Tabs)
            ========================================================================== */
-        .scrollspy-link {
-            color: var(--text-primary);
-            border-bottom: 3px solid transparent;
+        .sidebar-tab-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #F6F4F0;
+            background-color: transparent;
+            border: 1.5px solid transparent;
             transition: all 0.2s ease;
+            text-align: right;
+            cursor: pointer;
         }
 
-        .scrollspy-link[aria-current="location"] {
-            background-color: var(--navy-primary);
-            color: #FFFFFF !important;
-            border-bottom-color: var(--gold-accent);
+        .sidebar-tab-btn:hover {
+            background-color: #2C425C;
         }
 
-        body.dark-theme .scrollspy-link[aria-current="location"] {
-            background-color: var(--gold-accent);
+        .sidebar-tab-btn.active-tab {
+            background-color: #C5A059 !important;
             color: #0F1A28 !important;
-            border-bottom-color: #FFFFFF;
+            border-color: #FFFFFF !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         /* ==========================================================================
@@ -341,8 +351,11 @@
             #section-ticket-entry {
                 display: none !important;
             }
-            #dashboard-page {
+            #dashboard-page,
+            #main-workspace {
                 padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
             }
             .max-w-7xl {
                 max-width: 100% !important;
@@ -426,85 +439,6 @@
             <span id="toast-message"></span>
         </div>
     </div>
-
-    <!-- ==========================================================================
-         الدرج الجانبي المنزلق مع طبقة التعتيم (Off-Canvas Navigation Drawer & Scrim)
-         ========================================================================== -->
-    <div id="drawer-scrim" onclick="closeNavDrawer()"
-         class="fixed inset-0 bg-[#0F1A28]/60 backdrop-blur-xs z-40 hidden opacity-0 transition-opacity duration-300 no-print"
-         aria-hidden="true"></div>
-
-    <nav id="off-canvas-drawer" aria-label="القائمة الجانبية للتنقل السريع"
-         class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-[#192A3E] text-[#F6F4F0] z-50 transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl border-l-2 border-[#C5A059] flex flex-col justify-between no-print">
-        <div>
-            <!-- رأس الدرج الجانبي -->
-            <div class="p-5 bg-[#0F1A28] border-b border-[#2C425C] flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1 border border-[#C5A059]">
-                        <img src="logo1.jpg" alt="Logo" class="w-full h-full object-contain rounded-lg"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div style="display:none;" class="w-full h-full items-center justify-center text-lg text-[#192A3E] font-extrabold">✈️</div>
-                    </div>
-                    <div>
-                        <h3 class="font-extrabold text-sm text-white">قائمة التنقل السريع</h3>
-                        <p class="text-[11px] text-[#C5A059] font-bold">اختر الصفحة المطلوب فتحها</p>
-                    </div>
-                </div>
-                <button type="button" onclick="closeNavDrawer()" aria-label="إغلاق القائمة الجانبية"
-                        class="w-8 h-8 rounded-lg bg-[#2C425C] hover:bg-[#C5A059] hover:text-[#0F1A28] text-white font-extrabold flex items-center justify-center transition">
-                    ✕
-                </button>
-            </div>
-
-            <!-- روابط الصفحات المستقلة داخل الدرج الجانبي -->
-            <div class="p-4 space-y-2">
-                <p class="text-[11px] font-extrabold text-[#BEB8B0] px-2 mb-1 uppercase">الصفحات الرئيسية المستقلة:</p>
-                
-                <button type="button" onclick="switchDedicatedPage('section-ticket-entry', true)" id="drawer-btn-entry"
-                        class="w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition bg-[#C5A059] text-[#0F1A28]">
-                    <span class="flex items-center gap-2.5"><span>➕</span> تسجيل عملية تذكرة طيران</span>
-                    <span class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-[#0F1A28] text-white">الرئيسية</span>
-                </button>
-
-                <button type="button" onclick="switchDedicatedPage('section-report-table', true)" id="drawer-btn-table"
-                        class="w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition hover:bg-[#2C425C] text-white">
-                    <span class="flex items-center gap-2.5"><span>📋</span> جدول التقرير المفصل والبحث</span>
-                    <span id="drawer-badge-count" class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-[#2C425C] text-[#C5A059]">0</span>
-                </button>
-
-                <button type="button" onclick="switchDedicatedPage('section-kpi-summary', true)" id="drawer-btn-kpi"
-                        class="w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition hover:bg-[#2C425C] text-white">
-                    <span class="flex items-center gap-2.5"><span>📊</span> الملخص المالي والعمولات</span>
-                    <span class="text-[10px] text-[#BEB8B0]">6 بطاقات</span>
-                </button>
-
-                <button type="button" onclick="switchDedicatedPage('ALL', true)" id="drawer-btn-all"
-                        class="w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition hover:bg-[#2C425C] text-white border border-[#2C425C]">
-                    <span class="flex items-center gap-2.5"><span>🖥️</span> وضع العرض الشامل (كل الأقسام)</span>
-                </button>
-
-                <div class="pt-4 mt-4 border-t border-[#2C425C] space-y-2">
-                    <p class="text-[11px] font-extrabold text-[#BEB8B0] px-2 mb-1 uppercase">أدوات الأرشفة والتقارير:</p>
-                    <button type="button" onclick="closeNavDrawer(); printReport();"
-                            class="w-full text-right px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2.5 bg-emerald-700 hover:bg-emerald-600 text-white transition">
-                        <span>🖨️</span> طباعة التقرير الرسمي (A4)
-                    </button>
-                    <button type="button" onclick="closeNavDrawer(); exportBackupFile();"
-                            class="w-full text-right px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2.5 bg-[#2C425C] hover:bg-[#3b5575] text-white transition">
-                        <span>📥</span> تحميل نسخة احتياطية
-                    </button>
-                    <button type="button" onclick="closeNavDrawer(); openEmailModal();"
-                            class="w-full text-right px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2.5 bg-[#2C425C] hover:bg-[#3b5575] text-white transition">
-                        <span>✉️</span> إرسال التقرير إلى الإيميل
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 bg-[#0F1A28] border-t border-[#2C425C] text-center text-[11px] text-[#BEB8B0] font-bold">
-            Designed by <strong class="text-[#C5A059]">Eng. Bahaa Al-Sheikh</strong>
-        </div>
-    </nav>
 
     <!-- ==========================================================================
          نافذة الحوار المركزية لتأكيد الحذف مع إدارة وحصر التركيز
@@ -845,591 +779,589 @@
     </div>
 
     <!-- ==========================================================================
-         الصفحة الثانية: لوحة التحكم بنظام الصفحات المستقلة (Dedicated Page View Switcher)
+         الصفحة الثانية: لوحة التحكم بنظام التبويب اليميني الثابت والمنظم
+         (Right Sidebar Primary Navigation + Clean Single-View Workspace)
          ========================================================================== -->
-    <div id="dashboard-page" class="hidden flex-grow p-3 sm:p-5 md:p-6">
-        <div class="max-w-7xl mx-auto space-y-5">
+    <div id="dashboard-page" class="hidden flex-grow flex flex-col lg:flex-row min-h-screen">
 
-            <!-- ترويسة رسمية خاصة بالطباعة الورقية فقط (A4 Print Header) -->
-            <div class="hidden print-flex justify-between items-center border-b-2 border-[#192A3E] pb-2.5 mb-2">
-                <div class="flex items-center gap-3 text-right">
-                    <img src="logo1.jpg" alt="Logo" class="w-12 h-12 object-contain rounded-lg border border-[#9E978E] p-0.5"
-                         onerror="this.style.display='none';">
+        <!-- طبقة التعتيم للجوال فقط عند فتح القائمة الجانبية في الشاشات الصغيرة -->
+        <div id="drawer-scrim" onclick="closeMobileSidebar()"
+             class="fixed inset-0 bg-[#0F1A28]/60 backdrop-blur-xs z-40 hidden lg:hidden no-print"
+             aria-hidden="true"></div>
+
+        <!-- ==========================================================================
+             العمود الجانبي الأيمن الأساسي (Primary Right Sidebar Tabs)
+             ثابت دائماً على الشاشات الكبيرة، ومنزلق على الجوال
+             ========================================================================== -->
+        <aside id="right-sidebar" aria-label="التبويبات الرئيسية للنظام"
+               class="fixed lg:static top-0 right-0 h-full lg:h-auto w-72 bg-[#192A3E] text-[#F6F4F0] z-50 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none border-l-2 border-[#C5A059] flex flex-col justify-between shrink-0 no-print">
+            
+            <div>
+                <!-- هوية المكتب والمستخدم في أعلى التبويب اليميني -->
+                <div class="p-5 bg-[#0F1A28] border-b border-[#2C425C]">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 bg-white rounded-xl flex items-center justify-center p-1 border-2 border-[#C5A059] shrink-0">
+                                <img src="logo1.jpg" alt="Logo" class="w-full h-full object-contain rounded-lg"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display:none;" class="w-full h-full items-center justify-center text-lg text-[#192A3E] font-extrabold">✈️</div>
+                            </div>
+                            <div>
+                                <h2 id="welcome-title" class="font-extrabold text-sm text-white leading-tight">مكتب الطيران</h2>
+                                <span id="role-badge" class="inline-block mt-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full"></span>
+                            </div>
+                        </div>
+                        <!-- زر إغلاق يظهر فقط في شاشة الجوال -->
+                        <button type="button" onclick="closeMobileSidebar()" class="lg:hidden w-8 h-8 rounded-lg bg-[#2C425C] text-white font-extrabold flex items-center justify-center">
+                            ✕
+                        </button>
+                    </div>
+                    <div id="backup-version-pill" class="mt-3 text-[11px] font-mono font-bold text-[#EBE7E0] bg-[#192A3E] px-2.5 py-1 rounded-lg border border-[#2C425C] text-center"></div>
+                </div>
+
+                <!-- التبويبات الأساسية (تفتح كل نافذة بشكل مستقل تماماً) -->
+                <div class="p-4 space-y-2">
+                    <div class="text-[11px] font-extrabold text-[#C5A059] px-2 mb-2">📂 التبويبات الرئيسية:</div>
+
+                    <button type="button" id="tab-btn-entry" onclick="switchDedicatedPage('section-ticket-entry')"
+                            class="sidebar-tab-btn active-tab">
+                        <span class="flex items-center gap-2.5">
+                            <span>➕</span>
+                            <span>تسجيل تذكرة جديدة</span>
+                        </span>
+                    </button>
+
+                    <button type="button" id="tab-btn-table" onclick="switchDedicatedPage('section-report-table')"
+                            class="sidebar-tab-btn">
+                        <span class="flex items-center gap-2.5">
+                            <span>📋</span>
+                            <span>جدول التقرير والبحث</span>
+                        </span>
+                        <span id="sidebar-badge-count" class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#0F1A28] text-[#C5A059]">0</span>
+                    </button>
+
+                    <button type="button" id="tab-btn-kpi" onclick="switchDedicatedPage('section-kpi-summary')"
+                            class="sidebar-tab-btn">
+                        <span class="flex items-center gap-2.5">
+                            <span>📊</span>
+                            <span>الملخص المالي والعمولات</span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- قسم أدوات المدير (يظهر للمدير فقط داخل القائمة اليمنى بشكل مرتب) -->
+                <div id="admin-controls" class="hidden px-4 pt-3 pb-2 border-t border-[#2C425C] space-y-2.5">
+                    <div class="text-[11px] font-extrabold text-[#C5A059] px-1">👑 إشراف المدير العام:</div>
                     <div>
-                        <h1 id="print-main-title" class="text-lg font-extrabold text-[#192A3E]">✈️ تقرير المبيعات والعمولات - مكتب الطيران</h1>
-                        <p id="print-meta-info" class="text-xs font-bold text-[#0F1A28] mt-0.5"></p>
+                        <label for="employee-filter" class="block text-[11px] text-[#EBE7E0] font-bold mb-1">عرض تقارير الموظف:</label>
+                        <select id="employee-filter" onchange="renderDashboard()"
+                                class="w-full px-3 py-2 rounded-xl bg-[#0F1A28] text-white border border-[#C5A059] text-xs font-extrabold cursor-pointer">
+                            <option value="ALL">👥 جميع الموظفين</option>
+                            <option value="empA" id="filter-opt-empA">👤 الموظف أ فقط</option>
+                            <option value="empB" id="filter-opt-empB">👤 الموظف ب فقط</option>
+                        </select>
                     </div>
+                    <button type="button" onclick="openUsersModal()"
+                            class="w-full py-2 px-3 rounded-xl bg-[#2C425C] hover:bg-[#3b5575] text-white font-extrabold text-xs flex items-center justify-center gap-2 transition">
+                        <span>🔐</span> إدارة حسابات الموظفين
+                    </button>
                 </div>
-                <div class="text-left text-xs font-bold text-[#0F1A28] bg-[#EBE7E0] px-3 py-1.5 rounded-lg border border-[#9E978E]">
-                    <div>فترة التقرير: <span id="print-date-badge" class="font-extrabold"></span></div>
-                    <div class="text-[10px] mt-0.5">رقم النسخة: <span id="print-version-badge" class="font-mono font-extrabold">v1</span> | العمولة: 10% (تُحذف للمسترجع)</div>
-                </div>
-            </div>
 
-            <!-- الترويسة العلوية الرئيسية (تضم زر الخطوط الثلاثة Hamburger + القائمة المنسدلة للصفحات المستقلة) -->
-            <header class="theme-card rounded-2xl shadow-md p-4 md:p-5 flex flex-col gap-4 no-print">
-                <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+                <!-- قسم الأدوات السريعة والنسخ الاحتياطي -->
+                <div class="p-4 border-t border-[#2C425C] space-y-2">
+                    <div class="text-[11px] font-extrabold text-[#BEB8B0] px-1 mb-1">⚙️ أدوات التقرير والأرشفة:</div>
                     
-                    <!-- يمين الهيدر: زر الهامبرغر (3 خطوط أفقية) + الشعار + اسم الموظف -->
-                    <div class="flex items-center gap-3 w-full xl:w-auto">
-                        <!-- زر القائمة الجانبية (Hamburger Button - 3 Horizontal Bars) -->
-                        <button type="button" id="hamburger-btn" onclick="openNavDrawer()" aria-label="فتح القائمة الجانبية للتنقل" aria-expanded="false" aria-controls="off-canvas-drawer"
-                                class="w-12 h-12 rounded-xl bg-[#192A3E] hover:bg-[#2C425C] text-white flex flex-col items-center justify-center gap-1.5 shrink-0 shadow-sm border border-[#C5A059] transition">
-                            <span class="w-6 h-0.5 bg-white rounded-full"></span>
-                            <span class="w-6 h-0.5 bg-[#C5A059] rounded-full"></span>
-                            <span class="w-6 h-0.5 bg-white rounded-full"></span>
+                    <button type="button" onclick="printReport()"
+                            class="w-full py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-xs transition">
+                        <span>🖨️</span> طباعة التقرير الرسمي (A4)
+                    </button>
+
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button type="button" onclick="exportBackupFile()"
+                                class="py-2 px-2 rounded-xl bg-[#2C425C] hover:bg-[#3b5575] text-white font-bold text-[11px] flex items-center justify-center gap-1 transition">
+                            <span>📥</span> حفظ نسخة
                         </button>
-
-                        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-xs border-2 border-[#192A3E] overflow-hidden p-1 shrink-0">
-                            <img src="logo1.jpg" alt="شعار المكتب" class="w-full h-full object-contain rounded-lg"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div style="display:none;" class="w-full h-full items-center justify-center text-xl bg-[#192A3E] text-white rounded-lg font-bold">
-                                ✈️
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <h2 id="welcome-title" class="text-lg sm:text-xl font-extrabold">صفحة المبيعات</h2>
-                                <span id="role-badge" class="text-xs font-extrabold px-2.5 py-0.5 rounded-full"></span>
-                                <span id="backup-version-pill" class="text-[11px] font-mono font-extrabold theme-sub-surface px-2.5 py-0.5 rounded-full"></span>
-                            </div>
-                            <p id="report-date-subtitle" class="text-xs sm:text-sm font-bold opacity-80 mt-0.5"></p>
-                        </div>
-                    </div>
-
-                    <!-- يسار الهيدر: القائمة المنسدلة لفتح الصفحات المستقلة + مفتاح الوضع الليلي + أزرار التحكم -->
-                    <div class="flex flex-wrap items-center gap-2.5 w-full xl:w-auto justify-between xl:justify-end">
-                        
-                        <!-- القائمة المنسدلة الرئيسية للتنقل بين الصفحات المستقلة (Dedicated Page View Switcher) -->
-                        <div class="flex items-center gap-2 bg-[#192A3E] text-white px-3 py-1.5 rounded-xl border-2 border-[#C5A059] shadow-sm">
-                            <label for="dedicated-page-switcher" class="text-xs font-extrabold text-[#C5A059] whitespace-nowrap">📂 الانتقال لصفحة:</label>
-                            <select id="dedicated-page-switcher" onchange="switchDedicatedPage(this.value, false)"
-                                    class="bg-white text-[#0F1A28] font-extrabold text-xs sm:text-sm px-2.5 py-1.5 rounded-lg border border-[#9E978E] cursor-pointer">
-                                <option value="section-ticket-entry">➕ 1. تسجيل عملية تذكرة طيران (الرئيسية)</option>
-                                <option value="section-report-table">📋 2. جدول التقرير المفصل والبحث</option>
-                                <option value="section-kpi-summary">📊 3. الملخص المالي والعمولات (6 بطاقات)</option>
-                                <option value="ALL">🖥️ 4. عرض شامل (جميع الأقسام معاً)</option>
-                            </select>
-                        </div>
-
-                        <!-- مفتاح الوضع الليلي الفوري داخل النظام (Toggle Switch - role="switch") -->
-                        <div class="theme-sub-surface px-3 py-1.5 rounded-xl flex items-center gap-2">
-                            <span id="dash-theme-label" class="text-xs font-extrabold">🌙 ليلي</span>
-                            <button type="button" role="switch" id="dash-theme-switch" aria-checked="false" aria-labelledby="dash-theme-label"
-                                    onclick="toggleGlobalTheme()" class="ui-switch">
-                                <span class="ui-switch-thumb"></span>
-                            </button>
-                        </div>
-
-                        <!-- أدوات المدير فقط -->
-                        <div id="admin-controls" class="hidden flex flex-wrap items-center gap-2">
-                            <select id="employee-filter" onchange="renderDashboard()" aria-label="فلترة حسب الموظف"
-                                    class="px-3 py-2 rounded-xl theme-input text-xs cursor-pointer">
-                                <option value="ALL">👥 جميع الموظفين</option>
-                                <option value="empA" id="filter-opt-empA">👤 الموظف أ فقط</option>
-                                <option value="empB" id="filter-opt-empB">👤 الموظف ب فقط</option>
-                            </select>
-
-                            <button type="button" onclick="openUsersModal()" class="bg-[#FDF9F0] hover:bg-[#EBE7E0] text-[#0F1A28] border-2 border-[#C5A059] font-extrabold px-3 py-2 rounded-xl text-xs flex items-center gap-1 transition">
-                                <span>🔐</span> الحسابات
-                            </button>
-                        </div>
-
-                        <button type="button" onclick="exportBackupFile()" class="theme-sub-surface hover:opacity-90 font-extrabold px-3 py-2 rounded-xl text-xs flex items-center gap-1 transition">
-                            <span>📥</span> نسخة احتياطية
-                        </button>
-
-                        <button type="button" onclick="triggerRestoreFile()" class="theme-sub-surface hover:opacity-90 font-extrabold px-3 py-2 rounded-xl text-xs flex items-center gap-1 transition">
+                        <button type="button" onclick="triggerRestoreFile()"
+                                class="py-2 px-2 rounded-xl bg-[#2C425C] hover:bg-[#3b5575] text-white font-bold text-[11px] flex items-center justify-center gap-1 transition">
                             <span>📤</span> استعادة
                         </button>
                         <input type="file" id="restore-file-input" accept=".json" onchange="handleRestoreFile(event)" class="hidden">
-
-                        <button type="button" onclick="openEmailModal()" class="btn-french-navy px-3 py-2 rounded-xl text-xs flex items-center gap-1 shadow-xs">
-                            <span>✉️</span> إيميل
-                        </button>
-
-                        <button type="button" onclick="printReport()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold px-3 py-2 rounded-xl text-xs flex items-center gap-1 shadow-xs transition">
-                            <span>🖨️</span> طباعة
-                        </button>
-
-                        <button type="button" onclick="handleLogout()" class="bg-red-700 hover:bg-red-800 text-white font-extrabold px-3 py-2 rounded-xl text-xs transition">
-                            خروج
-                        </button>
                     </div>
+
+                    <button type="button" onclick="openEmailModal()"
+                            class="w-full py-2 px-3 rounded-xl bg-[#2C425C] hover:bg-[#3b5575] text-white font-bold text-xs flex items-center justify-center gap-2 transition">
+                        <span>✉️</span> إرسال التقرير للإيميل
+                    </button>
+                </div>
+            </div>
+
+            <!-- أسفل القائمة اليمنى: الوضع الليلي + زر الخروج -->
+            <div class="p-4 bg-[#0F1A28] border-t border-[#2C425C] space-y-3">
+                <div class="flex items-center justify-between px-1">
+                    <span id="dash-theme-label" class="text-xs font-extrabold text-[#EBE7E0]">🌙 الوضع الليلي</span>
+                    <button type="button" role="switch" id="dash-theme-switch" aria-checked="false" aria-labelledby="dash-theme-label"
+                            onclick="toggleGlobalTheme()" class="ui-switch">
+                        <span class="ui-switch-thumb"></span>
+                    </button>
+                </div>
+                <button type="button" onclick="handleLogout()"
+                        class="w-full py-2.5 rounded-xl bg-red-700 hover:bg-red-800 text-white font-extrabold text-xs transition">
+                    تسجيل الخروج الآمن ⬅
+                </button>
+            </div>
+        </aside>
+
+        <!-- ==========================================================================
+             مساحة العمل الرئيسية اليسرى (Clean Single-Window Workspace)
+             ========================================================================== -->
+        <main id="main-workspace" class="flex-grow p-4 sm:p-6 lg:p-7 overflow-x-hidden">
+            <div class="max-w-6xl mx-auto space-y-5">
+
+                <!-- شريط علوي مدمج يظهر فقط في شاشات الجوال والأجهزة اللوحية لفتح التبويب اليميني -->
+                <div class="lg:hidden theme-card rounded-2xl p-3.5 flex items-center justify-between shadow-xs no-print">
+                    <div class="flex items-center gap-3">
+                        <button type="button" id="hamburger-btn" onclick="openMobileSidebar()" aria-label="فتح قائمة التبويبات"
+                                class="w-10 h-10 rounded-xl bg-[#192A3E] text-white flex flex-col items-center justify-center gap-1.5 border border-[#C5A059]">
+                            <span class="w-5 h-0.5 bg-white rounded-full"></span>
+                            <span class="w-5 h-0.5 bg-[#C5A059] rounded-full"></span>
+                            <span class="w-5 h-0.5 bg-white rounded-full"></span>
+                        </button>
+                        <span id="mobile-active-tab-title" class="font-extrabold text-sm">➕ تسجيل تذكرة جديدة</span>
+                    </div>
+                    <button type="button" onclick="printReport()" class="bg-emerald-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-xs">
+                        🖨️ طباعة
+                    </button>
                 </div>
 
-                <!-- الصف الثاني: اختيار نطاق التقرير الزمني باستخدام أزرار الاختيار الأحادي المتبادلة (Radio Buttons - Named Group) -->
-                <div class="theme-sub-surface p-3 rounded-xl flex flex-wrap items-center justify-between gap-3">
-                    
-                    <fieldset class="flex flex-wrap items-center gap-2">
-                        <legend class="sr-only">نطاق التقرير الزمني</legend>
-                        <span class="text-xs font-extrabold px-1">📊 نطاق التقرير (Radio Group):</span>
-                        
-                        <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-[#9E978E] bg-white text-[#0F1A28] has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
-                            <input type="radio" name="reportPeriodRadio" value="daily" checked onchange="setFilterMode(this.value)" class="accent-[#C5A059]">
-                            <span>📅 يومي منفرد</span>
-                        </label>
-
-                        <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-[#9E978E] bg-white text-[#0F1A28] has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
-                            <input type="radio" name="reportPeriodRadio" value="monthly" onchange="setFilterMode(this.value)" class="accent-[#C5A059]">
-                            <span>🗓️ الشهر كامل</span>
-                        </label>
-
-                        <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold border border-[#9E978E] bg-white text-[#0F1A28] has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
-                            <input type="radio" name="reportPeriodRadio" value="range" onchange="setFilterMode(this.value)" class="accent-[#C5A059]">
-                            <span>⏳ فترة مخصصة (من - إلى)</span>
-                        </label>
-                    </fieldset>
-
-                    <!-- محددات التواريخ التقويمية (Calendar Grid Date Pickers) -->
-                    <div class="flex flex-wrap items-center gap-2">
-                        <div id="filter-box-daily" class="flex items-center gap-2 px-3 py-1 rounded-xl theme-card">
-                            <label for="date-picker" class="text-xs font-extrabold">اختر اليوم:</label>
-                            <input type="date" id="date-picker" onchange="renderDashboard()" class="theme-input px-2 py-1 rounded-lg text-xs cursor-pointer">
-                        </div>
-
-                        <div id="filter-box-monthly" class="hidden flex items-center gap-2 px-3 py-1 rounded-xl theme-card">
-                            <label for="month-picker" class="text-xs font-extrabold">اختر الشهر:</label>
-                            <input type="month" id="month-picker" onchange="renderDashboard()" class="theme-input px-2 py-1 rounded-lg text-xs cursor-pointer">
-                        </div>
-
-                        <div id="filter-box-range" class="hidden flex flex-wrap items-center gap-2 px-3 py-1 rounded-xl theme-card">
-                            <div class="flex items-center gap-1">
-                                <label for="date-from" class="text-xs font-extrabold">من:</label>
-                                <input type="date" id="date-from" onchange="renderDashboard()" class="theme-input px-2 py-1 rounded-lg text-xs cursor-pointer">
-                            </div>
-                            <span>|</span>
-                            <div class="flex items-center gap-1">
-                                <label for="date-to" class="text-xs font-extrabold">إلى:</label>
-                                <input type="date" id="date-to" onchange="renderDashboard()" class="theme-input px-2 py-1 rounded-lg text-xs cursor-pointer">
-                            </div>
+                <!-- ترويسة رسمية خاصة بالطباعة الورقية فقط (A4 Print Header) -->
+                <div class="hidden print-flex justify-between items-center border-b-2 border-[#192A3E] pb-2.5 mb-2">
+                    <div class="flex items-center gap-3 text-right">
+                        <img src="logo1.jpg" alt="Logo" class="w-12 h-12 object-contain rounded-lg border border-[#9E978E] p-0.5"
+                             onerror="this.style.display='none';">
+                        <div>
+                            <h1 id="print-main-title" class="text-lg font-extrabold text-[#192A3E]">✈️ تقرير المبيعات والعمولات - مكتب الطيران</h1>
+                            <p id="print-meta-info" class="text-xs font-bold text-[#0F1A28] mt-0.5"></p>
                         </div>
                     </div>
-                </div>
-            </header>
-
-            <!-- ==========================================================================
-                 شريط التتبع الداخلي اللاصق (Sticky Scrollspy / In-Page Navigation)
-                 يحتوي على روابط حقيقية (#section-id) ويحدث aria-current="location"
-                 ========================================================================== -->
-            <nav id="scrollspy-nav" aria-label="التنقل السريع وتتبع القسم الحالي"
-                 class="sticky top-2 z-30 theme-card rounded-2xl shadow-md px-3 py-2 flex flex-wrap items-center justify-between gap-2 no-print">
-                <div class="flex flex-wrap items-center gap-1.5">
-                    <span class="text-[11px] font-extrabold px-2 py-1 rounded bg-[#EBE7E0] text-[#0F1A28] border border-[#9E978E]">📍 القسم النشط:</span>
-                    
-                    <a href="#section-ticket-entry" id="spy-link-entry" onclick="handleScrollspyClick(event, 'section-ticket-entry')"
-                       aria-current="location"
-                       class="scrollspy-link px-3.5 py-1.5 rounded-xl font-extrabold text-xs flex items-center gap-1.5">
-                        <span>➕</span> تسجيل عملية تذكرة طيران
-                    </a>
-
-                    <a href="#section-report-table" id="spy-link-table" onclick="handleScrollspyClick(event, 'section-report-table')"
-                       class="scrollspy-link px-3.5 py-1.5 rounded-xl font-extrabold text-xs flex items-center gap-1.5">
-                        <span>📋</span> جدول التقرير المفصل (<span id="spy-count-badge">0</span>)
-                    </a>
-
-                    <a href="#section-kpi-summary" id="spy-link-kpi" onclick="handleScrollspyClick(event, 'section-kpi-summary')"
-                       class="scrollspy-link px-3.5 py-1.5 rounded-xl font-extrabold text-xs flex items-center gap-1.5">
-                        <span>📊</span> الملخص المالي والعمولات
-                    </a>
-                </div>
-
-                <div class="text-[11px] font-bold opacity-80 hidden md:block px-2">
-                    💡 يمكنك فتح كل قسم كصفحة مستقلة أو التمرير التلقائي
-                </div>
-            </nav>
-
-            <!-- ==========================================================================
-                 الصفحة المستقلة (1): تسجيل عملية تذكرة طيران (#section-ticket-entry)
-                 هي الصفحة الرئيسية الافتراضية عند تسجيل الدخول
-                 ========================================================================== -->
-            <section id="section-ticket-entry" aria-labelledby="heading-ticket-entry" class="theme-card rounded-2xl shadow-md p-5 md:p-6 no-print scroll-mt-20">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-5 pb-3 border-b-2 border-[#BEB8B0]">
-                    <div>
-                        <h3 id="heading-ticket-entry" class="text-lg sm:text-xl font-extrabold flex items-center gap-2">
-                            <span>➕</span> تسجيل عملية تذكرة طيران (الصفحة الرئيسية لإدخال المبيعات)
-                        </h3>
-                        <p class="text-xs font-bold opacity-75 mt-0.5">أدخل بيانات تذكرة العميل ثم اضغط حفظ، أو انتقل لصفحة الجدول لعرض السجلات السابقة</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs bg-[#FDF9F0] text-[#0F1A28] font-extrabold px-3 py-1.5 rounded-xl border-2 border-[#C5A059]">
-                            العمولة: 10% للإصدار والتعديل | 0% للمسترجع والملغي
-                        </span>
-                        <button type="button" onclick="switchDedicatedPage('section-report-table', false)"
-                                class="btn-french-navy px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 shadow-xs">
-                            <span>📋</span> عرض صفحة الجدول ⬅
-                        </button>
-                    </div>
-                </div>
-
-                <!-- شبكة الحقول الأساسية -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- 1. اسم العميل -->
-                    <div>
-                        <label for="client-name" class="block text-xs theme-label mb-1">اسم العميل / الشركة *</label>
-                        <input type="text" id="client-name" placeholder="الاسم الثلاثي للعميل" 
-                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
-                    </div>
-
-                    <!-- 2. رقم الجوال -->
-                    <div>
-                        <label for="client-phone" class="block text-xs theme-label mb-1">رقم جوال العميل (لواتساب) *</label>
-                        <input type="text" id="client-phone" placeholder="05xxxxxxxx" dir="ltr"
-                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
-                    </div>
-
-                    <!-- 3. رقم الحجز PNR -->
-                    <div>
-                        <label for="pnr-code" class="block text-xs theme-label mb-1">رقم الحجز (PNR) *</label>
-                        <input type="text" id="pnr-code" placeholder="مثال: XY789Z" maxlength="12" dir="ltr"
-                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm uppercase-input font-mono">
-                    </div>
-
-                    <!-- 4. شركة الطيران مع خيار "أخرى" -->
-                    <div>
-                        <label for="airline-select" class="block text-xs theme-label mb-1">شركة الطيران *</label>
-                        <select id="airline-select" onchange="toggleCustomAirlineInput()" class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm cursor-pointer">
-                            <option value="الخطوط السعودية (Saudia)">الخطوط السعودية (Saudia)</option>
-                            <option value="طيران ناس (Flynas)">طيران ناس (Flynas)</option>
-                            <option value="طيران أديل (Flyadeal)">طيران أديل (Flyadeal)</option>
-                            <option value="طيران الإمارات (Emirates)">طيران الإمارات (Emirates)</option>
-                            <option value="الخطوط القطرية (Qatar Airways)">الخطوط القطرية (Qatar Airways)</option>
-                            <option value="مصر للطيران (EgyptAir)">مصر للطيران (EgyptAir)</option>
-                            <option value="طيران الخليج (Gulf Air)">طيران الخليج (Gulf Air)</option>
-                            <option value="فلاي دبي (Flydubai)">فلاي دبي (Flydubai)</option>
-                            <option value="العربية للطيران (Air Arabia)">العربية للطيران (Air Arabia)</option>
-                            <option value="الخطوط التركية (Turkish Airlines)">الخطوط التركية (Turkish Airlines)</option>
-                            <option value="OTHER">➕ أخرى (إضافة يدوية...)</option>
-                        </select>
-                        <input type="text" id="airline-custom" placeholder="اكتب اسم شركة الطيران هنا..." 
-                               class="hidden mt-2 w-full px-3.5 py-2 rounded-xl theme-input text-sm">
-                    </div>
-
-                    <!-- 5. حالة التذكرة -->
-                    <div>
-                        <label for="ticket-status" class="block text-xs theme-label mb-1">حالة التذكرة *</label>
-                        <select id="ticket-status" onchange="handleFormStatusOrPaymentChange()" class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm cursor-pointer">
-                            <option value="issue">✅ إصدار جديد (Issue)</option>
-                            <option value="reissue">🔄 تعديل (Reissue)</option>
-                            <option value="refund">↩️ مسترجعة (Refund - بدون عمولة)</option>
-                            <option value="void">🚫 ملغاة (Void - بدون عمولة)</option>
-                        </select>
-                    </div>
-
-                    <!-- 6. المبلغ الأساسي (التكلفة) -->
-                    <div>
-                        <label for="base-price" class="block text-xs theme-label mb-1">المبلغ الأساسي (التكلفة) *</label>
-                        <input type="number" id="base-price" placeholder="0.00" step="0.01" oninput="onTotalPriceOrBaseInput()"
-                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
-                    </div>
-
-                    <!-- 7. المبلغ الإجمالي (سعر البيع) -->
-                    <div>
-                        <label for="total-price" class="block text-xs theme-label mb-1">المبلغ الإجمالي (سعر البيع) *</label>
-                        <input type="number" id="total-price" placeholder="0.00" step="0.01" oninput="onTotalPriceOrBaseInput()"
-                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
-                    </div>
-
-                    <!-- 8. المبلغ المدفوع فعلياً -->
-                    <div>
-                        <label for="paid-amount" class="block text-xs theme-label mb-1">المبلغ المدفوع فعلياً *</label>
-                        <input type="number" id="paid-amount" placeholder="يُملأ تلقائياً أو عدله للآجل" step="0.01" oninput="onPaidAmountManualInput()"
-                               class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                    <div class="text-left text-xs font-bold text-[#0F1A28] bg-[#EBE7E0] px-3 py-1.5 rounded-lg border border-[#9E978E]">
+                        <div>فترة التقرير: <span id="print-date-badge" class="font-extrabold"></span></div>
+                        <div class="text-[10px] mt-0.5">رقم النسخة: <span id="print-version-badge" class="font-mono font-extrabold">v1</span> | العمولة: 10% (تُحذف للمسترجع)</div>
                     </div>
                 </div>
 
                 <!-- ==========================================================================
-                     الفصل الدلالي الدقيق:
-                     1. أزرار الاختيار الأحادي المتبادلة لطريقة الدفع (Radio Buttons - type="radio")
-                     2. مربعات الاختيار المستقلة لإضافات التذكرة (Checkboxes - type="checkbox")
-                     3. محدد التاريخ التقويمي (Calendar Date Picker) + العجلة الدوارة للوقت (iOS Wheel Picker & <input type="time">)
+                     شريط تحديد فترة التقرير (يظهر فقط عند فتح تبويب الجدول أو تبويب الملخص المالي)
+                     مخفي تماماً في صفحة تسجيل التذكرة لمنع أي تشتيت أو ازدحام
                      ========================================================================== -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-5 pt-4 border-t border-[#BEB8B0]">
-                    
-                    <!-- أولاً: مجموعة أزرار الاختيار الأحادي لطريقة الدفع (Radio Buttons Named Group) -->
-                    <fieldset class="lg:col-span-4 theme-sub-surface p-3.5 rounded-xl">
-                        <legend class="text-xs theme-label px-1 mb-2">💳 طريقة الدفع المعتمدة (Radio Group - اختيار أحادي) *:</legend>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg border border-[#9E978E] bg-white text-[#0F1A28] font-extrabold text-xs has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
-                                <input type="radio" name="entryPaymentMethodRadio" value="شبكة" checked onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
-                                <span>💳 شبكة / فيزا</span>
-                            </label>
-                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg border border-[#9E978E] bg-white text-[#0F1A28] font-extrabold text-xs has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
-                                <input type="radio" name="entryPaymentMethodRadio" value="كاش" onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
-                                <span>💵 كاش (نقدي)</span>
-                            </label>
-                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg border border-[#9E978E] bg-white text-[#0F1A28] font-extrabold text-xs has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
-                                <input type="radio" name="entryPaymentMethodRadio" value="تحويل" onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
-                                <span>🏦 تحويل بنكي</span>
-                            </label>
-                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg border border-[#9E978E] bg-white text-[#0F1A28] font-extrabold text-xs has-[:checked]:bg-[#192A3E] has-[:checked]:text-white has-[:checked]:border-[#C5A059] transition">
-                                <input type="radio" name="entryPaymentMethodRadio" value="آجل" onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
-                                <span>📒 آجل / ذمم</span>
-                            </label>
+                <div id="shared-report-period-bar" class="hidden theme-card rounded-2xl p-4 shadow-xs no-print">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <h3 class="text-sm font-extrabold flex items-center gap-1.5">
+                                <span>📅</span> تحديد الفترة الزمنية للتقرير:
+                            </h3>
+                            <p id="report-date-subtitle" class="text-xs font-bold opacity-75 mt-0.5"></p>
                         </div>
-                        <!-- حقل متوافق مع الدوال المحاسبية الأصلية -->
-                        <input type="hidden" id="payment-method" value="شبكة">
-                    </fieldset>
 
-                    <!-- ثانياً: مربعات الاختيار المستقلة لإضافات التذكرة (Checkboxes - تنتظر زر الحفظ) -->
-                    <fieldset class="lg:col-span-4 theme-sub-surface p-3.5 rounded-xl">
-                        <legend class="text-xs theme-label px-1 mb-2">🧳 إضافات ومرفقات التذكرة (Checkboxes - خيارات مستقلة):</legend>
-                        <div class="grid grid-cols-2 gap-2 text-xs font-extrabold">
-                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg bg-white text-[#0F1A28] border border-[#9E978E]">
-                                <input type="checkbox" id="addon-baggage" value="وزن إضافي" class="w-4 h-4 accent-[#192A3E] rounded">
-                                <span>🧳 وزن إضافي</span>
+                        <fieldset class="flex flex-wrap items-center gap-2">
+                            <legend class="sr-only">نطاق التقرير الزمني</legend>
+                            <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold border border-[#9E978E] theme-input has-[:checked]:!bg-[#192A3E] has-[:checked]:!text-white has-[:checked]:!border-[#C5A059] transition">
+                                <input type="radio" name="reportPeriodRadio" value="daily" checked onchange="setFilterMode(this.value)" class="accent-[#C5A059]">
+                                <span>يومي منفرد</span>
                             </label>
-                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg bg-white text-[#0F1A28] border border-[#9E978E]">
-                                <input type="checkbox" id="addon-meal" value="وجبة" class="w-4 h-4 accent-[#192A3E] rounded">
-                                <span>🍽️ وجبة طيران</span>
-                            </label>
-                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg bg-white text-[#0F1A28] border border-[#9E978E]">
-                                <input type="checkbox" id="addon-seat" value="مقعد مميز" class="w-4 h-4 accent-[#192A3E] rounded">
-                                <span>💺 مقعد مميز</span>
-                            </label>
-                            <label class="cursor-pointer flex items-center gap-2 p-2 rounded-lg bg-white text-[#0F1A28] border border-[#9E978E]">
-                                <input type="checkbox" id="addon-auto-whatsapp" value="AUTO_WA" class="w-4 h-4 accent-emerald-700 rounded">
-                                <span>💬 واتساب بعد الحفظ</span>
-                            </label>
-                        </div>
-                    </fieldset>
 
-                    <!-- ثالثاً: تاريخ العملية (Calendar Date Picker) + وقت العملية (Time Field + Scrollable iOS Wheel Picker) -->
-                    <div class="lg:col-span-4 theme-sub-surface p-3.5 rounded-xl space-y-2.5">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label for="sale-entry-date" class="block text-xs theme-label mb-1">📅 تاريخ العملية *</label>
-                                <input type="date" id="sale-entry-date" class="w-full px-2.5 py-2 rounded-xl theme-input text-xs cursor-pointer">
+                            <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold border border-[#9E978E] theme-input has-[:checked]:!bg-[#192A3E] has-[:checked]:!text-white has-[:checked]:!border-[#C5A059] transition">
+                                <input type="radio" name="reportPeriodRadio" value="monthly" onchange="setFilterMode(this.value)" class="accent-[#C5A059]">
+                                <span>الشهر كامل</span>
+                            </label>
+
+                            <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold border border-[#9E978E] theme-input has-[:checked]:!bg-[#192A3E] has-[:checked]:!text-white has-[:checked]:!border-[#C5A059] transition">
+                                <input type="radio" name="reportPeriodRadio" value="range" onchange="setFilterMode(this.value)" class="accent-[#C5A059]">
+                                <span>فترة (من - إلى)</span>
+                            </label>
+                        </fieldset>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <div id="filter-box-daily" class="flex items-center gap-2 px-3 py-1.5 rounded-xl theme-sub-surface">
+                                <label for="date-picker" class="text-xs font-extrabold">اليوم:</label>
+                                <input type="date" id="date-picker" onchange="renderDashboard()" class="theme-input px-2.5 py-1 rounded-lg text-xs cursor-pointer">
                             </div>
-                            <div>
-                                <div class="flex items-center justify-between mb-1">
-                                    <label for="sale-entry-time" class="text-xs theme-label">⏰ وقت العملية</label>
-                                    <button type="button" onclick="toggleWheelTimePicker()"
-                                            class="text-[11px] font-extrabold px-2 py-0.5 rounded bg-[#192A3E] text-[#C5A059] border border-[#C5A059] hover:bg-[#2C425C] transition"
-                                            title="فتح/إغلاق العجلة الدوارة لاختيار الوقت (iOS Wheel Picker)">
-                                        🎡 عجلة الوقت
-                                    </button>
+
+                            <div id="filter-box-monthly" class="hidden flex items-center gap-2 px-3 py-1.5 rounded-xl theme-sub-surface">
+                                <label for="month-picker" class="text-xs font-extrabold">الشهر:</label>
+                                <input type="month" id="month-picker" onchange="renderDashboard()" class="theme-input px-2.5 py-1 rounded-lg text-xs cursor-pointer">
+                            </div>
+
+                            <div id="filter-box-range" class="hidden flex flex-wrap items-center gap-2 px-3 py-1.5 rounded-xl theme-sub-surface">
+                                <div class="flex items-center gap-1">
+                                    <label for="date-from" class="text-xs font-extrabold">من:</label>
+                                    <input type="date" id="date-from" onchange="renderDashboard()" class="theme-input px-2 py-1 rounded-lg text-xs cursor-pointer">
                                 </div>
-                                <!-- حقل الوقت القياسي المقسم إلى ساعات ودقائق و ص/م (<input type="time">) -->
-                                <input type="time" id="sale-entry-time" oninput="syncTimeInputToWheel()" dir="ltr"
-                                       class="w-full px-2.5 py-2 rounded-xl theme-input text-xs cursor-pointer">
+                                <span>⬅</span>
+                                <div class="flex items-center gap-1">
+                                    <label for="date-to" class="text-xs font-extrabold">إلى:</label>
+                                    <input type="date" id="date-to" onchange="renderDashboard()" class="theme-input px-2 py-1 rounded-lg text-xs cursor-pointer">
+                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- العجلة الدوارة لاختيار الوقت (Scrollable Wheel Picker - iOS Slot-Machine Drum with Gray Band) -->
-                        <div id="ios-wheel-picker-box" class="hidden pt-1">
-                            <div class="flex items-center justify-between text-[11px] font-extrabold mb-1 px-1">
-                                <span>🎡 أدر العجلة لاختيار الوقت (الساعة : الدقيقة : ص/م):</span>
-                                <span id="wheel-live-readout" class="font-mono bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded">12:00 PM</span>
+                <!-- ==========================================================================
+                     النافذة الأولى (1): تسجيل تذكرة جديدة (#section-ticket-entry)
+                     تفتح وحدها تماماً عند اختيار تبويب "تسجيل تذكرة جديدة"
+                     ========================================================================== -->
+                <section id="section-ticket-entry" aria-labelledby="heading-ticket-entry" class="theme-card rounded-2xl shadow-md p-5 md:p-6 no-print">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b-2 border-[#BEB8B0]">
+                        <div>
+                            <h3 id="heading-ticket-entry" class="text-lg sm:text-xl font-extrabold flex items-center gap-2">
+                                <span>➕</span> تسجيل عملية بيع تذكرة طيران
+                            </h3>
+                            <p class="text-xs font-bold opacity-75 mt-1">أدخل بيانات التذكرة أدناه ليتم احتساب المربح وعمولة الـ 10% تلقائياً</p>
+                        </div>
+                        <span class="text-xs bg-[#FDF9F0] text-[#0F1A28] font-extrabold px-3.5 py-1.5 rounded-xl border-2 border-[#C5A059]">
+                            العمولة: 10% للإصدار والتعديل | 0% للمسترجع والملغي
+                        </span>
+                    </div>
+
+                    <!-- الصف الأول والثاني: بيانات العميل والحجز والأسعار (شبكة منتظمة 4 أعمدة) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- 1. اسم العميل -->
+                        <div>
+                            <label for="client-name" class="block text-xs theme-label mb-1.5">اسم العميل / الشركة *</label>
+                            <input type="text" id="client-name" placeholder="الاسم الثلاثي للعميل" 
+                                   class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                        </div>
+
+                        <!-- 2. رقم الجوال -->
+                        <div>
+                            <label for="client-phone" class="block text-xs theme-label mb-1.5">رقم جوال العميل (لواتساب) *</label>
+                            <input type="text" id="client-phone" placeholder="05xxxxxxxx" dir="ltr"
+                                   class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                        </div>
+
+                        <!-- 3. رقم الحجز PNR -->
+                        <div>
+                            <label for="pnr-code" class="block text-xs theme-label mb-1.5">رقم الحجز (PNR) *</label>
+                            <input type="text" id="pnr-code" placeholder="مثال: XY789Z" maxlength="12" dir="ltr"
+                                   class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm uppercase-input font-mono">
+                        </div>
+
+                        <!-- 4. شركة الطيران مع خيار "أخرى" -->
+                        <div>
+                            <label for="airline-select" class="block text-xs theme-label mb-1.5">شركة الطيران *</label>
+                            <select id="airline-select" onchange="toggleCustomAirlineInput()" class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm cursor-pointer">
+                                <option value="الخطوط السعودية (Saudia)">الخطوط السعودية (Saudia)</option>
+                                <option value="طيران ناس (Flynas)">طيران ناس (Flynas)</option>
+                                <option value="طيران أديل (Flyadeal)">طيران أديل (Flyadeal)</option>
+                                <option value="طيران الإمارات (Emirates)">طيران الإمارات (Emirates)</option>
+                                <option value="الخطوط القطرية (Qatar Airways)">الخطوط القطرية (Qatar Airways)</option>
+                                <option value="مصر للطيران (EgyptAir)">مصر للطيران (EgyptAir)</option>
+                                <option value="طيران الخليج (Gulf Air)">طيران الخليج (Gulf Air)</option>
+                                <option value="فلاي دبي (Flydubai)">فلاي دبي (Flydubai)</option>
+                                <option value="العربية للطيران (Air Arabia)">العربية للطيران (Air Arabia)</option>
+                                <option value="الخطوط التركية (Turkish Airlines)">الخطوط التركية (Turkish Airlines)</option>
+                                <option value="OTHER">➕ أخرى (إضافة يدوية...)</option>
+                            </select>
+                            <input type="text" id="airline-custom" placeholder="اكتب اسم شركة الطيران هنا..." 
+                                   class="hidden mt-2 w-full px-3.5 py-2 rounded-xl theme-input text-sm">
+                        </div>
+
+                        <!-- 5. حالة التذكرة -->
+                        <div>
+                            <label for="ticket-status" class="block text-xs theme-label mb-1.5">حالة التذكرة *</label>
+                            <select id="ticket-status" onchange="handleFormStatusOrPaymentChange()" class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm cursor-pointer">
+                                <option value="issue">✅ إصدار جديد (Issue)</option>
+                                <option value="reissue">🔄 تعديل (Reissue)</option>
+                                <option value="refund">↩️ مسترجعة (Refund - بدون عمولة)</option>
+                                <option value="void">🚫 ملغاة (Void - بدون عمولة)</option>
+                            </select>
+                        </div>
+
+                        <!-- 6. المبلغ الأساسي (التكلفة) -->
+                        <div>
+                            <label for="base-price" class="block text-xs theme-label mb-1.5">المبلغ الأساسي (التكلفة) *</label>
+                            <input type="number" id="base-price" placeholder="0.00" step="0.01" oninput="onTotalPriceOrBaseInput()"
+                                   class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                        </div>
+
+                        <!-- 7. المبلغ الإجمالي (سعر البيع) -->
+                        <div>
+                            <label for="total-price" class="block text-xs theme-label mb-1.5">المبلغ الإجمالي (سعر البيع) *</label>
+                            <input type="number" id="total-price" placeholder="0.00" step="0.01" oninput="onTotalPriceOrBaseInput()"
+                                   class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                        </div>
+
+                        <!-- 8. المبلغ المدفوع فعلياً -->
+                        <div>
+                            <label for="paid-amount" class="block text-xs theme-label mb-1.5">المبلغ المدفوع فعلياً *</label>
+                            <input type="number" id="paid-amount" placeholder="يُملأ تلقائياً أو عدله للآجل" step="0.01" oninput="onPaidAmountManualInput()"
+                                   class="w-full px-3.5 py-2.5 rounded-xl theme-input text-sm">
+                        </div>
+                    </div>
+
+                    <!-- الصف الثالث المنظم: طريقة الدفع + المرفقات + التاريخ والوقت -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-5 pt-5 border-t border-[#BEB8B0]">
+                        
+                        <!-- 1. طريقة الدفع المعتمدة (Radio Group) -->
+                        <fieldset class="theme-sub-surface p-4 rounded-xl">
+                            <legend class="text-xs theme-label px-1 mb-2">💳 طريقة الدفع المعتمدة *:</legend>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-lg border border-[#9E978E] theme-input font-extrabold text-xs has-[:checked]:!bg-[#192A3E] has-[:checked]:!text-white has-[:checked]:!border-[#C5A059] transition">
+                                    <input type="radio" name="entryPaymentMethodRadio" value="شبكة" checked onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
+                                    <span>💳 شبكة / فيزا</span>
+                                </label>
+                                <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-lg border border-[#9E978E] theme-input font-extrabold text-xs has-[:checked]:!bg-[#192A3E] has-[:checked]:!text-white has-[:checked]:!border-[#C5A059] transition">
+                                    <input type="radio" name="entryPaymentMethodRadio" value="كاش" onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
+                                    <span>💵 كاش (نقدي)</span>
+                                </label>
+                                <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-lg border border-[#9E978E] theme-input font-extrabold text-xs has-[:checked]:!bg-[#192A3E] has-[:checked]:!text-white has-[:checked]:!border-[#C5A059] transition">
+                                    <input type="radio" name="entryPaymentMethodRadio" value="تحويل" onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
+                                    <span>🏦 تحويل بنكي</span>
+                                </label>
+                                <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-lg border border-[#9E978E] theme-input font-extrabold text-xs has-[:checked]:!bg-[#192A3E] has-[:checked]:!text-white has-[:checked]:!border-[#C5A059] transition">
+                                    <input type="radio" name="entryPaymentMethodRadio" value="آجل" onchange="syncPaymentRadioToHidden(this.value)" class="accent-[#C5A059]">
+                                    <span>📒 آجل / ذمم</span>
+                                </label>
                             </div>
-                            <div class="ios-wheel-drum" dir="ltr" aria-label="عجلة اختيار الوقت الدوارة">
-                                <div class="ios-wheel-highlight-band"></div>
-                                <div class="grid grid-cols-3 h-full text-center">
-                                    <!-- عمود الساعات (01 - 12) -->
-                                    <div id="wheel-col-hour" class="ios-wheel-column" onscroll="onWheelColumnScroll('hour')"></div>
-                                    <!-- عمود الدقائق (00 - 59) -->
-                                    <div id="wheel-col-minute" class="ios-wheel-column" onscroll="onWheelColumnScroll('minute')"></div>
-                                    <!-- عمود الفترة (AM / PM) -->
-                                    <div id="wheel-col-ampm" class="ios-wheel-column" onscroll="onWheelColumnScroll('ampm')">
-                                        <div class="ios-wheel-item" data-val="AM" onclick="snapWheelToValue('ampm', 'AM')">AM (ص)</div>
-                                        <div class="ios-wheel-item" data-val="PM" onclick="snapWheelToValue('ampm', 'PM')">PM (م)</div>
+                            <input type="hidden" id="payment-method" value="شبكة">
+                        </fieldset>
+
+                        <!-- 2. إضافات ومرفقات التذكرة (Checkboxes) -->
+                        <fieldset class="theme-sub-surface p-4 rounded-xl">
+                            <legend class="text-xs theme-label px-1 mb-2">🧳 إضافات ومرفقات التذكرة (اختياري):</legend>
+                            <div class="grid grid-cols-2 gap-2 text-xs font-extrabold">
+                                <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-lg theme-input border border-[#9E978E]">
+                                    <input type="checkbox" id="addon-baggage" value="وزن إضافي" class="w-4 h-4 accent-[#C5A059] rounded">
+                                    <span>🧳 وزن إضافي</span>
+                                </label>
+                                <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-lg theme-input border border-[#9E978E]">
+                                    <input type="checkbox" id="addon-meal" value="وجبة" class="w-4 h-4 accent-[#C5A059] rounded">
+                                    <span>🍽️ وجبة طيران</span>
+                                </label>
+                                <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-lg theme-input border border-[#9E978E]">
+                                    <input type="checkbox" id="addon-seat" value="مقعد مميز" class="w-4 h-4 accent-[#C5A059] rounded">
+                                    <span>💺 مقعد مميز</span>
+                                </label>
+                                <label class="cursor-pointer flex items-center gap-2 p-2.5 rounded-lg theme-input border border-[#9E978E]">
+                                    <input type="checkbox" id="addon-auto-whatsapp" value="AUTO_WA" class="w-4 h-4 accent-emerald-600 rounded">
+                                    <span>💬 واتساب تلقائي</span>
+                                </label>
+                            </div>
+                        </fieldset>
+
+                        <!-- 3. تاريخ ووقت العملية + عجلة الوقت الاختيارية -->
+                        <div class="theme-sub-surface p-4 rounded-xl space-y-3">
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div>
+                                    <label for="sale-entry-date" class="block text-xs theme-label mb-1.5">📅 تاريخ العملية *</label>
+                                    <input type="date" id="sale-entry-date" class="w-full px-2.5 py-2 rounded-xl theme-input text-xs cursor-pointer">
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1.5">
+                                        <label for="sale-entry-time" class="text-xs theme-label">⏰ الوقت</label>
+                                        <button type="button" onclick="toggleWheelTimePicker()"
+                                                class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-[#192A3E] text-[#C5A059] border border-[#C5A059] hover:bg-[#2C425C] transition">
+                                            🎡 عجلة الوقت
+                                        </button>
+                                    </div>
+                                    <input type="time" id="sale-entry-time" oninput="syncTimeInputToWheel()" dir="ltr"
+                                           class="w-full px-2.5 py-2 rounded-xl theme-input text-xs cursor-pointer">
+                                </div>
+                            </div>
+
+                            <!-- العجلة الدوارة لاختيار الوقت (تفتح عند الضغط على زر عجلة الوقت) -->
+                            <div id="ios-wheel-picker-box" class="hidden pt-1">
+                                <div class="flex items-center justify-between text-[11px] font-extrabold mb-1 px-1">
+                                    <span>🎡 اختر الوقت:</span>
+                                    <span id="wheel-live-readout" class="font-mono bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded">12:00 PM</span>
+                                </div>
+                                <div class="ios-wheel-drum" dir="ltr" aria-label="عجلة اختيار الوقت الدوارة">
+                                    <div class="ios-wheel-highlight-band"></div>
+                                    <div class="grid grid-cols-3 h-full text-center">
+                                        <div id="wheel-col-hour" class="ios-wheel-column" onscroll="onWheelColumnScroll('hour')"></div>
+                                        <div id="wheel-col-minute" class="ios-wheel-column" onscroll="onWheelColumnScroll('minute')"></div>
+                                        <div id="wheel-col-ampm" class="ios-wheel-column" onscroll="onWheelColumnScroll('ampm')">
+                                            <div class="ios-wheel-item" data-val="AM" onclick="snapWheelToValue('ampm', 'AM')">AM (ص)</div>
+                                            <div class="ios-wheel-item" data-val="PM" onclick="snapWheelToValue('ampm', 'PM')">PM (م)</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- شريط المعاينة المحاسبية الفورية + زر حفظ التذكرة -->
-                <div class="mt-5 theme-sub-surface rounded-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="flex flex-wrap justify-around items-center gap-6 text-xs sm:text-sm w-full md:w-auto">
-                        <div>
-                            <span class="font-bold">صافي مربح التذكرة: </span>
-                            <span id="preview-profit" class="font-extrabold text-base sm:text-lg underline">0.00</span>
+                    <!-- شريط المعاينة المحاسبية الفورية + زر الحفظ -->
+                    <div class="mt-6 theme-sub-surface rounded-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div class="flex flex-wrap justify-around items-center gap-6 text-xs sm:text-sm w-full md:w-auto">
+                            <div>
+                                <span class="font-bold">صافي مربح التذكرة: </span>
+                                <span id="preview-profit" class="font-extrabold text-base sm:text-lg underline">0.00</span>
+                            </div>
+                            <div>
+                                <span class="font-bold">عمولة الموظف (10%): </span>
+                                <span id="preview-commission" class="font-extrabold text-emerald-700 text-base sm:text-lg">0.00</span>
+                                <span id="preview-status-note" class="text-[11px] font-extrabold text-red-700 mr-1 hidden">(محذوفة للاسترجاع/الإلغاء)</span>
+                            </div>
+                            <div>
+                                <span class="font-bold">المتبقي على العميل (دين): </span>
+                                <span id="preview-debt" class="font-extrabold text-red-700 text-base sm:text-lg">0.00</span>
+                            </div>
                         </div>
-                        <div>
-                            <span class="font-bold">عمولة الموظف (10%): </span>
-                            <span id="preview-commission" class="font-extrabold text-emerald-700 text-base sm:text-lg">0.00</span>
-                            <span id="preview-status-note" class="text-[11px] font-extrabold text-red-700 mr-1 hidden">(محذوفة للاسترجاع/الإلغاء)</span>
-                        </div>
-                        <div>
-                            <span class="font-bold">المتبقي على العميل (دين/ذمم): </span>
-                            <span id="preview-debt" class="font-extrabold text-red-700 text-base sm:text-lg">0.00</span>
-                        </div>
+
+                        <button type="button" onclick="addNewSale()"
+                                class="w-full md:w-auto btn-french-navy py-3 px-8 rounded-xl shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base">
+                            <span>💾</span> حفظ التذكرة وإضافتها للسجل
+                        </button>
                     </div>
+                </section>
 
-                    <button type="button" onclick="addNewSale()"
-                            class="w-full md:w-auto btn-french-navy py-3 px-8 rounded-xl shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base">
-                        <span>💾</span> حفظ العملية وإضافتها للسجل
-                    </button>
-                </div>
-            </section>
-
-            <!-- ==========================================================================
-                 الصفحة المستقلة (2): الملخص المالي والعمولات (#section-kpi-summary)
-                 تفتح كصفحة مستقلة عند اختيارها من القائمة المنسدلة أو الدرج الجانبي، وتظهر دائماً في الطباعة
-                 ========================================================================== -->
-            <section id="section-kpi-summary" aria-labelledby="heading-kpi-summary" class="hidden space-y-4 scroll-mt-20">
-                <div class="theme-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-2 no-print">
-                    <div>
+                <!-- ==========================================================================
+                     النافذة الثانية (2): الملخص المالي والعمولات (#section-kpi-summary)
+                     تفتح وحدها عند الضغط على تبويب "الملخص المالي والعمولات" في القائمة اليمنى
+                     ========================================================================== -->
+                <section id="section-kpi-summary" aria-labelledby="heading-kpi-summary" class="hidden space-y-4">
+                    <div class="theme-card rounded-2xl p-5 no-print">
                         <h3 id="heading-kpi-summary" class="text-lg font-extrabold flex items-center gap-2">
                             <span>📊</span> الملخص المالي وإحصائيات العمولات والذمم
                         </h3>
-                        <p class="text-xs font-bold opacity-75">ملخص المؤشرات المالية للفترة المحددة مع استبعاد التذاكر المسترجعة والملغاة من العمولة</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="switchDedicatedPage('section-ticket-entry', false)"
-                                class="theme-sub-surface px-3 py-1.5 rounded-xl text-xs font-extrabold">
-                            ➕ العودة لتسجيل تذكرة
-                        </button>
-                        <button type="button" onclick="switchDedicatedPage('section-report-table', false)"
-                                class="btn-french-navy px-3.5 py-1.5 rounded-xl text-xs">
-                            📋 عرض جدول التقرير المفصل
-                        </button>
-                    </div>
-                </div>
-
-                <!-- بطاقات الملخص الإحصائي الـ 6 -->
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 print-summary-grid">
-                    <!-- 1. عدد التذاكر -->
-                    <div class="theme-card p-4 rounded-2xl shadow-xs print-summary-card">
-                        <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي التذاكر</span>
-                        <div id="sum-tickets" class="text-2xl font-extrabold print-card-value">0</div>
-                        <div id="sum-tickets-sub" class="text-[11px] font-bold opacity-80 mt-1">فعالة: 0 | مسترجع/ملغي: 0</div>
+                        <p class="text-xs font-bold opacity-75 mt-1">خلاصة الحسابات والصندوق والعمولات للفترة المحددة في الأعلى</p>
                     </div>
 
-                    <!-- 2. إجمالي المبيعات الفعالة -->
-                    <div class="theme-card p-4 rounded-2xl shadow-xs print-summary-card">
-                        <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي المبيعات الفعالة</span>
-                        <div id="sum-total-sales" class="text-xl font-extrabold print-card-value">0.00</div>
-                        <div class="text-[11px] font-bold opacity-75 mt-1">بعد استبعاد المسترجع</div>
-                    </div>
+                    <!-- بطاقات الملخص الإحصائي الـ 6 (شبكة منظمة 3 أعمدة في الشاشة، و6 في الطباعة) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 print-summary-grid">
+                        <!-- 1. عدد التذاكر -->
+                        <div class="theme-card p-5 rounded-2xl shadow-xs print-summary-card">
+                            <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي التذاكر المسجلة</span>
+                            <div id="sum-tickets" class="text-3xl font-extrabold print-card-value">0</div>
+                            <div id="sum-tickets-sub" class="text-xs font-bold opacity-80 mt-2">فعالة: 0 | مسترجع/ملغي: 0</div>
+                        </div>
 
-                    <!-- 3. المقبوض الفعلي في الصندوق -->
-                    <div class="theme-card p-4 rounded-2xl shadow-xs print-summary-card">
-                        <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">المقبوض فعلياً بالصندوق</span>
-                        <div class="text-xs font-extrabold space-y-1 mt-1">
-                            <div class="flex justify-between text-emerald-700"><span>💵 كاش:</span> <span id="sum-cash">0.00</span></div>
-                            <div class="flex justify-between"><span>💳 شبكة/تحويل:</span> <span id="sum-card">0.00</span></div>
+                        <!-- 2. إجمالي المبيعات الفعالة -->
+                        <div class="theme-card p-5 rounded-2xl shadow-xs print-summary-card">
+                            <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي المبيعات الفعالة</span>
+                            <div id="sum-total-sales" class="text-2xl font-extrabold print-card-value">0.00</div>
+                            <div class="text-xs font-bold opacity-75 mt-2">بعد استبعاد المسترجع والملغي</div>
+                        </div>
+
+                        <!-- 3. المقبوض الفعلي في الصندوق -->
+                        <div class="theme-card p-5 rounded-2xl shadow-xs print-summary-card">
+                            <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">المقبوض فعلياً بالصندوق</span>
+                            <div class="text-sm font-extrabold space-y-1.5 mt-2">
+                                <div class="flex justify-between text-emerald-700"><span>💵 كاش:</span> <span id="sum-cash">0.00</span></div>
+                                <div class="flex justify-between"><span>💳 شبكة/تحويل:</span> <span id="sum-card">0.00</span></div>
+                            </div>
+                        </div>
+
+                        <!-- 4. إجمالي الديون المتبقية -->
+                        <div class="bg-red-50 text-[#0F1A28] p-5 rounded-2xl shadow-xs border-2 border-red-600 print-summary-card print-debt-card">
+                            <span class="text-xs font-extrabold text-red-900 block mb-1 print-card-title">ديون متبقية على العملاء (ذمم/آجل)</span>
+                            <div id="sum-debt" class="text-2xl font-extrabold text-red-700 print-card-value">0.00</div>
+                            <div class="text-xs font-extrabold text-red-800 mt-2">مبالغ غير محصلة بعد</div>
+                        </div>
+
+                        <!-- 5. إجمالي صافي المرابح -->
+                        <div class="theme-card p-5 rounded-2xl shadow-xs print-summary-card">
+                            <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي صافي المرابح</span>
+                            <div id="sum-profit" class="text-2xl font-extrabold print-card-value">0.00</div>
+                            <div class="text-xs font-bold opacity-75 mt-2">صافي ربح المكتب الكلي</div>
+                        </div>
+
+                        <!-- 6. صافي عمولة الموظف (10%) -->
+                        <div class="bg-[#192A3E] text-white p-5 rounded-2xl shadow-md border-2 border-[#C5A059] print-summary-card print-commission-card">
+                            <span class="text-xs font-extrabold text-[#C5A059] block mb-1 print-card-title">صافي عمولة الموظف المستحقة (10%)</span>
+                            <div id="sum-commission" class="text-2xl font-extrabold text-white print-card-value">0.00</div>
+                            <div class="text-xs font-bold text-[#EBE7E0] mt-2">محذوف منها التذاكر المسترجعة</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================================================
+                     النافذة الثالثة (3): جدول التقرير والبحث (#section-report-table)
+                     تفتح وحدها عند الضغط على تبويب "جدول التقرير والبحث" في القائمة اليمنى
+                     ========================================================================== -->
+                <section id="section-report-table" aria-labelledby="table-section-title" class="hidden theme-card rounded-2xl shadow-md overflow-hidden print-table-container">
+                    
+                    <!-- رأس الجدول وأدوات البحث الفوري -->
+                    <div class="p-4 md:p-5 border-b-2 border-[#BEB8B0] flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 no-print">
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <h3 id="table-section-title" class="font-extrabold text-base md:text-lg">📋 جدول التقرير المفصل</h3>
+                            <span id="table-count-badge" class="text-xs font-extrabold bg-[#192A3E] text-[#C5A059] px-3 py-1 rounded-full border border-[#C5A059]">0 حجز</span>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <div class="relative flex-grow sm:w-64">
+                                <input type="text" id="global-search-input" oninput="renderDashboard()" placeholder="🔍 ابحث برقم PNR، اسم العميل، الجوال..."
+                                       aria-label="البحث الفوري في السجل"
+                                       class="w-full px-3.5 py-2 rounded-xl theme-input text-xs">
+                            </div>
+
+                            <div class="theme-sub-surface px-3 py-1.5 rounded-xl flex items-center gap-2">
+                                <span id="all-dates-switch-label" class="text-xs font-extrabold">شامل كل التواريخ</span>
+                                <button type="button" role="switch" id="search-all-dates-switch" aria-checked="false" aria-labelledby="all-dates-switch-label"
+                                        onclick="toggleSearchAllDatesSwitch()" class="ui-switch">
+                                    <span class="ui-switch-thumb"></span>
+                                </button>
+                                <input type="checkbox" id="search-all-dates" class="hidden">
+                            </div>
+
+                            <select id="status-filter" onchange="renderDashboard()" aria-label="فلترة حسب حالة التذكرة"
+                                    class="px-3 py-2 rounded-xl theme-input text-xs cursor-pointer">
+                                <option value="ALL">كل الحالات</option>
+                                <option value="ACTIVE">✅ الفعالة فقط (إصدار/تعديل)</option>
+                                <option value="DEBT">📒 عليها مديونية (ذمم متبقية)</option>
+                                <option value="REFUND_VOID">↩️ المسترجعة والملغاة فقط</option>
+                            </select>
                         </div>
                     </div>
 
-                    <!-- 4. إجمالي الديون المتبقية -->
-                    <div class="bg-red-50 text-[#0F1A28] p-4 rounded-2xl shadow-xs border-2 border-red-600 print-summary-card print-debt-card">
-                        <span class="text-xs font-extrabold text-red-900 block mb-1 print-card-title">ديون متبقية (ذمم/آجل)</span>
-                        <div id="sum-debt" class="text-xl font-extrabold text-red-700 print-card-value">0.00</div>
-                        <div class="text-[11px] font-extrabold text-red-800 mt-1">مبالغ غير محصلة بعد</div>
+                    <div class="overflow-x-auto print-table-container">
+                        <table class="w-full text-right border-collapse text-xs sm:text-sm">
+                            <thead>
+                                <tr class="theme-sub-surface border-b-2 border-[#9E978E] text-[11px] uppercase">
+                                    <th class="py-3 px-2.5 font-extrabold">#</th>
+                                    <th id="th-sale-date" class="py-3 px-2.5 font-extrabold hidden">التاريخ والوقت</th>
+                                    <th id="th-emp-name" class="py-3 px-2.5 font-extrabold hidden">الموظف</th>
+                                    <th class="py-3 px-2.5 font-extrabold">العميل والجوال</th>
+                                    <th class="py-3 px-2.5 font-extrabold">PNR والطيران</th>
+                                    <th class="py-3 px-2.5 font-extrabold">الحالة</th>
+                                    <th class="py-3 px-2.5 font-extrabold">الدفع</th>
+                                    <th class="py-3 px-2.5 font-extrabold">الأساسي</th>
+                                    <th class="py-3 px-2.5 font-extrabold">الإجمالي</th>
+                                    <th class="py-3 px-2.5 font-extrabold text-emerald-800">المدفوع</th>
+                                    <th class="py-3 px-2.5 font-extrabold text-red-700">المتبقي (دين)</th>
+                                    <th class="py-3 px-2.5 font-extrabold">المربح</th>
+                                    <th class="py-3 px-2.5 font-extrabold text-emerald-800">العمولة (10%)</th>
+                                    <th class="py-3 px-2.5 font-extrabold no-print text-center">إجراءات وواتساب</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-table-body" class="divide-y divide-[#BEB8B0]">
+                                <!-- يتم تعبئة صفوف التذاكر برمجياً -->
+                            </tbody>
+                            <tfoot id="sales-table-foot" class="theme-sub-surface font-extrabold border-t-2 border-[#192A3E] text-xs">
+                                <!-- يتم تعبئة صف الإجماليات السفلي برمجياً -->
+                            </tfoot>
+                        </table>
                     </div>
+                </section>
 
-                    <!-- 5. إجمالي صافي المرابح -->
-                    <div class="theme-card p-4 rounded-2xl shadow-xs print-summary-card">
-                        <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي صافي المرابح</span>
-                        <div id="sum-profit" class="text-xl font-extrabold print-card-value">0.00</div>
-                        <div class="text-[11px] font-bold opacity-75 mt-1">صافي ربح المكتب</div>
+                <!-- قسم التوقيعات الرسمي للطباعة الورقية فقط -->
+                <div class="hidden print-flex justify-between items-center pt-6 mt-4 text-xs font-extrabold text-[#0F1A28] px-4">
+                    <div class="text-center">
+                        <p class="mb-6">توقيع الموظف المختص</p>
+                        <p class="text-[#9E978E]">............................................</p>
                     </div>
-
-                    <!-- 6. صافي عمولة الموظف (10%) -->
-                    <div class="bg-[#192A3E] text-white p-4 rounded-2xl shadow-md border-2 border-[#C5A059] print-summary-card print-commission-card">
-                        <span class="text-xs font-extrabold text-[#C5A059] block mb-1 print-card-title">صافي عمولة الموظف (10%)</span>
-                        <div id="sum-commission" class="text-xl font-extrabold text-white print-card-value">0.00</div>
-                        <div class="text-[11px] font-bold text-[#EBE7E0] mt-1">محذوف منها المسترجع</div>
+                    <div class="text-center">
+                        <p class="mb-6">المراجعة والمحاسبة (الصندوق والذمم)</p>
+                        <p class="text-[#9E978E]">............................................</p>
                     </div>
-                </div>
-            </section>
-
-            <!-- ==========================================================================
-                 الصفحة المستقلة (3): جدول التقرير المفصل والبحث (#section-report-table)
-                 تفتح كصفحة مستقلة عند اختيارها، وتظهر دائماً في الطباعة
-                 ========================================================================== -->
-            <section id="section-report-table" aria-labelledby="table-section-title" class="hidden theme-card rounded-2xl shadow-md overflow-hidden print-table-container scroll-mt-20">
-                
-                <!-- شريط البحث الفوري الشامل + المفتاح الثنائي الفوري (Toggle Switch - role="switch") -->
-                <div class="p-4 md:p-5 border-b-2 border-[#BEB8B0] flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 no-print">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h3 id="table-section-title" class="font-extrabold text-base md:text-lg">📋 جدول التقرير المفصل</h3>
-                        <span id="table-count-badge" class="text-xs font-extrabold bg-[#192A3E] text-[#C5A059] px-3 py-1 rounded-full border border-[#C5A059]">0 حجز</span>
-                        <button type="button" onclick="switchDedicatedPage('section-ticket-entry', false)"
-                                class="theme-sub-surface px-3 py-1 rounded-xl text-xs font-extrabold hover:opacity-90">
-                            ➕ إضافة تذكرة جديدة
-                        </button>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-2.5">
-                        <div class="relative flex-grow sm:w-64">
-                            <input type="text" id="global-search-input" oninput="renderDashboard()" placeholder="🔍 ابحث برقم PNR، اسم العميل، الجوال..."
-                                   aria-label="البحث الفوري في السجل"
-                                   class="w-full px-3.5 py-2 rounded-xl theme-input text-xs">
-                        </div>
-
-                        <!-- المفتاح الثنائي الفوري لخيار "شامل كل التواريخ" (Toggle Switch - role="switch") -->
-                        <div class="theme-sub-surface px-3 py-1.5 rounded-xl flex items-center gap-2">
-                            <span id="all-dates-switch-label" class="text-xs font-extrabold">شامل كل التواريخ</span>
-                            <button type="button" role="switch" id="search-all-dates-switch" aria-checked="false" aria-labelledby="all-dates-switch-label"
-                                    onclick="toggleSearchAllDatesSwitch()" class="ui-switch">
-                                <span class="ui-switch-thumb"></span>
-                            </button>
-                            <!-- حقل متوافق مع الدوال البرمجية -->
-                            <input type="checkbox" id="search-all-dates" class="hidden">
-                        </div>
-
-                        <select id="status-filter" onchange="renderDashboard()" aria-label="فلترة حسب حالة التذكرة"
-                                class="px-3 py-2 rounded-xl theme-input text-xs cursor-pointer">
-                            <option value="ALL">كل الحالات</option>
-                            <option value="ACTIVE">✅ الفعالة فقط (إصدار/تعديل)</option>
-                            <option value="DEBT">📒 عليها مديونية (ذمم متبقية)</option>
-                            <option value="REFUND_VOID">↩️ المسترجعة والملغاة فقط</option>
-                        </select>
+                    <div class="text-center">
+                        <p class="mb-6">اعتماد المدير العام</p>
+                        <p class="text-[#9E978E]">............................................</p>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto print-table-container">
-                    <table class="w-full text-right border-collapse text-xs sm:text-sm">
-                        <thead>
-                            <tr class="theme-sub-surface border-b-2 border-[#9E978E] text-[11px] uppercase">
-                                <th class="py-3 px-2 font-extrabold">#</th>
-                                <th id="th-sale-date" class="py-3 px-2 font-extrabold hidden">التاريخ والوقت</th>
-                                <th id="th-emp-name" class="py-3 px-2 font-extrabold hidden">الموظف</th>
-                                <th class="py-3 px-2 font-extrabold">العميل والجوال</th>
-                                <th class="py-3 px-2 font-extrabold">PNR والطيران والمرفقات</th>
-                                <th class="py-3 px-2 font-extrabold">الحالة</th>
-                                <th class="py-3 px-2 font-extrabold">الدفع</th>
-                                <th class="py-3 px-2 font-extrabold">الأساسي</th>
-                                <th class="py-3 px-2 font-extrabold">الإجمالي</th>
-                                <th class="py-3 px-2 font-extrabold text-emerald-800">المدفوع</th>
-                                <th class="py-3 px-2 font-extrabold text-red-700">المتبقي (دين)</th>
-                                <th class="py-3 px-2 font-extrabold">المربح</th>
-                                <th class="py-3 px-2 font-extrabold text-emerald-800">العمولة (10%)</th>
-                                <th class="py-3 px-2 font-extrabold no-print text-center">إجراءات وواتساب</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sales-table-body" class="divide-y divide-[#BEB8B0]">
-                            <!-- يتم تعبئة صفوف التذاكر برمجياً -->
-                        </tbody>
-                        <tfoot id="sales-table-foot" class="theme-sub-surface font-extrabold border-t-2 border-[#192A3E] text-xs">
-                            <!-- يتم تعبئة صف الإجماليات السفلي برمجياً -->
-                        </tfoot>
-                    </table>
-                </div>
-            </section>
-
-            <!-- قسم التوقيعات الرسمي للطباعة الورقية فقط -->
-            <div class="hidden print-flex justify-between items-center pt-6 mt-4 text-xs font-extrabold text-[#0F1A28] px-4">
-                <div class="text-center">
-                    <p class="mb-6">توقيع الموظف المختص</p>
-                    <p class="text-[#9E978E]">............................................</p>
-                </div>
-                <div class="text-center">
-                    <p class="mb-6">المراجعة والمحاسبة (الصندوق والذمم)</p>
-                    <p class="text-[#9E978E]">............................................</p>
-                </div>
-                <div class="text-center">
-                    <p class="mb-6">اعتماد المدير العام</p>
-                    <p class="text-[#9E978E]">............................................</p>
-                </div>
             </div>
-
-        </div>
+        </main>
     </div>
 
     <!-- ==========================================================================
@@ -1569,136 +1501,67 @@
         }
 
         // ==========================================================================
-        // نظام الصفحات المستقلة عبر القائمة المنسدلة والدرج الجانبي (Dedicated Page Switcher)
+        // نظام التبويب الجانبي الأيمن الأساسي (Right Sidebar Dedicated Window Switcher)
+        // يفتح نافذة التبويب المختار فقط ويخفي بقية النوافذ تماماً
         // ==========================================================================
-        function switchDedicatedPage(targetPageId, closeDrawerAfter = false) {
+        function switchDedicatedPage(targetPageId) {
             activeDedicatedPage = targetPageId;
 
             const secEntry = document.getElementById('section-ticket-entry');
             const secTable = document.getElementById('section-report-table');
             const secKpi   = document.getElementById('section-kpi-summary');
+            const periodBar = document.getElementById('shared-report-period-bar');
 
-            if (targetPageId === 'ALL') {
-                secEntry.classList.remove('hidden');
-                secKpi.classList.remove('hidden');
-                secTable.classList.remove('hidden');
-            } else {
-                secEntry.classList.toggle('hidden', targetPageId !== 'section-ticket-entry');
-                secTable.classList.toggle('hidden', targetPageId !== 'section-report-table');
-                secKpi.classList.toggle('hidden', targetPageId !== 'section-kpi-summary');
+            // إظهار القسم المختار فقط وإخفاء القسمين الآخرين
+            secEntry.classList.toggle('hidden', targetPageId !== 'section-ticket-entry');
+            secTable.classList.toggle('hidden', targetPageId !== 'section-report-table');
+            secKpi.classList.toggle('hidden', targetPageId !== 'section-kpi-summary');
+
+            // شريط تحديد فترة التقرير يظهر فقط في صفحتي الجدول والملخص المالي
+            if (periodBar) {
+                periodBar.classList.toggle('hidden', targetPageId === 'section-ticket-entry');
             }
 
-            // مزامنة القائمة المنسدلة في الهيدر
-            const headerSelect = document.getElementById('dedicated-page-switcher');
-            if (headerSelect && headerSelect.value !== targetPageId) {
-                headerSelect.value = targetPageId;
-            }
-
-            // مزامنة أزرار الدرج الجانبي
-            const drawerMap = {
-                'section-ticket-entry': 'drawer-btn-entry',
-                'section-report-table': 'drawer-btn-table',
-                'section-kpi-summary': 'drawer-btn-kpi',
-                'ALL': 'drawer-btn-all'
+            // تحديث حالة التفعيل للتبويبات في العمود الأيمن
+            const tabMap = {
+                'section-ticket-entry': { btnId: 'tab-btn-entry', title: '➕ تسجيل تذكرة جديدة' },
+                'section-report-table': { btnId: 'tab-btn-table', title: '📋 جدول التقرير والبحث' },
+                'section-kpi-summary':  { btnId: 'tab-btn-kpi',   title: '📊 الملخص المالي والعمولات' }
             };
-            Object.keys(drawerMap).forEach(key => {
-                const btn = document.getElementById(drawerMap[key]);
+
+            Object.keys(tabMap).forEach(key => {
+                const btn = document.getElementById(tabMap[key].btnId);
                 if (!btn) return;
                 if (key === targetPageId) {
-                    btn.className = "w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition bg-[#C5A059] text-[#0F1A28]";
+                    btn.classList.add('active-tab');
                 } else {
-                    btn.className = "w-full text-right px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-between transition hover:bg-[#2C425C] text-white";
+                    btn.classList.remove('active-tab');
                 }
             });
 
-            // تحديث مؤشر Scrollspy النشط
-            updateScrollspyIndicator(targetPageId === 'ALL' ? 'section-ticket-entry' : targetPageId);
-
-            if (closeDrawerAfter) {
-                closeNavDrawer();
+            // تحديث العنوان في شريط الجوال العلوي
+            const mobileTitle = document.getElementById('mobile-active-tab-title');
+            if (mobileTitle && tabMap[targetPageId]) {
+                mobileTitle.innerText = tabMap[targetPageId].title;
             }
 
+            closeMobileSidebar();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ==========================================================================
-        // زر الخطوط الثلاثة والدرج الجانبي المنزلق (Hamburger & Off-Canvas Drawer)
-        // ==========================================================================
-        function openNavDrawer() {
-            const drawer = document.getElementById('off-canvas-drawer');
+        // فتح وإغلاق التبويب اليميني في شاشات الجوال الصغيرة
+        function openMobileSidebar() {
+            const sidebar = document.getElementById('right-sidebar');
             const scrim = document.getElementById('drawer-scrim');
-            const hamBtn = document.getElementById('hamburger-btn');
-
-            scrim.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                scrim.classList.remove('opacity-0');
-                drawer.classList.remove('translate-x-full');
-            });
-            if (hamBtn) hamBtn.setAttribute('aria-expanded', 'true');
+            if (scrim) scrim.classList.remove('hidden');
+            if (sidebar) sidebar.classList.remove('translate-x-full');
         }
 
-        function closeNavDrawer() {
-            const drawer = document.getElementById('off-canvas-drawer');
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('right-sidebar');
             const scrim = document.getElementById('drawer-scrim');
-            const hamBtn = document.getElementById('hamburger-btn');
-
-            scrim.classList.add('opacity-0');
-            drawer.classList.add('translate-x-full');
-            if (hamBtn) hamBtn.setAttribute('aria-expanded', 'false');
-            setTimeout(() => {
-                scrim.classList.add('hidden');
-            }, 300);
-        }
-
-        // ==========================================================================
-        // شريط التتبع الداخلي (Scrollspy with IntersectionObserver & aria-current="location")
-        // ==========================================================================
-        function updateScrollspyIndicator(activeSectionId) {
-            const map = {
-                'section-ticket-entry': 'spy-link-entry',
-                'section-report-table': 'spy-link-table',
-                'section-kpi-summary': 'spy-link-kpi'
-            };
-            Object.keys(map).forEach(secId => {
-                const link = document.getElementById(map[secId]);
-                if (!link) return;
-                if (secId === activeSectionId) {
-                    link.setAttribute('aria-current', 'location');
-                } else {
-                    link.removeAttribute('aria-current');
-                }
-            });
-        }
-
-        function handleScrollspyClick(event, sectionId) {
-            event.preventDefault();
-            if (activeDedicatedPage !== 'ALL' && activeDedicatedPage !== sectionId) {
-                switchDedicatedPage(sectionId, false);
-            } else {
-                const targetEl = document.getElementById(sectionId);
-                if (targetEl) {
-                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    updateScrollspyIndicator(sectionId);
-                }
-            }
-        }
-
-        function initScrollspyObserver() {
-            if (!('IntersectionObserver' in window)) return;
-            const sections = ['section-ticket-entry', 'section-kpi-summary', 'section-report-table']
-                .map(id => document.getElementById(id))
-                .filter(Boolean);
-
-            const observer = new IntersectionObserver((entries) => {
-                if (activeDedicatedPage !== 'ALL') return;
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        updateScrollspyIndicator(entry.target.id);
-                    }
-                });
-            }, { rootMargin: '-25% 0px -55% 0px', threshold: 0.1 });
-
-            sections.forEach(sec => observer.observe(sec));
+            if (sidebar) sidebar.classList.add('translate-x-full');
+            if (scrim) scrim.classList.add('hidden');
         }
 
         // بديل داعم لتأثير Parallax في المتصفحات التي لا تدعم animation-timeline: scroll()
@@ -1944,7 +1807,7 @@
             } else if (e.key === 'Escape') {
                 const editModal = document.getElementById('status-debt-modal');
                 if (editModal && !editModal.classList.contains('hidden')) closeStatusDebtModal();
-                closeNavDrawer();
+                closeMobileSidebar();
             }
         });
 
@@ -1985,7 +1848,6 @@
         window.onload = function() {
             applyGlobalTheme();
             initWheelTimePickerColumns();
-            initScrollspyObserver();
             initParallaxFallback();
             updateEmployeeFilterNames();
             try {
@@ -2078,8 +1940,8 @@
 
             updateVersionBadgeUI();
             setFilterMode('daily');
-            // فتح صفحة تسجيل التذكرة كصفحة رئيسية مستقلة افتراضياً عند الدخول
-            switchDedicatedPage('section-ticket-entry', false);
+            // فتح تبويب تسجيل التذكرة كنافذة وحيدة افتراضية عند الدخول
+            switchDedicatedPage('section-ticket-entry');
         }
 
         function setFilterMode(mode) {
@@ -2114,15 +1976,16 @@
             showToast("تم تسجيل الخروج بنجاح");
         }
 
+        // دالة إظهار/إخفاء حقل الكتابة اليدوية لشركة الطيران عند اختيار "أخرى" في نموذج التسجيل
         function toggleCustomAirlineInput() {
             const selectVal = document.getElementById('airline-select').value;
             const customInput = document.getElementById('airline-custom');
+            if (!customInput) return;
             if (selectVal === 'OTHER') {
                 customInput.classList.remove('hidden');
                 customInput.focus();
             } else {
                 customInput.classList.add('hidden');
-                customInput.value = '';
             }
         }
 
@@ -2641,7 +2504,12 @@
                 return matchPeriod && matchEmp && matchStatus && matchSearch;
             });
 
-            filteredSales.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+            // ترتيب التذاكر زمنياً حسب التاريخ والوقت معاً
+            filteredSales.sort((a, b) => {
+                const dtA = `${a.date || ''} ${a.time || '00:00'}`;
+                const dtB = `${b.date || ''} ${b.time || '00:00'}`;
+                return dtA.localeCompare(dtB);
+            });
             return { filteredSales, periodLabel, cleanDateTag, empFilter, selectedDay, selectedMonth, dateFrom, dateTo, searchQuery, searchAllDates };
         }
 
@@ -2684,7 +2552,7 @@
                 document.getElementById('print-date-badge').innerText = `${dateFrom} ⬅ ${dateTo}`;
             }
 
-            document.getElementById('welcome-title').innerText = `سجل المبيعات - ${currentUser.name}`;
+            document.getElementById('welcome-title').innerText = currentUser.name;
             document.getElementById('report-date-subtitle').innerText = `التقرير المعتمد ${periodLabel}`;
             document.getElementById('table-section-title').innerText = `📋 جدول التقرير المفصل (${periodLabel})`;
             document.getElementById('print-main-title').innerText = reportMainTitle;
@@ -2834,10 +2702,8 @@
             }
 
             document.getElementById('table-count-badge').innerText = `${filteredSales.length} حجز`;
-            const spyBadge = document.getElementById('spy-count-badge');
-            const drawerBadge = document.getElementById('drawer-badge-count');
-            if (spyBadge) spyBadge.innerText = filteredSales.length;
-            if (drawerBadge) drawerBadge.innerText = filteredSales.length;
+            const sidebarBadge = document.getElementById('sidebar-badge-count');
+            if (sidebarBadge) sidebarBadge.innerText = filteredSales.length;
 
             document.getElementById('sum-tickets').innerText = filteredSales.length;
             document.getElementById('sum-tickets-sub').innerText = `فعالة: ${activeCount} | مسترجع/ملغي: ${refundVoidCount}`;

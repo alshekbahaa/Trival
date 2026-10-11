@@ -222,6 +222,73 @@
         }
 
         /* ==========================================================================
+           5.5 تنسيق الجدول الاحترافي المتناسق (Clean & Balanced Financial Table)
+           ========================================================================== */
+        .report-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .report-table th,
+        .report-table td {
+            vertical-align: middle;
+            padding: 11px 10px;
+            border-bottom: 1px solid var(--seal-divider);
+            border-left: 1px solid rgba(190, 184, 176, 0.45);
+        }
+
+        .report-table th:last-child,
+        .report-table td:last-child {
+            border-left: none;
+        }
+
+        .report-table thead th {
+            background-color: var(--surface-sub);
+            color: var(--text-primary);
+            font-weight: 900;
+            font-size: 12px;
+            white-space: nowrap;
+            border-bottom: 2px solid var(--navy-primary);
+        }
+
+        .report-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .report-table tbody tr:nth-child(even) {
+            background-color: rgba(235, 231, 224, 0.32);
+        }
+
+        body.dark-theme .report-table tbody tr:nth-child(even) {
+            background-color: rgba(30, 48, 69, 0.35);
+        }
+
+        .report-table tbody tr:hover {
+            background-color: rgba(197, 160, 89, 0.14);
+        }
+
+        .num-cell {
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            text-align: center;
+            direction: ltr;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            white-space: nowrap;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 11.5px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        /* ==========================================================================
            6. إعدادات الطباعة الرسمية المدمجة (Flexible Portrait / Landscape Print)
               تضمن وضوح النصوص 100% وتقليص الخانات العلوية وتثبيت الفوتر بنفس الورقة
            ========================================================================== */
@@ -667,7 +734,7 @@
                     </div>
                 </div>
                 <h1 class="text-2xl font-extrabold tracking-wide text-white">نظام مبيعات الطيران</h1>
-                <p class="text-[#C5A059] text-sm mt-1 font-extrabold">بوابة الدخول الرسمية للموظفين والإدارة</p>
+                <p class="text-[#C5A059] text-sm mt-1 font-extrabold">مكتب اجوائي للسفر والسياحة</p>
             </div>
 
             <form onsubmit="event.preventDefault(); handleLogin();" class="p-8 space-y-5">
@@ -678,7 +745,7 @@
 
                 <div>
                     <label for="username" class="block text-xs theme-label mb-1.5">اسم المستخدم (Username)</label>
-                    <input type="text" id="username" required autocomplete="username" placeholder="أدخل اسم المستخدم (empA / empB / admin)"
+                    <input type="text" id="username" required autocomplete="username" placeholder="Bahaa Alshek"
                            class="w-full px-4 py-3 rounded-xl theme-input text-sm">
                 </div>
 
@@ -1214,26 +1281,26 @@
                     </div>
 
                     <div class="overflow-x-auto print-table-container">
-                        <table class="w-full text-right border-collapse text-xs sm:text-sm">
+                        <table class="report-table text-xs sm:text-sm">
                             <thead>
-                                <tr class="theme-sub-surface border-b-2 border-[#9E978E] text-[11px] uppercase">
-                                    <th class="py-3 px-2 font-extrabold">#</th>
-                                    <th id="th-sale-date" class="py-3 px-2 font-extrabold">التاريخ والوقت</th>
-                                    <th id="th-emp-name" class="py-3 px-2 font-extrabold hidden">المستفيد (الموظف)</th>
-                                    <th class="py-3 px-2 font-extrabold">العميل والجوال</th>
-                                    <th class="py-3 px-2 font-extrabold">PNR والطيران</th>
-                                    <th class="py-3 px-2 font-extrabold">الحالة</th>
-                                    <th class="py-3 px-2 font-extrabold">الدفع</th>
-                                    <th class="py-3 px-2 font-extrabold">الأساسي</th>
-                                    <th class="py-3 px-2 font-extrabold">الإجمالي</th>
-                                    <th class="py-3 px-2 font-extrabold text-emerald-800">المدفوع</th>
-                                    <th class="py-3 px-2 font-extrabold text-red-700">المتبقي (دين)</th>
-                                    <th class="py-3 px-2 font-extrabold">المربح</th>
-                                    <th class="py-3 px-2 font-extrabold text-emerald-800">العمولة (10%)</th>
-                                    <th class="py-3 px-2 font-extrabold no-print text-center">إجراءات وواتساب</th>
+                                <tr>
+                                    <th class="text-center w-10">#</th>
+                                    <th id="th-sale-date" class="text-center">التاريخ والوقت</th>
+                                    <th id="th-emp-name" class="text-center hidden">المستفيد (الموظف)</th>
+                                    <th class="text-right min-w-[140px]">العميل والجوال</th>
+                                    <th class="text-center min-w-[130px]">PNR والطيران</th>
+                                    <th class="text-center">الحالة</th>
+                                    <th class="text-center">الدفع</th>
+                                    <th class="text-center">الأساسي</th>
+                                    <th class="text-center">الإجمالي</th>
+                                    <th class="text-center !text-emerald-800">المدفوع</th>
+                                    <th class="text-center !text-red-700">المتبقي (دين)</th>
+                                    <th class="text-center">المربح</th>
+                                    <th class="text-center !text-emerald-800">العمولة (10%)</th>
+                                    <th class="no-print text-center min-w-[190px]">إجراءات وواتساب</th>
                                 </tr>
                             </thead>
-                            <tbody id="sales-table-body" class="divide-y divide-[#BEB8B0]">
+                            <tbody id="sales-table-body">
                                 <!-- يتم تعبئة صفوف التذاكر برمجياً -->
                             </tbody>
                             <tfoot id="sales-table-foot" class="theme-sub-surface font-extrabold border-t-2 border-[#192A3E] text-xs">
@@ -1265,10 +1332,9 @@
 
     <!-- تذييل الصفحات الرسمي (يثبت في نفس الورقة عند الطباعة) -->
     <footer class="print-footer bg-[#0F1A28] text-[#F6F4F0] border-t-2 border-[#C5A059] py-3.5 px-6 text-center mt-auto">
-        <div class="max-w-7xl mx-auto flex flex-row justify-between items-center gap-2 text-xs font-extrabold">
-            <span>جميع الحقوق محفوظة © نظام مبيعات وعمولات مكتب الطيران</span>
-            <span class="bg-[#192A3E] text-white px-3.5 py-1 rounded-full border border-[#C5A059]">
-                Designed by <strong class="text-[#C5A059]">Eng. Bahaa Al-Sheikh</strong>
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-center items-center gap-2 text-xs sm:text-sm font-extrabold">
+            <span class="bg-[#192A3E] text-white px-5 py-1.5 rounded-full border border-[#C5A059] shadow-xs">
+                جميع الحقوق محفوظة © Designed by <strong class="text-[#C5A059]">Eng. Bahaa Al-Sheikh</strong>
             </span>
         </div>
     </footer>
@@ -2467,28 +2533,28 @@
 
                     let statusBadge = '';
                     if (sale.status === 'issue') {
-                        statusBadge = `<span class="bg-emerald-100 text-emerald-950 border border-emerald-500 px-2 py-0.5 rounded-full text-[11px] font-extrabold">✅ إصدار</span>`;
+                        statusBadge = `<span class="badge-pill bg-emerald-100 text-emerald-950 border border-emerald-500"><span>✅</span><span>إصدار</span></span>`;
                     } else if (sale.status === 'reissue') {
-                        statusBadge = `<span class="bg-sky-100 text-sky-950 border border-sky-500 px-2 py-0.5 rounded-full text-[11px] font-extrabold">🔄 تعديل</span>`;
+                        statusBadge = `<span class="badge-pill bg-sky-100 text-sky-950 border border-sky-500"><span>🔄</span><span>تعديل</span></span>`;
                     } else if (sale.status === 'refund') {
-                        statusBadge = `<span class="bg-amber-200 text-amber-950 border border-amber-600 px-2 py-0.5 rounded-full text-[11px] font-extrabold">↩️ مسترجعة</span>`;
+                        statusBadge = `<span class="badge-pill bg-amber-200 text-amber-950 border border-amber-600"><span>↩️</span><span>مسترجعة</span></span>`;
                     } else if (sale.status === 'void') {
-                        statusBadge = `<span class="bg-red-200 text-red-950 border border-red-600 px-2 py-0.5 rounded-full text-[11px] font-extrabold">🚫 ملغاة</span>`;
+                        statusBadge = `<span class="badge-pill bg-red-200 text-red-950 border border-red-600"><span>🚫</span><span>ملغاة</span></span>`;
                     }
 
                     let paymentBadge = '';
                     if (sale.paymentMethod === 'كاش') {
-                        paymentBadge = `<span class="bg-emerald-100 text-emerald-950 border border-emerald-500 px-2 py-0.5 rounded-md text-[11px] font-extrabold">💵 كاش</span>`;
+                        paymentBadge = `<span class="badge-pill bg-emerald-100 text-emerald-950 border border-emerald-500"><span>💵</span><span>كاش</span></span>`;
                     } else if (sale.paymentMethod === 'شبكة') {
-                        paymentBadge = `<span class="bg-[#EBE7E0] text-[#0F1A28] border border-[#9E978E] px-2 py-0.5 rounded-md text-[11px] font-extrabold">💳 شبكة</span>`;
+                        paymentBadge = `<span class="badge-pill bg-[#EBE7E0] text-[#0F1A28] border border-[#9E978E]"><span>💳</span><span>شبكة</span></span>`;
                     } else if (sale.paymentMethod === 'تحويل') {
-                        paymentBadge = `<span class="bg-amber-100 text-[#0F1A28] border border-[#C5A059] px-2 py-0.5 rounded-md text-[11px] font-extrabold">🏦 تحويل</span>`;
+                        paymentBadge = `<span class="badge-pill bg-amber-100 text-[#0F1A28] border border-[#C5A059]"><span>🏦</span><span>تحويل</span></span>`;
                     } else {
-                        paymentBadge = `<span class="bg-red-100 text-red-950 border border-red-500 px-2 py-0.5 rounded-md text-[11px] font-extrabold">📒 آجل/ذمم</span>`;
+                        paymentBadge = `<span class="badge-pill bg-red-100 text-red-950 border border-red-500"><span>📒</span><span>آجل/ذمم</span></span>`;
                     }
 
                     const addonsBadges = (sale.addons && sale.addons.length > 0)
-                        ? `<div class="flex flex-wrap gap-1 mt-1">${sale.addons.map(a => `<span class="text-[10px] font-extrabold bg-[#FDF9F0] text-[#0F1A28] border border-[#C5A059] px-1.5 py-0.2 rounded">${escapeHTML(a)}</span>`).join('')}</div>`
+                        ? `<div class="flex flex-wrap justify-center gap-1 mt-1">${sale.addons.map(a => `<span class="text-[10px] font-extrabold bg-[#FDF9F0] text-[#0F1A28] border border-[#C5A059] px-1.5 py-0.5 rounded whitespace-nowrap">${escapeHTML(a)}</span>`).join('')}</div>`
                         : '';
 
                     const displayEmpName = usersDB[sale.employeeUsername]
@@ -2496,41 +2562,41 @@
                         : `${sale.employeeName} (${sale.employeeUsername || ''})`;
 
                     const tr = document.createElement('tr');
-                    tr.className = isRefundOrVoid ? "bg-red-500/10 transition" : "hover:bg-[#9E978E]/15 transition";
+                    if (isRefundOrVoid) tr.className = "!bg-red-500/10";
                     tr.innerHTML = `
-                        <td class="py-2.5 px-2 font-extrabold">${index + 1}</td>
-                        <td class="py-2.5 px-2 font-mono text-[11px] font-extrabold whitespace-nowrap" dir="ltr">
+                        <td class="text-center font-extrabold">${index + 1}</td>
+                        <td class="text-center font-mono text-[11.5px] font-extrabold whitespace-nowrap" dir="ltr">
                             <div>${escapeHTML(sale.date)}</div>
-                            <div class="text-[10px] text-[#C5A059] font-extrabold">${escapeHTML(sale.time || '')}</div>
+                            <div class="text-[10.5px] text-[#C5A059] font-extrabold mt-0.5">${escapeHTML(sale.time || '')}</div>
                         </td>
-                        ${currentUser.role === 'admin' ? `<td class="py-2.5 px-2 font-extrabold">${escapeHTML(displayEmpName)}</td>` : ''}
-                        <td class="py-2.5 px-2">
-                            <div class="font-extrabold">${escapeHTML(sale.clientName)}</div>
-                            <div class="text-[11px] font-mono font-bold">${escapeHTML(sale.clientPhone)}</div>
+                        ${currentUser.role === 'admin' ? `<td class="text-center font-extrabold whitespace-nowrap">${escapeHTML(displayEmpName)}</td>` : ''}
+                        <td class="text-right">
+                            <div class="font-extrabold text-[13px] leading-snug whitespace-nowrap">${escapeHTML(sale.clientName)}</div>
+                            <div class="text-[11.5px] font-mono font-bold opacity-80 mt-0.5" dir="ltr">${escapeHTML(sale.clientPhone)}</div>
                         </td>
-                        <td class="py-2.5 px-2">
-                            <span class="font-mono font-extrabold bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded text-[11px]">${escapeHTML(sale.pnr || '-')}</span>
-                            <div class="text-[11px] font-bold mt-0.5">${escapeHTML(sale.airline || '-')}</div>
+                        <td class="text-center">
+                            <span class="inline-block font-mono font-extrabold bg-[#192A3E] text-[#C5A059] px-2.5 py-0.5 rounded-md text-[11.5px] tracking-wider">${escapeHTML(sale.pnr || '-')}</span>
+                            <div class="text-[11.5px] font-bold mt-1 whitespace-nowrap">${escapeHTML(sale.airline || '-')}</div>
                             ${addonsBadges}
                         </td>
-                        <td class="py-2.5 px-2">${statusBadge}</td>
-                        <td class="py-2.5 px-2">${paymentBadge}</td>
-                        <td class="py-2.5 px-2 font-bold ${isRefundOrVoid ? 'line-through' : ''}">${sale.basePrice.toFixed(2)}</td>
-                        <td class="py-2.5 px-2 font-extrabold ${isRefundOrVoid ? 'line-through' : ''}">${sale.totalPrice.toFixed(2)}</td>
-                        <td class="py-2.5 px-2 font-extrabold text-emerald-700">${sale.paidAmount.toFixed(2)}</td>
-                        <td class="py-2.5 px-2 font-extrabold ${sale.remainingDebt > 0 ? 'text-red-700 underline' : ''}">${sale.remainingDebt.toFixed(2)}</td>
-                        <td class="py-2.5 px-2 font-extrabold">${sale.profit.toFixed(2)}</td>
-                        <td class="py-2.5 px-2 font-extrabold ${isRefundOrVoid ? 'text-red-700' : 'text-emerald-700'}">
-                            ${sale.commission.toFixed(2)}
-                            ${isRefundOrVoid ? '<span class="block text-[9px] text-red-700">محذوفة</span>' : ''}
+                        <td class="text-center">${statusBadge}</td>
+                        <td class="text-center">${paymentBadge}</td>
+                        <td class="num-cell font-bold ${isRefundOrVoid ? 'line-through opacity-60' : ''}">${sale.basePrice.toFixed(2)}</td>
+                        <td class="num-cell font-extrabold ${isRefundOrVoid ? 'line-through opacity-60' : ''}">${sale.totalPrice.toFixed(2)}</td>
+                        <td class="num-cell font-extrabold text-emerald-700">${sale.paidAmount.toFixed(2)}</td>
+                        <td class="num-cell font-extrabold ${sale.remainingDebt > 0 ? 'text-red-700 underline' : ''}">${sale.remainingDebt.toFixed(2)}</td>
+                        <td class="num-cell font-extrabold">${sale.profit.toFixed(2)}</td>
+                        <td class="num-cell font-extrabold ${isRefundOrVoid ? 'text-red-700' : 'text-emerald-700'}">
+                            <div>${sale.commission.toFixed(2)}</div>
+                            ${isRefundOrVoid ? '<span class="block text-[9.5px] text-red-700 font-extrabold">محذوفة</span>' : ''}
                         </td>
-                        <td class="py-2.5 px-2 text-center no-print">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button type="button" onclick="sendWhatsAppReceipt(${sale.id})" class="bg-emerald-700 hover:bg-emerald-800 text-white px-2.5 py-1 rounded-lg transition text-[11px] font-extrabold shrink-0">
-                                    💬 واتساب
+                        <td class="text-center no-print">
+                            <div class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
+                                <button type="button" onclick="sendWhatsAppReceipt(${sale.id})" class="inline-flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg transition text-[11.5px] font-extrabold shadow-xs">
+                                    <span>💬</span><span>واتساب</span>
                                 </button>
                                 <select onchange="handleQuickTableAction(this, ${sale.id})" aria-label="اختر تعديل للتذكرة"
-                                        class="bg-[#192A3E] text-white border border-[#C5A059] px-2 py-1 rounded-lg text-[11px] font-extrabold cursor-pointer">
+                                        class="bg-[#192A3E] text-white border border-[#C5A059] px-2.5 py-1.5 rounded-lg text-[11.5px] font-extrabold cursor-pointer">
                                     <option value="" class="bg-white text-[#0F1A28]">🛠️ اختر تعديل...</option>
                                     <option value="EDIT_INFO" class="bg-white text-[#0F1A28]">📝 تصحيح بيانات الحجز</option>
                                     <option value="PAY_DEBT" class="bg-white text-[#0F1A28]">💵 تسديد دفعة / دين</option>
@@ -2549,13 +2615,13 @@
 
                 tfoot.innerHTML = `
                     <tr>
-                        <td colspan="${labelColSpan}" class="py-3 px-2 text-left font-extrabold">الإجمالي الصافي (للتذاكر الفعالة):</td>
-                        <td class="py-3 px-2 font-extrabold">${totalBaseSum.toFixed(2)}</td>
-                        <td class="py-3 px-2 font-extrabold">${totalSalesSum.toFixed(2)}</td>
-                        <td class="py-3 px-2 font-extrabold text-emerald-700">${totalPaidSum.toFixed(2)}</td>
-                        <td class="py-3 px-2 font-extrabold text-red-700">${totalDebtSum.toFixed(2)}</td>
-                        <td class="py-3 px-2 font-extrabold">${totalProfitSum.toFixed(2)}</td>
-                        <td class="py-3 px-2 font-extrabold text-emerald-700">${totalCommissionSum.toFixed(2)}</td>
+                        <td colspan="${labelColSpan}" class="py-3 px-4 text-left font-extrabold text-sm">الإجمالي الصافي (للتذاكر الفعالة):</td>
+                        <td class="num-cell font-extrabold text-sm">${totalBaseSum.toFixed(2)}</td>
+                        <td class="num-cell font-extrabold text-sm">${totalSalesSum.toFixed(2)}</td>
+                        <td class="num-cell font-extrabold text-emerald-700 text-sm">${totalPaidSum.toFixed(2)}</td>
+                        <td class="num-cell font-extrabold text-red-700 text-sm">${totalDebtSum.toFixed(2)}</td>
+                        <td class="num-cell font-extrabold text-sm">${totalProfitSum.toFixed(2)}</td>
+                        <td class="num-cell font-extrabold text-emerald-700 text-sm">${totalCommissionSum.toFixed(2)}</td>
                         <td class="no-print"></td>
                     </tr>
                 `;

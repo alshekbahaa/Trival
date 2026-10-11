@@ -228,12 +228,13 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
+            table-layout: auto;
         }
 
         .report-table th,
         .report-table td {
             vertical-align: middle;
-            padding: 11px 10px;
+            padding: 9px 6px;
             border-bottom: 1px solid var(--seal-divider);
             border-left: 1px solid rgba(190, 184, 176, 0.45);
         }
@@ -247,7 +248,7 @@
             background-color: var(--surface-sub);
             color: var(--text-primary);
             font-weight: 900;
-            font-size: 12px;
+            font-size: 11.5px;
             white-space: nowrap;
             border-bottom: 2px solid var(--navy-primary);
         }
@@ -273,17 +274,18 @@
             white-space: nowrap;
             text-align: center;
             direction: ltr;
+            font-size: 12.5px;
         }
 
         .badge-pill {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 4px;
             white-space: nowrap;
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 9999px;
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 800;
             line-height: 1.2;
         }
@@ -909,9 +911,9 @@
             </div>
         </aside>
 
-        <!-- مساحة العمل الرئيسية اليسرى -->
-        <main id="main-workspace" class="flex-grow p-4 sm:p-6 lg:p-7 overflow-x-hidden">
-            <div class="max-w-6xl mx-auto space-y-5">
+        <!-- مساحة العمل الرئيسية اليسرى (موسعة بالكامل لاستيعاب الجدول بدون تمرير) -->
+        <main id="main-workspace" class="flex-grow p-3 sm:p-4 lg:p-5 overflow-x-hidden w-full">
+            <div class="w-full max-w-full mx-auto space-y-4">
 
                 <!-- شريط علوي للجوال فقط -->
                 <div class="lg:hidden theme-card rounded-2xl p-3.5 flex items-center justify-between shadow-xs no-print">
@@ -1280,15 +1282,15 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto print-table-container">
-                        <table class="report-table text-xs sm:text-sm">
+                    <div class="w-full overflow-x-auto print-table-container">
+                        <table class="report-table text-xs">
                             <thead>
                                 <tr>
-                                    <th class="text-center w-10">#</th>
+                                    <th class="text-center w-8">#</th>
                                     <th id="th-sale-date" class="text-center">التاريخ والوقت</th>
-                                    <th id="th-emp-name" class="text-center hidden">المستفيد (الموظف)</th>
-                                    <th class="text-right min-w-[140px]">العميل والجوال</th>
-                                    <th class="text-center min-w-[130px]">PNR والطيران</th>
+                                    <th id="th-emp-name" class="text-center hidden">المستفيد</th>
+                                    <th class="text-right">العميل والجوال</th>
+                                    <th class="text-center">PNR والطيران</th>
                                     <th class="text-center">الحالة</th>
                                     <th class="text-center">الدفع</th>
                                     <th class="text-center">الأساسي</th>
@@ -1297,7 +1299,7 @@
                                     <th class="text-center !text-red-700">المتبقي (دين)</th>
                                     <th class="text-center">المربح</th>
                                     <th class="text-center !text-emerald-800">العمولة (10%)</th>
-                                    <th class="no-print text-center min-w-[190px]">إجراءات وواتساب</th>
+                                    <th class="no-print text-center">إجراءات وواتساب</th>
                                 </tr>
                             </thead>
                             <tbody id="sales-table-body">
@@ -2565,18 +2567,18 @@
                     if (isRefundOrVoid) tr.className = "!bg-red-500/10";
                     tr.innerHTML = `
                         <td class="text-center font-extrabold">${index + 1}</td>
-                        <td class="text-center font-mono text-[11.5px] font-extrabold whitespace-nowrap" dir="ltr">
+                        <td class="text-center font-mono text-[11px] font-extrabold whitespace-nowrap" dir="ltr">
                             <div>${escapeHTML(sale.date)}</div>
-                            <div class="text-[10.5px] text-[#C5A059] font-extrabold mt-0.5">${escapeHTML(sale.time || '')}</div>
+                            <div class="text-[10px] text-[#C5A059] font-extrabold mt-0.5">${escapeHTML(sale.time || '')}</div>
                         </td>
-                        ${currentUser.role === 'admin' ? `<td class="text-center font-extrabold whitespace-nowrap">${escapeHTML(displayEmpName)}</td>` : ''}
+                        ${currentUser.role === 'admin' ? `<td class="text-center font-extrabold text-[11.5px]">${escapeHTML(displayEmpName)}</td>` : ''}
                         <td class="text-right">
-                            <div class="font-extrabold text-[13px] leading-snug whitespace-nowrap">${escapeHTML(sale.clientName)}</div>
-                            <div class="text-[11.5px] font-mono font-bold opacity-80 mt-0.5" dir="ltr">${escapeHTML(sale.clientPhone)}</div>
+                            <div class="font-extrabold text-[12.5px] leading-snug">${escapeHTML(sale.clientName)}</div>
+                            <div class="text-[11px] font-mono font-bold opacity-80 mt-0.5" dir="ltr">${escapeHTML(sale.clientPhone)}</div>
                         </td>
                         <td class="text-center">
-                            <span class="inline-block font-mono font-extrabold bg-[#192A3E] text-[#C5A059] px-2.5 py-0.5 rounded-md text-[11.5px] tracking-wider">${escapeHTML(sale.pnr || '-')}</span>
-                            <div class="text-[11.5px] font-bold mt-1 whitespace-nowrap">${escapeHTML(sale.airline || '-')}</div>
+                            <span class="inline-block font-mono font-extrabold bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded-md text-[11px] tracking-wider">${escapeHTML(sale.pnr || '-')}</span>
+                            <div class="text-[11px] font-bold mt-1 leading-tight">${escapeHTML(sale.airline || '-')}</div>
                             ${addonsBadges}
                         </td>
                         <td class="text-center">${statusBadge}</td>
@@ -2588,16 +2590,16 @@
                         <td class="num-cell font-extrabold">${sale.profit.toFixed(2)}</td>
                         <td class="num-cell font-extrabold ${isRefundOrVoid ? 'text-red-700' : 'text-emerald-700'}">
                             <div>${sale.commission.toFixed(2)}</div>
-                            ${isRefundOrVoid ? '<span class="block text-[9.5px] text-red-700 font-extrabold">محذوفة</span>' : ''}
+                            ${isRefundOrVoid ? '<span class="block text-[9px] text-red-700 font-extrabold">محذوفة</span>' : ''}
                         </td>
                         <td class="text-center no-print">
-                            <div class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
-                                <button type="button" onclick="sendWhatsAppReceipt(${sale.id})" class="inline-flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg transition text-[11.5px] font-extrabold shadow-xs">
+                            <div class="inline-flex items-center justify-center gap-1 whitespace-nowrap">
+                                <button type="button" onclick="sendWhatsAppReceipt(${sale.id})" class="inline-flex items-center gap-1 bg-emerald-700 hover:bg-emerald-800 text-white px-2.5 py-1 rounded-lg transition text-[11px] font-extrabold shadow-xs">
                                     <span>💬</span><span>واتساب</span>
                                 </button>
                                 <select onchange="handleQuickTableAction(this, ${sale.id})" aria-label="اختر تعديل للتذكرة"
-                                        class="bg-[#192A3E] text-white border border-[#C5A059] px-2.5 py-1.5 rounded-lg text-[11.5px] font-extrabold cursor-pointer">
-                                    <option value="" class="bg-white text-[#0F1A28]">🛠️ اختر تعديل...</option>
+                                        class="bg-[#192A3E] text-white border border-[#C5A059] px-2 py-1 rounded-lg text-[11px] font-extrabold cursor-pointer">
+                                    <option value="" class="bg-white text-[#0F1A28]">🛠️ تعديل...</option>
                                     <option value="EDIT_INFO" class="bg-white text-[#0F1A28]">📝 تصحيح بيانات الحجز</option>
                                     <option value="PAY_DEBT" class="bg-white text-[#0F1A28]">💵 تسديد دفعة / دين</option>
                                     <option value="EDIT_PRICES" class="bg-white text-[#0F1A28]">🔄 تعديل الأسعار / Reissue</option>

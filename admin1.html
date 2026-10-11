@@ -876,6 +876,11 @@
                         <span>🖨️</span> طباعة التقرير الرسمي (A4)
                     </button>
 
+                    <button type="button" onclick="exportToExcelCSV()"
+                            class="w-full py-2 px-3 rounded-xl bg-[#C5A059] hover:bg-[#d4b26f] text-[#0F1A28] font-extrabold text-xs flex items-center justify-center gap-2 shadow-xs transition">
+                        <span>📊</span> تصدير التقرير إلى Excel (CSV)
+                    </button>
+
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button type="button" onclick="exportBackupFile()"
                                 class="py-2 px-2 rounded-xl bg-[#2C425C] hover:bg-[#3b5575] text-white font-bold text-[11px] flex items-center justify-center gap-1 transition">
@@ -1425,38 +1430,58 @@
         let lastFocusedElementBeforeModal = null;
         let toastTimeoutId = null;
 
-        // دالة تطبيع بيانات التذاكر لضمان سلامة المعادلات المحاسبية 100%
+        // دالة تطبيع بيانات التذاكر لضمان سلامة المعادلات المحاسبية ومنع أي تعارض منطقي 100%
         function normalizeTicketRecord(t) {
             const status = t.status || 'issue';
-            const basePrice = parseFloat(t.basePrice) || 0;
-            const totalPrice = parseFloat(t.totalPrice) || 0;
+            const basePrice = Math.max(0, parseFloat(t.basePrice) || 0);
+            const totalPrice = Math.max(0, parseFloat(t.totalPrice) || 0);
+            let paymentMethod = t.paymentMethod || 'شبكة';
 
-            let paidAmount = (t.paidAmount !== undefined && t.paidAmount !== null)
+            let paidAmount = (t.paidAmount !== undefined && t.paidAmount !== null && t.paidAmount !== '')
                 ? parseFloat(t.paidAmount)
-                : ((status === 'refund' || status === 'void') ? 0 : totalPrice);
+                : ((status === 'refund' || status === 'void' || paymentMethod === 'آجل') ? 0 : totalPrice);
+
+            if (isNaN(paidAmount) || paidAmount < 0) paidAmount = 0;
 
             let remainingDebt = 0;
             let profit = 0;
             let commission = 0;
 
             if (status === 'void') {
+                // التذكرة الملغاة: تصفير كافة القيم المالية والعمولة
                 paidAmount = 0;
                 remainingDebt = 0;
                 profit = 0;
                 commission = 0;
             } else if (status === 'refund') {
+                // التذكرة المسترجعة: لا توجد عمولة للموظف (0.00)، ولا يدخل سعرها في المبيعات أو الذمم
+                paidAmount = 0;
                 remainingDebt = 0;
-                profit = parseFloat(t.profit) || 0;
+                // إذا تم تحديد رسوم استرجاع صريحة للمكتب نأخذها، وإلا نحسب الفرق الموجب كرسوم محتجزة
+                const rawRefundProfit = (t.refundFee !== undefined) ? parseFloat(t.refundFee) : parseFloat(t.profit);
+                profit = (!isNaN(rawRefundProfit) && rawRefundProfit > 0) ? rawRefundProfit : 0;
                 commission = 0;
             } else {
+                // التذكرة الفعالة (إصدار أو تعديل Reissue):
+                // لا يمكن أن يكون المبلغ المدفوع أكبر من إجمالي سعر التذكرة
+                if (paidAmount > totalPrice) {
+                    paidAmount = totalPrice;
+                }
+                // إذا كانت طريقة الدفع "آجل" بالكامل والمبلغ المدفوع = 0، يبقى الدين = كامل المبلغ
+                // أما إذا دفع العميل عربوناً وكان الخيار "آجل"، نحول وسيلة قبض العربون تلقائياً إلى "كاش" ليدخل الصندوق
+                if (paymentMethod === 'آجل' && paidAmount > 0) {
+                    paymentMethod = 'كاش';
+                }
                 remainingDebt = Math.max(0, totalPrice - paidAmount);
                 profit = totalPrice - basePrice;
+                // عمولة الـ 10% تحسب على التذكرة المربحة فقط لكل تذكرة على حدة
                 commission = profit > 0 ? (profit * COMMISSION_RATE) : 0;
             }
 
             return {
                 ...t,
                 status: status,
+                paymentMethod: paymentMethod,
                 basePrice: basePrice,
                 totalPrice: totalPrice,
                 paidAmount: paidAmount,
@@ -2006,13 +2031,24 @@
 
         function onPaidAmountManualInput() {
             isPaidManuallyEdited = true;
+            const totalPrice = Math.max(0, parseFloat(document.getElementById('total-price').value) || 0);
+            const paidInput = document.getElementById('paid-amount');
+            let paidVal = parseFloat(paidInput.value);
+
+            // إذا أدخل الموظف مبلغاً مدفوعاً بينما الخيار على "آجل"، ننبهه أو نحول وسيلة قبض العربون إلى "كاش"
+            if (!isNaN(paidVal) && paidVal > 0 && document.getElementById('payment-method').value === 'آجل') {
+                document.getElementById('payment-method').value = 'كاش';
+                const cashRadio = document.querySelector('input[name="entryPaymentMethodRadio"][value="كاش"]');
+                if (cashRadio) cashRadio.checked = true;
+                showToast("تم تحويل وسيلة قبض الدفعة المقدمة إلى (كاش) وتسجيل الباقي كدين تلقائياً", "warning");
+            }
             calculateLivePreview();
         }
 
         function handleFormStatusOrPaymentChange() {
             const paymentMethod = document.getElementById('payment-method').value;
             const status = document.getElementById('ticket-status').value;
-            const totalPrice = parseFloat(document.getElementById('total-price').value) || 0;
+            const totalPrice = Math.max(0, parseFloat(document.getElementById('total-price').value) || 0);
 
             if (paymentMethod === 'آجل' || status === 'void' || status === 'refund') {
                 document.getElementById('paid-amount').value = '0';
@@ -2024,11 +2060,18 @@
         }
 
         function calculateLivePreview() {
-            const basePrice = parseFloat(document.getElementById('base-price').value) || 0;
-            const totalPrice = parseFloat(document.getElementById('total-price').value) || 0;
+            const basePrice = Math.max(0, parseFloat(document.getElementById('base-price').value) || 0);
+            const totalPrice = Math.max(0, parseFloat(document.getElementById('total-price').value) || 0);
             const paidInputVal = document.getElementById('paid-amount').value;
-            const paidAmount = paidInputVal !== '' ? (parseFloat(paidInputVal) || 0) : totalPrice;
             const status = document.getElementById('ticket-status').value;
+            const paymentMethod = document.getElementById('payment-method').value;
+
+            let paidAmount = paidInputVal !== ''
+                ? (parseFloat(paidInputVal) || 0)
+                : ((status === 'void' || status === 'refund' || paymentMethod === 'آجل') ? 0 : totalPrice);
+
+            if (paidAmount < 0) paidAmount = 0;
+            if (paidAmount > totalPrice) paidAmount = totalPrice;
 
             const statusNote = document.getElementById('preview-status-note');
             let profit = 0;
@@ -2041,6 +2084,7 @@
                 debt = 0;
                 statusNote.classList.remove('hidden');
             } else if (status === 'refund') {
+                // في حالة تسجيل تذكرة مسترجعة ابتداءً: الفرق الموجب يعتبر رسوم استرجاع للمكتب بدون عمولة للموظف
                 profit = Math.max(0, totalPrice - basePrice);
                 commission = 0;
                 debt = 0;
@@ -2057,7 +2101,7 @@
             document.getElementById('preview-debt').innerText = debt.toFixed(2);
         }
 
-        // دالة إضافة التذكرة الجديدة (مع قراءة مربعات الاختيار Checkboxes ووقت العملية)
+        // دالة إضافة التذكرة الجديدة (مع التحقق المنطقي الصارم من المبالغ والمدفوعات)
         function addNewSale() {
             const clientName = document.getElementById('client-name').value.trim();
             const clientPhone = document.getElementById('client-phone').value.trim();
@@ -2068,7 +2112,7 @@
             const airlineName = (airlineSelect === 'OTHER') ? airlineCustom : airlineSelect;
 
             const status = document.getElementById('ticket-status').value;
-            const paymentMethod = document.getElementById('payment-method').value;
+            let paymentMethod = document.getElementById('payment-method').value;
             const basePrice = parseFloat(document.getElementById('base-price').value);
             const totalPrice = parseFloat(document.getElementById('total-price').value);
             const paidRaw = document.getElementById('paid-amount').value;
@@ -2080,6 +2124,26 @@
                 return;
             }
 
+            if (basePrice < 0 || totalPrice < 0) {
+                showToast("لا يمكن إدخال مبالغ سالبة في التكلفة أو سعر البيع!", "error");
+                return;
+            }
+
+            let paidAmount = paidRaw !== ''
+                ? parseFloat(paidRaw)
+                : ((status === 'void' || status === 'refund' || paymentMethod === 'آجل') ? 0 : totalPrice);
+
+            if (isNaN(paidAmount) || paidAmount < 0) paidAmount = 0;
+
+            if (status !== 'void' && status !== 'refund' && paidAmount > totalPrice) {
+                showToast("تنبيه منطقي: المبلغ المدفوع لا يمكن أن يكون أكبر من المبلغ الإجمالي للتذكرة!", "error");
+                return;
+            }
+
+            if (status !== 'void' && status !== 'refund' && totalPrice < basePrice) {
+                showToast("تنبيه: سعر البيع الإجمالي أقل من التكلفة الأساسية (عملية بيع بخسارة)!", "warning");
+            }
+
             // قراءة مربعات الاختيار المستقلة (Checkboxes)
             const selectedAddons = [];
             if (document.getElementById('addon-baggage').checked) selectedAddons.push('وزن إضافي');
@@ -2087,8 +2151,9 @@
             if (document.getElementById('addon-seat').checked) selectedAddons.push('مقعد مميز');
             const autoSendWA = document.getElementById('addon-auto-whatsapp').checked;
 
-            let paidAmount = paidRaw !== '' ? parseFloat(paidRaw) : totalPrice;
-            if (isNaN(paidAmount) || paidAmount < 0) paidAmount = 0;
+            const calculatedProfit = (status === 'refund')
+                ? Math.max(0, totalPrice - basePrice)
+                : (totalPrice - basePrice);
 
             const newTicket = normalizeTicketRecord({
                 id: Date.now(),
@@ -2105,7 +2170,8 @@
                 basePrice: basePrice,
                 totalPrice: totalPrice,
                 paidAmount: paidAmount,
-                profit: totalPrice - basePrice,
+                profit: calculatedProfit,
+                refundFee: (status === 'refund') ? calculatedProfit : undefined,
                 addons: selectedAddons
             });
 
@@ -2271,22 +2337,24 @@
             if (action === 'EDIT_INFO') {
                 statusText = 'تعديل بيانات فقط (نفس الحالة)';
             } else if (action === 'PAY_DEBT') {
-                const newPaid = parseFloat(document.getElementById('edit-paid-amount').value) || 0;
+                let newPaid = Math.max(0, parseFloat(document.getElementById('edit-paid-amount').value) || 0);
+                if (newPaid > ticket.totalPrice) newPaid = ticket.totalPrice;
                 debt = Math.max(0, ticket.totalPrice - newPaid);
                 profit = ticket.totalPrice - ticket.basePrice;
                 comm = profit > 0 ? (profit * COMMISSION_RATE) : 0;
                 statusText = debt === 0 ? 'مسددة بالكامل ✅' : 'متبقي ذمم 📒';
             } else if (action === 'EDIT_PRICES') {
-                const bPrice = parseFloat(document.getElementById('modal-base-price').value) || 0;
-                const tPrice = parseFloat(document.getElementById('modal-total-price').value) || 0;
-                const pAmount = parseFloat(document.getElementById('modal-price-paid').value) || 0;
+                const bPrice = Math.max(0, parseFloat(document.getElementById('modal-base-price').value) || 0);
+                const tPrice = Math.max(0, parseFloat(document.getElementById('modal-total-price').value) || 0);
+                let pAmount = Math.max(0, parseFloat(document.getElementById('modal-price-paid').value) || 0);
+                if (pAmount > tPrice) pAmount = tPrice;
                 const st = document.getElementById('modal-price-status').value;
                 profit = tPrice - bPrice;
                 comm = profit > 0 ? (profit * COMMISSION_RATE) : 0;
                 debt = Math.max(0, tPrice - pAmount);
                 statusText = st === 'reissue' ? 'معاد إصدارها Reissue 🔄' : 'إصدار مؤكد ✅';
             } else if (action === 'MAKE_REFUND') {
-                const fee = parseFloat(document.getElementById('edit-refund-fee').value) || 0;
+                const fee = Math.max(0, parseFloat(document.getElementById('edit-refund-fee').value) || 0);
                 profit = fee;
                 comm = 0;
                 debt = 0;
@@ -2343,8 +2411,22 @@
                 ticket.airline = finalAirline;
 
             } else if (action === 'PAY_DEBT') {
-                const newPaid = parseFloat(document.getElementById('edit-paid-amount').value) || 0;
-                const newMethod = document.getElementById('edit-payment-method').value;
+                const newPaid = parseFloat(document.getElementById('edit-paid-amount').value);
+                let newMethod = document.getElementById('edit-payment-method').value;
+
+                if (isNaN(newPaid) || newPaid < 0) {
+                    showToast("يرجى إدخال مبلغ مدفوع صحيح (0 أو أكثر)!", "error");
+                    return;
+                }
+                if (newPaid > ticket.totalPrice) {
+                    showToast("لا يمكن أن يكون المبلغ المدفوع أكبر من إجمالي قيمة التذكرة!", "error");
+                    return;
+                }
+                if (newPaid > 0 && newMethod === 'آجل') {
+                    showToast("يرجى اختيار وسيلة القبض الفعلية (كاش / شبكة / تحويل) للمبلغ المحصل بدلاً من (آجل)!", "error");
+                    return;
+                }
+
                 if (ticket.status === 'refund' || ticket.status === 'void') {
                     ticket.status = 'issue';
                 }
@@ -2355,22 +2437,35 @@
                 const newBase = parseFloat(document.getElementById('modal-base-price').value);
                 const newTotal = parseFloat(document.getElementById('modal-total-price').value);
                 const newPaid = parseFloat(document.getElementById('modal-price-paid').value) || 0;
-                if (isNaN(newBase) || isNaN(newTotal)) {
-                    showToast("يرجى إدخال المبلغ الأساسي والإجمالي بشكل صحيح!", "error");
+                const newPayMethod = document.getElementById('modal-price-payment').value;
+
+                if (isNaN(newBase) || isNaN(newTotal) || newBase < 0 || newTotal < 0 || newPaid < 0) {
+                    showToast("يرجى إدخال المبلغ الأساسي والإجمالي والمدفوع بشكل صحيح وبدون قيم سالبة!", "error");
                     return;
                 }
+                if (newPaid > newTotal) {
+                    showToast("المبلغ المدفوع لا يمكن أن يتجاوز السعر الإجمالي الجديد للتذكرة!", "error");
+                    return;
+                }
+                if (newPaid > 0 && newPayMethod === 'آجل') {
+                    showToast("بما أن هناك مبلغاً مدفوعاً، يرجى تحديد طريقة الدفع (كاش / شبكة / تحويل) بدلاً من آجل!", "error");
+                    return;
+                }
+
                 ticket.status = document.getElementById('modal-price-status').value;
-                ticket.paymentMethod = document.getElementById('modal-price-payment').value;
+                ticket.paymentMethod = newPayMethod;
                 ticket.basePrice = newBase;
                 ticket.totalPrice = newTotal;
                 ticket.paidAmount = newPaid;
+                delete ticket.refundFee;
 
             } else if (action === 'MAKE_REFUND') {
-                const refundFee = parseFloat(document.getElementById('edit-refund-fee').value) || 0;
+                const refundFee = Math.max(0, parseFloat(document.getElementById('edit-refund-fee').value) || 0);
                 ticket.status = 'refund';
                 ticket.paidAmount = 0;
                 ticket.remainingDebt = 0;
                 ticket.profit = refundFee;
+                ticket.refundFee = refundFee;
                 ticket.commission = 0;
 
             } else if (action === 'MAKE_VOID') {
@@ -2378,6 +2473,7 @@
                 ticket.paidAmount = 0;
                 ticket.remainingDebt = 0;
                 ticket.profit = 0;
+                ticket.refundFee = 0;
                 ticket.commission = 0;
             }
 
@@ -2715,6 +2811,104 @@
             document.getElementById('sum-commission').innerText = totalCommissionSum.toFixed(2);
         }
 
+        // دالة تصدير التقرير المفلتر حالياً إلى ملف Excel (CSV) بترميز UTF-8 BOM لدعم العربية
+        function exportToExcelCSV() {
+            const { filteredSales, cleanDateTag } = getActiveFilteredData();
+            if (filteredSales.length === 0) {
+                showToast("لا توجد بيانات في التقرير الحالي لتصديرها إلى Excel!", "warning");
+                return;
+            }
+
+            const statusArabic = {
+                'issue': 'إصدار مؤكد',
+                'reissue': 'تعديل Reissue',
+                'refund': 'مسترجعة Refund',
+                'void': 'ملغاة Void'
+            };
+
+            const headers = [
+                "م",
+                "التاريخ",
+                "الوقت",
+                "الموظف",
+                "اسم العميل",
+                "رقم الجوال",
+                "رقم الحجز PNR",
+                "شركة الطيران",
+                "الإضافات",
+                "حالة التذكرة",
+                "طريقة الدفع",
+                "المبلغ الأساسي",
+                "المبلغ الإجمالي",
+                "المبلغ المدفوع",
+                "الدين المتبقي",
+                "صافي المربح",
+                "عمولة الموظف (10%)"
+            ];
+
+            const escapeCSV = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
+
+            let totalBase = 0, totalSales = 0, totalPaid = 0, totalDebt = 0, totalProfit = 0, totalComm = 0;
+            const rows = filteredSales.map((s, idx) => {
+                const isRefVoid = (s.status === 'refund' || s.status === 'void');
+                if (!isRefVoid) {
+                    totalBase += s.basePrice;
+                    totalSales += s.totalPrice;
+                    totalPaid += s.paidAmount;
+                    totalDebt += s.remainingDebt;
+                    totalComm += s.commission;
+                }
+                totalProfit += s.profit;
+
+                const empName = usersDB[s.employeeUsername] ? usersDB[s.employeeUsername].name : s.employeeName;
+                return [
+                    idx + 1,
+                    s.date,
+                    s.time || '12:00',
+                    empName,
+                    s.clientName,
+                    s.clientPhone,
+                    s.pnr,
+                    s.airline,
+                    (s.addons || []).join(' + '),
+                    statusArabic[s.status] || s.status,
+                    s.paymentMethod,
+                    isRefVoid ? '0.00' : s.basePrice.toFixed(2),
+                    isRefVoid ? '0.00' : s.totalPrice.toFixed(2),
+                    s.paidAmount.toFixed(2),
+                    s.remainingDebt.toFixed(2),
+                    s.profit.toFixed(2),
+                    s.commission.toFixed(2)
+                ].map(escapeCSV).join(',');
+            });
+
+            // إضافة صف الإجمالي المحاسبي في نهاية ملف الإكسل
+            const footerRow = [
+                "الإجمالي الصافي", "", "", "", "", "", "", "", "", "", "",
+                totalBase.toFixed(2),
+                totalSales.toFixed(2),
+                totalPaid.toFixed(2),
+                totalDebt.toFixed(2),
+                totalProfit.toFixed(2),
+                totalComm.toFixed(2)
+            ].map(escapeCSV).join(',');
+
+            const csvContent = "\uFEFF" + [headers.map(escapeCSV).join(','), ...rows, footerRow].join('\r\n');
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+
+            const empClean = currentUser.name.replace(/\s+/g, '_');
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Report_Excel_v${backupVersionCounter}_${cleanDateTag}_${empClean}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showToast("تم تصدير جدول التقرير إلى ملف Excel (CSV) بنجاح!");
+        }
+
         function exportBackupFile() {
             const todayStr = getTodayDateString();
             const currentVer = backupVersionCounter;
@@ -2745,7 +2939,7 @@
             document.body.removeChild(downloadLink);
             URL.revokeObjectURL(url);
 
-            backupVersionCounter++;
+            backupVersionCounter = currentVer + 1;
             localStorage.setItem('airline_backup_version_num', String(backupVersionCounter));
             updateVersionBadgeUI();
 
@@ -2777,6 +2971,11 @@
                         usersDB = imported.usersDB;
                         localStorage.setItem('airline_users_v3_db', JSON.stringify(usersDB));
                         updateEmployeeFilterNames();
+                        // تحديث اسم المستخدم النشط في الجلسة الحالية فوراً
+                        if (currentUser && usersDB[currentUser.username]) {
+                            currentUser.name = usersDB[currentUser.username].name;
+                            sessionStorage.setItem('airline_active_user', JSON.stringify(currentUser));
+                        }
                     }
 
                     if (imported.backupVersion) {

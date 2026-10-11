@@ -14,22 +14,18 @@
            1. الهوية اللونية الصارمة (French Navy & Seal Grey) وفصل المتغيرات (WCAG AAA)
            ========================================================================== */
         :root {
-            /* French Navy Palette */
             --navy-primary: #192A3E;
             --navy-hover: #2C425C;
             --navy-dark: #0F1A28;
 
-            /* Seal Grey Palette */
             --seal-border: #9E978E;
             --seal-divider: #BEB8B0;
             --seal-bg-main: #F6F4F0;
             --seal-bg-sub: #EBE7E0;
 
-            /* Accent Gold */
             --gold-accent: #C5A059;
             --gold-bg-soft: #FDF9F0;
 
-            /* Strict Separation: Text vs Surface vs Input vs Buttons (Light Mode Default) */
             --bg-body: #F6F4F0;
             --surface-card: #FFFFFF;
             --surface-sub: #EBE7E0;
@@ -77,7 +73,6 @@
             text-transform: uppercase;
         }
 
-        /* فئات مساعدة صارمة التباين للبطاقات والحقول والأزرار */
         .theme-card {
             background-color: var(--surface-card);
             color: var(--text-primary);
@@ -134,8 +129,7 @@
         }
 
         /* ==========================================================================
-           3. تأثير العمق البصري للخلفية (Parallax Scrolling via animation-timeline)
-              تجنب background-attachment: fixed غير المدعوم في iOS Safari
+           3. تأثير العمق البصري للخلفية (Parallax Scrolling)
            ========================================================================== */
         .parallax-bg-layer {
             position: fixed;
@@ -149,18 +143,6 @@
                 repeating-linear-gradient(45deg, rgba(158, 151, 142, 0.04) 0px, rgba(158, 151, 142, 0.04) 2px, transparent 2px, transparent 24px);
             will-change: transform;
             transform: translate3d(0, var(--parallax-offset, 0px), 0);
-        }
-
-        @keyframes parallax-scroll-shift {
-            from { transform: translate3d(0, 0, 0); }
-            to   { transform: translate3d(0, -12vh, 0); }
-        }
-
-        @supports (animation-timeline: scroll()) {
-            .parallax-bg-layer {
-                animation: parallax-scroll-shift linear both;
-                animation-timeline: scroll(root);
-            }
         }
 
         /* ==========================================================================
@@ -204,7 +186,6 @@
             background-color: #0F1A28;
         }
 
-        /* في اتجاه RTL يتحرك المقبض لليسار عند التفعيل */
         .ui-switch[aria-checked="true"] .ui-switch-thumb {
             transform: translateX(-21px);
         }
@@ -241,98 +222,29 @@
         }
 
         /* ==========================================================================
-           6. العجلة الدوارة لاختيار الوقت (iOS Slot-Machine Drum Wheel Picker)
-              UIDatePicker in .wheels style with gray selection band
-           ========================================================================== */
-        .ios-wheel-drum {
-            position: relative;
-            height: 132px;
-            background: linear-gradient(180deg, #E5E2DC 0%, #FFFFFF 35%, #FFFFFF 65%, #E5E2DC 100%);
-            border: 1.5px solid var(--seal-border);
-            border-radius: 14px;
-            overflow: hidden;
-            user-select: none;
-            box-shadow: inset 0 4px 10px rgba(15, 26, 40, 0.08);
-        }
-
-        body.dark-theme .ios-wheel-drum {
-            background: linear-gradient(180deg, #0B131E 0%, #1E3045 35%, #1E3045 65%, #0B131E 100%);
-        }
-
-        /* الشريط الرمادي الأوسط (Gray Selection Band) */
-        .ios-wheel-highlight-band {
-            position: absolute;
-            top: 50%;
-            left: 6px;
-            right: 6px;
-            height: 36px;
-            transform: translateY(-50%);
-            background-color: rgba(158, 151, 142, 0.24);
-            border-top: 1.5px solid rgba(25, 42, 62, 0.35);
-            border-bottom: 1.5px solid rgba(25, 42, 62, 0.35);
-            border-radius: 8px;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        body.dark-theme .ios-wheel-highlight-band {
-            background-color: rgba(197, 160, 89, 0.22);
-            border-color: rgba(197, 160, 89, 0.65);
-        }
-
-        .ios-wheel-column {
-            height: 132px;
-            overflow-y: scroll;
-            scroll-snap-type: y mandatory;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            position: relative;
-            z-index: 2;
-            padding-top: 48px;
-            padding-bottom: 48px;
-        }
-
-        .ios-wheel-column::-webkit-scrollbar {
-            display: none;
-        }
-
-        .ios-wheel-item {
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            scroll-snap-align: center;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: transform 0.15s ease, color 0.15s ease, font-weight 0.15s ease;
-        }
-
-        .ios-wheel-item.wheel-selected {
-            color: var(--text-primary);
-            font-weight: 900;
-            font-size: 16px;
-            transform: scale(1.08);
-        }
-
-        /* ==========================================================================
-           7. إعدادات الطباعة الرسمية المدمجة (A4 Print Layout)
-              تضمن إظهار الملخص والجدول دائماً في الطباعة حتى لو كانت الصفحة مخفية
+           6. إعدادات الطباعة الرسمية المدمجة (Flexible Portrait / Landscape Print)
+              تضمن وضوح النصوص 100% وتقليص الخانات العلوية وتثبيت الفوتر بنفس الورقة
            ========================================================================== */
         @media print {
             @page {
-                size: A4 landscape;
-                margin: 8mm;
+                margin: 6mm;
             }
-            body {
+            html, body {
                 background-color: #ffffff !important;
-                color: #0F1A28 !important;
+                color: #000000 !important;
                 padding: 0 !important;
                 margin: 0 !important;
-                font-size: 10.5px !important;
+                min-height: auto !important;
+                height: auto !important;
+                display: block !important;
+                font-size: 9.5px !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
+            }
+            /* إلغاء أي شفافية في الطباعة لضمان سطوع النصوص 100% */
+            * {
+                opacity: 1 !important;
+                text-shadow: none !important;
             }
             .no-print {
                 display: none !important;
@@ -347,91 +259,117 @@
             #section-kpi-summary,
             #section-report-table {
                 display: block !important;
+                margin-bottom: 6px !important;
             }
             #section-ticket-entry {
                 display: none !important;
             }
             #dashboard-page,
             #main-workspace {
+                display: block !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 width: 100% !important;
             }
-            .max-w-7xl {
+            .max-w-6xl, .max-w-7xl {
                 max-width: 100% !important;
             }
+            /* تقليص البطاقات الـ 6 العلوية لتكون شريطاً مدمجاً يناسب الطولي والعرضي */
             .print-summary-grid {
                 display: grid !important;
                 grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-                gap: 6px !important;
-                margin-bottom: 10px !important;
+                gap: 4px !important;
+                margin-bottom: 8px !important;
             }
             .print-summary-card {
-                padding: 6px 8px !important;
-                border: 1px solid #9E978E !important;
-                border-radius: 8px !important;
+                padding: 4px 6px !important;
+                border: 1.5px solid #0F1A28 !important;
+                border-radius: 6px !important;
                 box-shadow: none !important;
-                background-color: #F6F4F0 !important;
-                color: #0F1A28 !important;
+                background-color: #F8FAFC !important;
+                color: #000000 !important;
+            }
+            .print-summary-card * {
+                color: #000000 !important;
             }
             .print-summary-card .print-card-title {
-                color: #334155 !important;
-                font-size: 9.5px !important;
-                margin-bottom: 2px !important;
+                font-size: 8.5px !important;
+                font-weight: 800 !important;
+                margin-bottom: 1px !important;
             }
             .print-summary-card .print-card-value {
-                color: #0F1A28 !important;
-                font-size: 14px !important;
+                font-size: 12px !important;
+                font-weight: 900 !important;
+                line-height: 1.2 !important;
+            }
+            .print-summary-card .print-card-sub {
+                font-size: 7.5px !important;
                 font-weight: 800 !important;
+                margin-top: 2px !important;
             }
             .print-commission-card {
                 background-color: #ecfdf5 !important;
-                border: 1.5px solid #059669 !important;
+                border: 1.5px solid #047857 !important;
             }
-            .print-commission-card .print-card-value {
-                color: #047857 !important;
+            .print-commission-card * {
+                color: #064e3b !important;
             }
             .print-debt-card {
                 background-color: #fef2f2 !important;
-                border: 1.5px solid #dc2626 !important;
+                border: 1.5px solid #b91c1c !important;
             }
-            .print-debt-card .print-card-value {
-                color: #b91c1c !important;
+            .print-debt-card * {
+                color: #7f1d1d !important;
             }
             .print-table-container {
                 overflow: visible !important;
-                border: 1px solid #9E978E !important;
-                border-radius: 8px !important;
+                border: 1.5px solid #0F1A28 !important;
+                border-radius: 6px !important;
             }
             table {
                 width: 100% !important;
                 table-layout: auto !important;
-                font-size: 9.5px !important;
+                font-size: 8.5px !important;
+                border-collapse: collapse !important;
             }
             th, td {
-                padding: 5px 4px !important;
-                border: 1px solid #BEB8B0 !important;
+                padding: 3.5px 3px !important;
+                border: 1px solid #64748B !important;
                 white-space: normal !important;
                 word-break: break-word !important;
-                color: #0F1A28 !important;
+                color: #000000 !important;
+                font-weight: 700 !important;
             }
             th {
                 background-color: #EBE7E0 !important;
-                color: #192A3E !important;
-                font-size: 9.5px !important;
+                color: #000000 !important;
+                font-size: 8.5px !important;
+                font-weight: 900 !important;
+            }
+            /* تثبيت الفوتر السفلي في نفس ورقة الطباعة بخلفية فاتحة واضحة */
+            footer.print-footer {
+                background-color: #F6F4F0 !important;
+                color: #000000 !important;
+                border: 1.5px solid #0F1A28 !important;
+                border-radius: 6px !important;
+                padding: 5px 10px !important;
+                margin-top: 8px !important;
+                page-break-inside: avoid !important;
+            }
+            footer.print-footer * {
+                color: #000000 !important;
+                background-color: transparent !important;
+                border-color: #0F1A28 !important;
             }
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between relative">
 
-    <!-- طبقة العمق البصري المتحركة (Parallax Scrolling Layer) -->
+    <!-- طبقة العمق البصري المتحركة -->
     <div id="parallax-bg" class="parallax-bg-layer no-print" aria-hidden="true"></div>
 
-    <!-- ==========================================================================
-         إشعارات الزاوية العابرة غير الحاجبة (Compact Non-Modal Corner Toast)
-         تظهر في الزاوية السفلية اليسرى دون حجب أو مقاطعة سير عمل الموظف
-         ========================================================================== -->
+    <!-- إشعارات الزاوية العابرة غير الحاجبة (Compact Non-Modal Corner Toast) -->
     <div id="toast-container" role="status" aria-live="polite" aria-atomic="true"
          class="fixed bottom-5 left-5 z-50 hidden no-print pointer-events-none max-w-sm">
         <div id="toast-box" class="pointer-events-auto px-4 py-3 rounded-xl shadow-2xl text-white font-extrabold text-xs sm:text-sm flex items-center gap-3 border-2 border-[#C5A059] transition-all duration-300">
@@ -440,10 +378,7 @@
         </div>
     </div>
 
-    <!-- ==========================================================================
-         نافذة الحوار المركزية لتأكيد الحذف مع إدارة وحصر التركيز
-         (Centered Modal Dialog with Managed Focus & Escape Key Support)
-         ========================================================================== -->
+    <!-- نافذة الحوار المركزية لتأكيد الحذف -->
     <div id="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title" aria-describedby="delete-modal-desc"
          class="fixed inset-0 bg-[#0F1A28]/75 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 no-print">
         <div class="theme-card rounded-2xl max-w-sm w-full p-6 shadow-2xl border-2 border-red-600 text-center">
@@ -485,7 +420,7 @@
             <div class="mb-5 bg-[#192A3E] text-white p-4 rounded-2xl border border-[#C5A059]">
                 <label for="edit-action-type" class="block text-xs font-extrabold text-[#C5A059] mb-2">👇 اختر نوع التعديل أو الإجراء المطلوب تنفيذه على التذكرة:</label>
                 <select id="edit-action-type" onchange="handleEditActionTypeChange()" class="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#C5A059] bg-white font-extrabold text-xs sm:text-sm text-[#0F1A28] cursor-pointer">
-                    <option value="EDIT_INFO">📝 1. تصحيح بيانات الحجز (العميل / الجوال / PNR / شركة الطيران / التاريخ والوقت)</option>
+                    <option value="EDIT_INFO">📝 1. تصحيح بيانات الحجز (العميل / الجوال / PNR / شركة الطيران)</option>
                     <option value="PAY_DEBT">💵 2. تحصيل دفعة مالية / تسديد مديونية على العميل</option>
                     <option value="EDIT_PRICES">🔄 3. تعديل أسعار التذكرة أو إعادة إصدار (Reissue)</option>
                     <option value="MAKE_REFUND">↩️ 4. استرجاع التذكرة (Refund - حذف عمولة الـ 10% تلقائياً)</option>
@@ -497,7 +432,7 @@
                 <!-- القسم 1: تصحيح بيانات الحجز الأساسية -->
                 <div id="section-edit-info" class="theme-sub-surface p-4 rounded-xl space-y-3 hidden">
                     <div class="text-xs font-extrabold border-b border-[#9E978E] pb-2 mb-2">
-                        📝 تعديل البيانات الأساسية للحجز (بدون تغيير الحسابات المالية):
+                        📝 تعديل البيانات الأساسية للحجز (التاريخ والوقت محميان بختم التسجيل الأصلي):
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
@@ -512,15 +447,9 @@
                             <label class="block text-xs theme-label mb-1">رقم الحجز (PNR):</label>
                             <input type="text" id="modal-pnr" dir="ltr" maxlength="12" class="w-full px-3 py-2 rounded-lg theme-input text-sm font-mono uppercase-input">
                         </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-xs theme-label mb-1">تاريخ العملية:</label>
-                                <input type="date" id="modal-date" class="w-full px-2 py-2 rounded-lg theme-input text-xs">
-                            </div>
-                            <div>
-                                <label class="block text-xs theme-label mb-1">وقت العملية:</label>
-                                <input type="time" id="modal-time" class="w-full px-2 py-2 rounded-lg theme-input text-xs" dir="ltr">
-                            </div>
+                        <div>
+                            <label class="block text-xs theme-label mb-1">تاريخ ووقت التسجيل الأصلي (للقراءة):</label>
+                            <input type="text" id="modal-readonly-datetime" readonly dir="ltr" class="w-full px-3 py-2 rounded-lg theme-input text-xs font-mono opacity-75 cursor-not-allowed">
                         </div>
                         <div class="sm:col-span-2">
                             <label class="block text-xs theme-label mb-1">شركة الطيران:</label>
@@ -692,8 +621,8 @@
                 </div>
                 <div class="theme-sub-surface p-3.5 rounded-xl space-y-2 text-xs">
                     <div class="flex justify-between items-center border-b border-[#9E978E] pb-2">
-                        <span class="font-bold">معرف النسخة والتاريخ والموظف:</span>
-                        <span id="email-meta-preview" class="font-extrabold bg-[#192A3E] text-white px-2.5 py-0.5 rounded-lg"></span>
+                        <span class="font-bold">ختم النسخة (التاريخ | الوقت | المستفيد):</span>
+                        <span id="email-meta-preview" class="font-extrabold bg-[#192A3E] text-[#C5A059] px-2.5 py-0.5 rounded-lg font-mono"></span>
                     </div>
                     <label for="email-body-preview" class="block font-extrabold pt-1">معاينة محتوى الرسالة المرسلة:</label>
                     <textarea id="email-body-preview" rows="7" readonly class="w-full p-2.5 rounded-lg theme-input text-xs resize-none"></textarea>
@@ -716,13 +645,12 @@
     <!-- ==========================================================================
          الصفحة الأولى: بوابة تسجيل الدخول الرسمية (French Navy & Seal Grey)
          ========================================================================== -->
-    <div id="login-page" class="flex-grow flex flex-col items-center justify-center p-4 transition-colors duration-300 relative">
+    <div id="login-page" class="flex-grow flex flex-col items-center justify-center p-4 transition-colors duration-300 relative no-print">
         
-        <!-- شريط تبديل الوضع الليلي باستخدام Toggle Switch القياسي (role="switch") -->
         <div class="w-full max-w-md flex justify-end mb-3">
             <div class="theme-card px-3.5 py-2 rounded-full flex items-center gap-3 shadow-md">
-                <span id="login-theme-label" class="text-xs font-extrabold">🌙 الوضع الليلي الفوري</span>
-                <button type="button" role="switch" id="login-theme-switch" aria-checked="true" aria-labelledby="login-theme-label"
+                <span id="login-theme-label" class="text-xs font-extrabold">☀️ الوضع الفاتح مفعل</span>
+                <button type="button" role="switch" id="login-theme-switch" aria-checked="false" aria-labelledby="login-theme-label"
                         onclick="toggleGlobalTheme()" class="ui-switch">
                     <span class="ui-switch-thumb"></span>
                 </button>
@@ -730,7 +658,6 @@
         </div>
 
         <div id="login-card" class="max-w-md w-full theme-card rounded-3xl shadow-2xl overflow-hidden">
-            <!-- رأس بطاقة تسجيل الدخول بالكحلي الفرنسي والذهبي -->
             <div class="bg-[#192A3E] p-8 text-center text-white relative border-b-4 border-[#C5A059]">
                 <div class="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg overflow-hidden border-2 border-[#C5A059] p-1">
                     <img src="logo1.jpg" alt="شعار المكتب" class="w-full h-full object-contain rounded-xl"
@@ -780,24 +707,20 @@
 
     <!-- ==========================================================================
          الصفحة الثانية: لوحة التحكم بنظام التبويب اليميني الثابت والمنظم
-         (Right Sidebar Primary Navigation + Clean Single-View Workspace)
          ========================================================================== -->
     <div id="dashboard-page" class="hidden flex-grow flex flex-col lg:flex-row min-h-screen">
 
-        <!-- طبقة التعتيم للجوال فقط عند فتح القائمة الجانبية في الشاشات الصغيرة -->
+        <!-- طبقة التعتيم للجوال فقط عند فتح القائمة الجانبية -->
         <div id="drawer-scrim" onclick="closeMobileSidebar()"
              class="fixed inset-0 bg-[#0F1A28]/60 backdrop-blur-xs z-40 hidden lg:hidden no-print"
              aria-hidden="true"></div>
 
-        <!-- ==========================================================================
-             العمود الجانبي الأيمن الأساسي (Primary Right Sidebar Tabs)
-             ثابت دائماً على الشاشات الكبيرة، ومنزلق على الجوال
-             ========================================================================== -->
+        <!-- العمود الجانبي الأيمن الأساسي (Primary Right Sidebar Tabs) -->
         <aside id="right-sidebar" aria-label="التبويبات الرئيسية للنظام"
-               class="fixed lg:static top-0 right-0 h-full lg:h-auto w-72 bg-[#192A3E] text-[#F6F4F0] z-50 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none border-l-2 border-[#C5A059] flex flex-col justify-between shrink-0 no-print">
+               class="fixed lg:static top-0 right-0 h-full lg:h-auto w-76 bg-[#192A3E] text-[#F6F4F0] z-50 transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none border-l-2 border-[#C5A059] flex flex-col justify-between shrink-0 no-print">
             
             <div>
-                <!-- هوية المكتب والمستخدم في أعلى التبويب اليميني -->
+                <!-- هوية المكتب والمستخدم + ختم النسخة (التاريخ | الوقت الفعلي | المستفيد) -->
                 <div class="p-5 bg-[#0F1A28] border-b border-[#2C425C]">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -811,15 +734,18 @@
                                 <span id="role-badge" class="inline-block mt-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full"></span>
                             </div>
                         </div>
-                        <!-- زر إغلاق يظهر فقط في شاشة الجوال -->
                         <button type="button" onclick="closeMobileSidebar()" class="lg:hidden w-8 h-8 rounded-lg bg-[#2C425C] text-white font-extrabold flex items-center justify-center">
                             ✕
                         </button>
                     </div>
-                    <div id="backup-version-pill" class="mt-3 text-[11px] font-mono font-bold text-[#EBE7E0] bg-[#192A3E] px-2.5 py-1 rounded-lg border border-[#2C425C] text-center"></div>
+                    <!-- شارة النسخة: التاريخ | الوقت الفعلي | حساب المستفيد المسجل -->
+                    <div class="mt-3 bg-[#192A3E] p-2 rounded-xl border border-[#C5A059]/60 text-center">
+                        <span class="block text-[10px] font-bold text-[#C5A059] mb-0.5">⏱️ ختم النسخة والمستفيد الفعلي:</span>
+                        <div id="backup-version-pill" dir="ltr" class="text-[11px] font-mono font-extrabold text-white leading-relaxed"></div>
+                    </div>
                 </div>
 
-                <!-- التبويبات الأساسية (تفتح كل نافذة بشكل مستقل تماماً) -->
+                <!-- التبويبات الأساسية الثلاثة -->
                 <div class="p-4 space-y-2">
                     <div class="text-[11px] font-extrabold text-[#C5A059] px-2 mb-2">📂 التبويبات الرئيسية:</div>
 
@@ -849,7 +775,7 @@
                     </button>
                 </div>
 
-                <!-- قسم أدوات المدير (يظهر للمدير فقط داخل القائمة اليمنى بشكل مرتب) -->
+                <!-- قسم أدوات المدير العام -->
                 <div id="admin-controls" class="hidden px-4 pt-3 pb-2 border-t border-[#2C425C] space-y-2.5">
                     <div class="text-[11px] font-extrabold text-[#C5A059] px-1">👑 إشراف المدير العام:</div>
                     <div>
@@ -873,7 +799,7 @@
                     
                     <button type="button" onclick="printReport()"
                             class="w-full py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-xs transition">
-                        <span>🖨️</span> طباعة التقرير الرسمي (A4)
+                        <span>🖨️</span> طباعة التقرير (طولي / عرضي)
                     </button>
 
                     <button type="button" onclick="exportToExcelCSV()"
@@ -916,13 +842,11 @@
             </div>
         </aside>
 
-        <!-- ==========================================================================
-             مساحة العمل الرئيسية اليسرى (Clean Single-Window Workspace)
-             ========================================================================== -->
+        <!-- مساحة العمل الرئيسية اليسرى -->
         <main id="main-workspace" class="flex-grow p-4 sm:p-6 lg:p-7 overflow-x-hidden">
             <div class="max-w-6xl mx-auto space-y-5">
 
-                <!-- شريط علوي مدمج يظهر فقط في شاشات الجوال والأجهزة اللوحية لفتح التبويب اليميني -->
+                <!-- شريط علوي للجوال فقط -->
                 <div class="lg:hidden theme-card rounded-2xl p-3.5 flex items-center justify-between shadow-xs no-print">
                     <div class="flex items-center gap-3">
                         <button type="button" id="hamburger-btn" onclick="openMobileSidebar()" aria-label="فتح قائمة التبويبات"
@@ -938,26 +862,23 @@
                     </button>
                 </div>
 
-                <!-- ترويسة رسمية خاصة بالطباعة الورقية فقط (A4 Print Header) -->
-                <div class="hidden print-flex justify-between items-center border-b-2 border-[#192A3E] pb-2.5 mb-2">
+                <!-- ترويسة رسمية خاصة بالطباعة الورقية فقط -->
+                <div class="hidden print-flex justify-between items-center border-b-2 border-[#0F1A28] pb-2 mb-2">
                     <div class="flex items-center gap-3 text-right">
-                        <img src="logo1.jpg" alt="Logo" class="w-12 h-12 object-contain rounded-lg border border-[#9E978E] p-0.5"
+                        <img src="logo1.jpg" alt="Logo" class="w-11 h-11 object-contain rounded-lg border border-[#0F1A28] p-0.5"
                              onerror="this.style.display='none';">
                         <div>
-                            <h1 id="print-main-title" class="text-lg font-extrabold text-[#192A3E]">✈️ تقرير المبيعات والعمولات - مكتب الطيران</h1>
-                            <p id="print-meta-info" class="text-xs font-bold text-[#0F1A28] mt-0.5"></p>
+                            <h1 id="print-main-title" class="text-base font-extrabold text-[#000000]">✈️ تقرير المبيعات والعمولات والذمم - مكتب الطيران</h1>
+                            <p id="print-meta-info" class="text-[10px] font-extrabold text-[#000000] mt-0.5"></p>
                         </div>
                     </div>
-                    <div class="text-left text-xs font-bold text-[#0F1A28] bg-[#EBE7E0] px-3 py-1.5 rounded-lg border border-[#9E978E]">
+                    <div class="text-left text-[10px] font-extrabold text-[#000000] bg-[#EBE7E0] px-2.5 py-1.5 rounded-lg border border-[#0F1A28]">
                         <div>فترة التقرير: <span id="print-date-badge" class="font-extrabold"></span></div>
-                        <div class="text-[10px] mt-0.5">رقم النسخة: <span id="print-version-badge" class="font-mono font-extrabold">v1</span> | العمولة: 10% (تُحذف للمسترجع)</div>
+                        <div class="mt-0.5">ختم النسخة والمستفيد: <span id="print-version-badge" dir="ltr" class="font-mono font-extrabold"></span></div>
                     </div>
                 </div>
 
-                <!-- ==========================================================================
-                     شريط تحديد فترة التقرير (يظهر فقط عند فتح تبويب الجدول أو تبويب الملخص المالي)
-                     مخفي تماماً في صفحة تسجيل التذكرة لمنع أي تشتيت أو ازدحام
-                     ========================================================================== -->
+                <!-- شريط تحديد فترة التقرير (يظهر فقط في تبويب الجدول وتبويب الملخص المالي) -->
                 <div id="shared-report-period-bar" class="hidden theme-card rounded-2xl p-4 shadow-xs no-print">
                     <div class="flex flex-wrap items-center justify-between gap-4">
                         <div>
@@ -1013,7 +934,7 @@
 
                 <!-- ==========================================================================
                      النافذة الأولى (1): تسجيل تذكرة جديدة (#section-ticket-entry)
-                     تفتح وحدها تماماً عند اختيار تبويب "تسجيل تذكرة جديدة"
+                     بدون حقل تاريخ يدوي — التسجيل يتم بالتاريخ والوقت الفعلي تلقائياً
                      ========================================================================== -->
                 <section id="section-ticket-entry" aria-labelledby="heading-ticket-entry" class="theme-card rounded-2xl shadow-md p-5 md:p-6 no-print">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b-2 border-[#BEB8B0]">
@@ -1021,14 +942,14 @@
                             <h3 id="heading-ticket-entry" class="text-lg sm:text-xl font-extrabold flex items-center gap-2">
                                 <span>➕</span> تسجيل عملية بيع تذكرة طيران
                             </h3>
-                            <p class="text-xs font-bold opacity-75 mt-1">أدخل بيانات التذكرة أدناه ليتم احتساب المربح وعمولة الـ 10% تلقائياً</p>
+                            <p class="text-xs font-bold opacity-75 mt-1">يتم توثيق تاريخ ووقت العملية الفعلي تلقائياً لحظة الحفظ لمنع أي تلاعب</p>
                         </div>
                         <span class="text-xs bg-[#FDF9F0] text-[#0F1A28] font-extrabold px-3.5 py-1.5 rounded-xl border-2 border-[#C5A059]">
                             العمولة: 10% للإصدار والتعديل | 0% للمسترجع والملغي
                         </span>
                     </div>
 
-                    <!-- الصف الأول والثاني: بيانات العميل والحجز والأسعار (شبكة منتظمة 4 أعمدة) -->
+                    <!-- الصف الأول والثاني: بيانات العميل والحجز والأسعار -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- 1. اسم العميل -->
                         <div>
@@ -1104,10 +1025,10 @@
                         </div>
                     </div>
 
-                    <!-- الصف الثالث المنظم: طريقة الدفع + المرفقات + التاريخ والوقت -->
+                    <!-- الصف الثالث المنظم: طريقة الدفع + المرفقات + لوحة الختم الزمني التلقائي -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-5 pt-5 border-t border-[#BEB8B0]">
                         
-                        <!-- 1. طريقة الدفع المعتمدة (Radio Group) -->
+                        <!-- 1. طريقة الدفع المعتمدة -->
                         <fieldset class="theme-sub-surface p-4 rounded-xl">
                             <legend class="text-xs theme-label px-1 mb-2">💳 طريقة الدفع المعتمدة *:</legend>
                             <div class="grid grid-cols-2 gap-2">
@@ -1131,7 +1052,7 @@
                             <input type="hidden" id="payment-method" value="شبكة">
                         </fieldset>
 
-                        <!-- 2. إضافات ومرفقات التذكرة (Checkboxes) -->
+                        <!-- 2. إضافات ومرفقات التذكرة -->
                         <fieldset class="theme-sub-surface p-4 rounded-xl">
                             <legend class="text-xs theme-label px-1 mb-2">🧳 إضافات ومرفقات التذكرة (اختياري):</legend>
                             <div class="grid grid-cols-2 gap-2 text-xs font-extrabold">
@@ -1154,44 +1075,20 @@
                             </div>
                         </fieldset>
 
-                        <!-- 3. تاريخ ووقت العملية + عجلة الوقت الاختيارية -->
-                        <div class="theme-sub-surface p-4 rounded-xl space-y-3">
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <div>
-                                    <label for="sale-entry-date" class="block text-xs theme-label mb-1.5">📅 تاريخ العملية *</label>
-                                    <input type="date" id="sale-entry-date" class="w-full px-2.5 py-2 rounded-xl theme-input text-xs cursor-pointer">
-                                </div>
-                                <div>
-                                    <div class="flex items-center justify-between mb-1.5">
-                                        <label for="sale-entry-time" class="text-xs theme-label">⏰ الوقت</label>
-                                        <button type="button" onclick="toggleWheelTimePicker()"
-                                                class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-[#192A3E] text-[#C5A059] border border-[#C5A059] hover:bg-[#2C425C] transition">
-                                            🎡 عجلة الوقت
-                                        </button>
-                                    </div>
-                                    <input type="time" id="sale-entry-time" oninput="syncTimeInputToWheel()" dir="ltr"
-                                           class="w-full px-2.5 py-2 rounded-xl theme-input text-xs cursor-pointer">
-                                </div>
+                        <!-- 3. لوحة الختم الزمني التلقائي (بدلاً من إدخال التاريخ يدوياً) -->
+                        <div class="theme-sub-surface p-4 rounded-xl flex flex-col justify-center space-y-2 border-2 border-[#C5A059]">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold flex items-center gap-1.5">
+                                    <span>⏱️</span> توقيت التسجيل الفعلي (تلقائي):
+                                </span>
+                                <span class="text-[10px] font-extrabold bg-emerald-700 text-white px-2 py-0.5 rounded-full">مباشر الآن</span>
                             </div>
-
-                            <!-- العجلة الدوارة لاختيار الوقت (تفتح عند الضغط على زر عجلة الوقت) -->
-                            <div id="ios-wheel-picker-box" class="hidden pt-1">
-                                <div class="flex items-center justify-between text-[11px] font-extrabold mb-1 px-1">
-                                    <span>🎡 اختر الوقت:</span>
-                                    <span id="wheel-live-readout" class="font-mono bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded">12:00 PM</span>
-                                </div>
-                                <div class="ios-wheel-drum" dir="ltr" aria-label="عجلة اختيار الوقت الدوارة">
-                                    <div class="ios-wheel-highlight-band"></div>
-                                    <div class="grid grid-cols-3 h-full text-center">
-                                        <div id="wheel-col-hour" class="ios-wheel-column" onscroll="onWheelColumnScroll('hour')"></div>
-                                        <div id="wheel-col-minute" class="ios-wheel-column" onscroll="onWheelColumnScroll('minute')"></div>
-                                        <div id="wheel-col-ampm" class="ios-wheel-column" onscroll="onWheelColumnScroll('ampm')">
-                                            <div class="ios-wheel-item" data-val="AM" onclick="snapWheelToValue('ampm', 'AM')">AM (ص)</div>
-                                            <div class="ios-wheel-item" data-val="PM" onclick="snapWheelToValue('ampm', 'PM')">PM (م)</div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div id="live-entry-timestamp-box" dir="ltr" class="w-full py-2.5 px-3 rounded-xl bg-[#192A3E] text-[#C5A059] font-mono font-extrabold text-xs sm:text-sm text-center shadow-inner">
+                                --
                             </div>
+                            <p class="text-[11px] font-bold opacity-80 leading-snug">
+                                يتم اعتماد تاريخ اليوم والوقت الفعلي تلقائياً مع اسم المستفيد المسجل لحظة الضغط على زر الحفظ.
+                            </p>
                         </div>
                     </div>
 
@@ -1215,14 +1112,13 @@
 
                         <button type="button" onclick="addNewSale()"
                                 class="w-full md:w-auto btn-french-navy py-3 px-8 rounded-xl shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base">
-                            <span>💾</span> حفظ التذكرة وإضافتها للسجل
+                            <span>💾</span> حفظ التذكرة بالتوقيت الفعلي الآن
                         </button>
                     </div>
                 </section>
 
                 <!-- ==========================================================================
                      النافذة الثانية (2): الملخص المالي والعمولات (#section-kpi-summary)
-                     تفتح وحدها عند الضغط على تبويب "الملخص المالي والعمولات" في القائمة اليمنى
                      ========================================================================== -->
                 <section id="section-kpi-summary" aria-labelledby="heading-kpi-summary" class="hidden space-y-4">
                     <div class="theme-card rounded-2xl p-5 no-print">
@@ -1232,27 +1128,27 @@
                         <p class="text-xs font-bold opacity-75 mt-1">خلاصة الحسابات والصندوق والعمولات للفترة المحددة في الأعلى</p>
                     </div>
 
-                    <!-- بطاقات الملخص الإحصائي الـ 6 (شبكة منظمة 3 أعمدة في الشاشة، و6 في الطباعة) -->
+                    <!-- بطاقات الملخص الإحصائي الـ 6 -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 print-summary-grid">
                         <!-- 1. عدد التذاكر -->
                         <div class="theme-card p-5 rounded-2xl shadow-xs print-summary-card">
-                            <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي التذاكر المسجلة</span>
+                            <span class="text-xs font-extrabold block mb-1 print-card-title">إجمالي التذاكر المسجلة</span>
                             <div id="sum-tickets" class="text-3xl font-extrabold print-card-value">0</div>
-                            <div id="sum-tickets-sub" class="text-xs font-bold opacity-80 mt-2">فعالة: 0 | مسترجع/ملغي: 0</div>
+                            <div id="sum-tickets-sub" class="text-xs font-extrabold mt-2 print-card-sub">فعالة: 0 | مسترجع/ملغي: 0</div>
                         </div>
 
                         <!-- 2. إجمالي المبيعات الفعالة -->
                         <div class="theme-card p-5 rounded-2xl shadow-xs print-summary-card">
-                            <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي المبيعات الفعالة</span>
+                            <span class="text-xs font-extrabold block mb-1 print-card-title">إجمالي المبيعات الفعالة</span>
                             <div id="sum-total-sales" class="text-2xl font-extrabold print-card-value">0.00</div>
-                            <div class="text-xs font-bold opacity-75 mt-2">بعد استبعاد المسترجع والملغي</div>
+                            <div class="text-xs font-extrabold mt-2 print-card-sub">بعد استبعاد المسترجع والملغي</div>
                         </div>
 
                         <!-- 3. المقبوض الفعلي في الصندوق -->
                         <div class="theme-card p-5 rounded-2xl shadow-xs print-summary-card">
-                            <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">المقبوض فعلياً بالصندوق</span>
-                            <div class="text-sm font-extrabold space-y-1.5 mt-2">
-                                <div class="flex justify-between text-emerald-700"><span>💵 كاش:</span> <span id="sum-cash">0.00</span></div>
+                            <span class="text-xs font-extrabold block mb-1 print-card-title">المقبوض فعلياً بالصندوق</span>
+                            <div class="text-xs sm:text-sm font-extrabold space-y-1 mt-1">
+                                <div class="flex justify-between text-emerald-800"><span>💵 كاش:</span> <span id="sum-cash">0.00</span></div>
                                 <div class="flex justify-between"><span>💳 شبكة/تحويل:</span> <span id="sum-card">0.00</span></div>
                             </div>
                         </div>
@@ -1261,32 +1157,30 @@
                         <div class="bg-red-50 text-[#0F1A28] p-5 rounded-2xl shadow-xs border-2 border-red-600 print-summary-card print-debt-card">
                             <span class="text-xs font-extrabold text-red-900 block mb-1 print-card-title">ديون متبقية على العملاء (ذمم/آجل)</span>
                             <div id="sum-debt" class="text-2xl font-extrabold text-red-700 print-card-value">0.00</div>
-                            <div class="text-xs font-extrabold text-red-800 mt-2">مبالغ غير محصلة بعد</div>
+                            <div class="text-xs font-extrabold text-red-900 mt-2 print-card-sub">مبالغ غير محصلة بعد</div>
                         </div>
 
                         <!-- 5. إجمالي صافي المرابح -->
                         <div class="theme-card p-5 rounded-2xl shadow-xs print-summary-card">
-                            <span class="text-xs font-extrabold opacity-75 block mb-1 print-card-title">إجمالي صافي المرابح</span>
+                            <span class="text-xs font-extrabold block mb-1 print-card-title">إجمالي صافي المرابح</span>
                             <div id="sum-profit" class="text-2xl font-extrabold print-card-value">0.00</div>
-                            <div class="text-xs font-bold opacity-75 mt-2">صافي ربح المكتب الكلي</div>
+                            <div class="text-xs font-extrabold mt-2 print-card-sub">صافي ربح المكتب الكلي</div>
                         </div>
 
                         <!-- 6. صافي عمولة الموظف (10%) -->
                         <div class="bg-[#192A3E] text-white p-5 rounded-2xl shadow-md border-2 border-[#C5A059] print-summary-card print-commission-card">
                             <span class="text-xs font-extrabold text-[#C5A059] block mb-1 print-card-title">صافي عمولة الموظف المستحقة (10%)</span>
                             <div id="sum-commission" class="text-2xl font-extrabold text-white print-card-value">0.00</div>
-                            <div class="text-xs font-bold text-[#EBE7E0] mt-2">محذوف منها التذاكر المسترجعة</div>
+                            <div class="text-xs font-extrabold text-[#C5A059] mt-2 print-card-sub">محذوف منها التذاكر المسترجعة</div>
                         </div>
                     </div>
                 </section>
 
                 <!-- ==========================================================================
                      النافذة الثالثة (3): جدول التقرير والبحث (#section-report-table)
-                     تفتح وحدها عند الضغط على تبويب "جدول التقرير والبحث" في القائمة اليمنى
                      ========================================================================== -->
                 <section id="section-report-table" aria-labelledby="table-section-title" class="hidden theme-card rounded-2xl shadow-md overflow-hidden print-table-container">
                     
-                    <!-- رأس الجدول وأدوات البحث الفوري -->
                     <div class="p-4 md:p-5 border-b-2 border-[#BEB8B0] flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 no-print">
                         <div class="flex flex-wrap items-center gap-2.5">
                             <h3 id="table-section-title" class="font-extrabold text-base md:text-lg">📋 جدول التقرير المفصل</h3>
@@ -1323,20 +1217,20 @@
                         <table class="w-full text-right border-collapse text-xs sm:text-sm">
                             <thead>
                                 <tr class="theme-sub-surface border-b-2 border-[#9E978E] text-[11px] uppercase">
-                                    <th class="py-3 px-2.5 font-extrabold">#</th>
-                                    <th id="th-sale-date" class="py-3 px-2.5 font-extrabold hidden">التاريخ والوقت</th>
-                                    <th id="th-emp-name" class="py-3 px-2.5 font-extrabold hidden">الموظف</th>
-                                    <th class="py-3 px-2.5 font-extrabold">العميل والجوال</th>
-                                    <th class="py-3 px-2.5 font-extrabold">PNR والطيران</th>
-                                    <th class="py-3 px-2.5 font-extrabold">الحالة</th>
-                                    <th class="py-3 px-2.5 font-extrabold">الدفع</th>
-                                    <th class="py-3 px-2.5 font-extrabold">الأساسي</th>
-                                    <th class="py-3 px-2.5 font-extrabold">الإجمالي</th>
-                                    <th class="py-3 px-2.5 font-extrabold text-emerald-800">المدفوع</th>
-                                    <th class="py-3 px-2.5 font-extrabold text-red-700">المتبقي (دين)</th>
-                                    <th class="py-3 px-2.5 font-extrabold">المربح</th>
-                                    <th class="py-3 px-2.5 font-extrabold text-emerald-800">العمولة (10%)</th>
-                                    <th class="py-3 px-2.5 font-extrabold no-print text-center">إجراءات وواتساب</th>
+                                    <th class="py-3 px-2 font-extrabold">#</th>
+                                    <th id="th-sale-date" class="py-3 px-2 font-extrabold">التاريخ والوقت</th>
+                                    <th id="th-emp-name" class="py-3 px-2 font-extrabold hidden">المستفيد (الموظف)</th>
+                                    <th class="py-3 px-2 font-extrabold">العميل والجوال</th>
+                                    <th class="py-3 px-2 font-extrabold">PNR والطيران</th>
+                                    <th class="py-3 px-2 font-extrabold">الحالة</th>
+                                    <th class="py-3 px-2 font-extrabold">الدفع</th>
+                                    <th class="py-3 px-2 font-extrabold">الأساسي</th>
+                                    <th class="py-3 px-2 font-extrabold">الإجمالي</th>
+                                    <th class="py-3 px-2 font-extrabold text-emerald-800">المدفوع</th>
+                                    <th class="py-3 px-2 font-extrabold text-red-700">المتبقي (دين)</th>
+                                    <th class="py-3 px-2 font-extrabold">المربح</th>
+                                    <th class="py-3 px-2 font-extrabold text-emerald-800">العمولة (10%)</th>
+                                    <th class="py-3 px-2 font-extrabold no-print text-center">إجراءات وواتساب</th>
                                 </tr>
                             </thead>
                             <tbody id="sales-table-body" class="divide-y divide-[#BEB8B0]">
@@ -1350,18 +1244,18 @@
                 </section>
 
                 <!-- قسم التوقيعات الرسمي للطباعة الورقية فقط -->
-                <div class="hidden print-flex justify-between items-center pt-6 mt-4 text-xs font-extrabold text-[#0F1A28] px-4">
+                <div class="hidden print-flex justify-between items-center pt-4 mt-2 text-[10px] font-extrabold text-[#000000] px-4">
                     <div class="text-center">
-                        <p class="mb-6">توقيع الموظف المختص</p>
-                        <p class="text-[#9E978E]">............................................</p>
+                        <p class="mb-4">توقيع الموظف المختص</p>
+                        <p>............................................</p>
                     </div>
                     <div class="text-center">
-                        <p class="mb-6">المراجعة والمحاسبة (الصندوق والذمم)</p>
-                        <p class="text-[#9E978E]">............................................</p>
+                        <p class="mb-4">المراجعة والمحاسبة (الصندوق والذمم)</p>
+                        <p>............................................</p>
                     </div>
                     <div class="text-center">
-                        <p class="mb-6">اعتماد المدير العام</p>
-                        <p class="text-[#9E978E]">............................................</p>
+                        <p class="mb-4">اعتماد المدير العام</p>
+                        <p>............................................</p>
                     </div>
                 </div>
 
@@ -1369,11 +1263,9 @@
         </main>
     </div>
 
-    <!-- ==========================================================================
-         تذييل الصفحات الرسمي (French Navy Footer Signature)
-         ========================================================================== -->
-    <footer class="bg-[#0F1A28] text-[#F6F4F0] border-t-2 border-[#C5A059] py-4 px-6 text-center mt-auto print-border">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-bold">
+    <!-- تذييل الصفحات الرسمي (يثبت في نفس الورقة عند الطباعة) -->
+    <footer class="print-footer bg-[#0F1A28] text-[#F6F4F0] border-t-2 border-[#C5A059] py-3.5 px-6 text-center mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-row justify-between items-center gap-2 text-xs font-extrabold">
             <span>جميع الحقوق محفوظة © نظام مبيعات وعمولات مكتب الطيران</span>
             <span class="bg-[#192A3E] text-white px-3.5 py-1 rounded-full border border-[#C5A059]">
                 Designed by <strong class="text-[#C5A059]">Eng. Bahaa Al-Sheikh</strong>
@@ -1383,24 +1275,23 @@
 
     <script>
         /* ==========================================================================
-           البرمجة التفاعلية، المنطق المحاسبي الصارم (100% محفوظ)، وأنماط UI/UX القياسية
+           البرمجة التفاعلية، الختم الزمني الفعلي، والمنطق المحاسبي الصارم (100% آمن)
            ========================================================================== */
 
-        // 1. إعداد نسبة العمولة الثابتة (10% للتذاكر الفعالة فقط، و 0% للمسترجع والملغي)
         const COMMISSION_RATE = 0.10;
 
-        // 2. الحسابات الافتراضية للنظام
         const DEFAULT_USERS = {
             "empA":  { password: "123",      name: "الموظف أ",    role: "employee" },
             "empB":  { password: "123",      name: "الموظف ب",    role: "employee" },
             "admin": { password: "admin123", name: "المدير العام", role: "admin" }
         };
 
-        // دالة آمنة لقراءة البيانات من localStorage (نفس المفاتيح الأصلية 100%)
         function safeLoadStorage(key, fallback) {
             try {
                 const raw = localStorage.getItem(key);
-                return raw ? JSON.parse(raw) : fallback;
+                if (!raw) return fallback;
+                const parsed = JSON.parse(raw);
+                return parsed !== null ? parsed : fallback;
             } catch (e) {
                 console.error("Storage load error:", e);
                 return fallback;
@@ -1416,9 +1307,9 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // تحميل بيانات المستخدمين ورقم النسخة الاحتياطية ووضع الألوان
-        let usersDB = safeLoadStorage('airline_users_v3_db', DEFAULT_USERS);
-        let backupVersionCounter = parseInt(localStorage.getItem('airline_backup_version_num') || '1', 10);
+        // تحميل وضمان سلامة حسابات المستخدمين
+        let loadedUsers = safeLoadStorage('airline_users_v3_db', DEFAULT_USERS);
+        let usersDB = (loadedUsers && typeof loadedUsers === 'object' && loadedUsers.admin) ? loadedUsers : DEFAULT_USERS;
         let globalThemeMode = localStorage.getItem('airline_login_theme') || 'light';
 
         let currentUser = null;
@@ -1429,9 +1320,70 @@
         let activeDedicatedPage = 'section-ticket-entry';
         let lastFocusedElementBeforeModal = null;
         let toastTimeoutId = null;
+        let liveClockIntervalId = null;
 
-        // دالة تطبيع بيانات التذاكر لضمان سلامة المعادلات المحاسبية ومنع أي تعارض منطقي 100%
+        // دالة الحصول على تاريخ اليوم الفعلي بصيغة YYYY-MM-DD
+        function getTodayDateString() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function getCurrentMonthString() {
+            return getTodayDateString().slice(0, 7);
+        }
+
+        // دالة الحصول على الوقت الفعلي اللحظي بصيغة واضحة (HH:MM:SS AM/PM)
+        function getActualTimeStrings() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            let h12 = hours % 12;
+            if (h12 === 0) h12 = 12;
+            const h12Str = String(h12).padStart(2, '0');
+            const h24Str = String(hours).padStart(2, '0');
+
+            return {
+                dateStr: getTodayDateString(),
+                time24: `${h24Str}:${minutes}:${seconds}`,
+                time12: `${h12Str}:${minutes}:${seconds} ${ampm}`,
+                shortTime12: `${h12Str}:${minutes} ${ampm}`
+            };
+        }
+
+        // دالة بناء ختم النسخة: تاريخ اليوم | الوقت الفعلي | حساب المستفيد الحقيقي المسجل
+        function getBeneficiaryVersionStamp() {
+            const { dateStr, time12 } = getActualTimeStrings();
+            const beneficiary = currentUser
+                ? `${currentUser.name} (${currentUser.username})`
+                : 'غير مسجل';
+            return `${dateStr} | ${time12} | ${beneficiary}`;
+        }
+
+        function updateVersionBadgeUI() {
+            const stamp = getBeneficiaryVersionStamp();
+            const pill = document.getElementById('backup-version-pill');
+            const printVer = document.getElementById('print-version-badge');
+            const liveEntryBox = document.getElementById('live-entry-timestamp-box');
+
+            if (pill) pill.innerText = stamp;
+            if (printVer) printVer.innerText = stamp;
+            if (liveEntryBox) liveEntryBox.innerText = stamp;
+        }
+
+        function startLiveTimestampClock() {
+            updateVersionBadgeUI();
+            if (liveClockIntervalId) clearInterval(liveClockIntervalId);
+            liveClockIntervalId = setInterval(updateVersionBadgeUI, 1000);
+        }
+
+        // دالة تطبيع بيانات التذاكر لضمان سلامة المعادلات المحاسبية
         function normalizeTicketRecord(t) {
+            if (!t || typeof t !== 'object') t = {};
             const status = t.status || 'issue';
             const basePrice = Math.max(0, parseFloat(t.basePrice) || 0);
             const totalPrice = Math.max(0, parseFloat(t.totalPrice) || 0);
@@ -1448,38 +1400,34 @@
             let commission = 0;
 
             if (status === 'void') {
-                // التذكرة الملغاة: تصفير كافة القيم المالية والعمولة
                 paidAmount = 0;
                 remainingDebt = 0;
                 profit = 0;
                 commission = 0;
             } else if (status === 'refund') {
-                // التذكرة المسترجعة: لا توجد عمولة للموظف (0.00)، ولا يدخل سعرها في المبيعات أو الذمم
                 paidAmount = 0;
                 remainingDebt = 0;
-                // إذا تم تحديد رسوم استرجاع صريحة للمكتب نأخذها، وإلا نحسب الفرق الموجب كرسوم محتجزة
                 const rawRefundProfit = (t.refundFee !== undefined) ? parseFloat(t.refundFee) : parseFloat(t.profit);
                 profit = (!isNaN(rawRefundProfit) && rawRefundProfit > 0) ? rawRefundProfit : 0;
                 commission = 0;
             } else {
-                // التذكرة الفعالة (إصدار أو تعديل Reissue):
-                // لا يمكن أن يكون المبلغ المدفوع أكبر من إجمالي سعر التذكرة
                 if (paidAmount > totalPrice) {
                     paidAmount = totalPrice;
                 }
-                // إذا كانت طريقة الدفع "آجل" بالكامل والمبلغ المدفوع = 0، يبقى الدين = كامل المبلغ
-                // أما إذا دفع العميل عربوناً وكان الخيار "آجل"، نحول وسيلة قبض العربون تلقائياً إلى "كاش" ليدخل الصندوق
                 if (paymentMethod === 'آجل' && paidAmount > 0) {
                     paymentMethod = 'كاش';
                 }
                 remainingDebt = Math.max(0, totalPrice - paidAmount);
                 profit = totalPrice - basePrice;
-                // عمولة الـ 10% تحسب على التذكرة المربحة فقط لكل تذكرة على حدة
                 commission = profit > 0 ? (profit * COMMISSION_RATE) : 0;
             }
 
             return {
                 ...t,
+                id: t.id || Date.now(),
+                date: t.date || getTodayDateString(),
+                time: t.time || '12:00:00 PM',
+                sortTime: t.sortTime || t.time || '12:00:00',
                 status: status,
                 paymentMethod: paymentMethod,
                 basePrice: basePrice,
@@ -1488,7 +1436,6 @@
                 remainingDebt: remainingDebt,
                 profit: profit,
                 commission: commission,
-                time: t.time || '12:00',
                 addons: Array.isArray(t.addons) ? t.addons : []
             };
         }
@@ -1496,9 +1443,7 @@
         let rawSalesDB = safeLoadStorage('airline_pos_v2_db', []);
         let salesDatabase = Array.isArray(rawSalesDB) ? rawSalesDB.map(normalizeTicketRecord) : [];
 
-        // ==========================================================================
-        // إدارة الوضع الفاتح / الليلي الفوري عبر Toggle Switch (role="switch")
-        // ==========================================================================
+        // إدارة الوضع الفاتح / الليلي
         function applyGlobalTheme() {
             const isDark = (globalThemeMode === 'dark');
             if (isDark) {
@@ -1525,10 +1470,7 @@
             showToast(globalThemeMode === 'dark' ? 'تم تفعيل الوضع الليلي عالي التباين' : 'تم تفعيل الوضع الفاتح (French Navy & Seal Grey)');
         }
 
-        // ==========================================================================
-        // نظام التبويب الجانبي الأيمن الأساسي (Right Sidebar Dedicated Window Switcher)
-        // يفتح نافذة التبويب المختار فقط ويخفي بقية النوافذ تماماً
-        // ==========================================================================
+        // التبديل بين التبويبات الثلاثة في العمود الأيمن
         function switchDedicatedPage(targetPageId) {
             activeDedicatedPage = targetPageId;
 
@@ -1537,17 +1479,14 @@
             const secKpi   = document.getElementById('section-kpi-summary');
             const periodBar = document.getElementById('shared-report-period-bar');
 
-            // إظهار القسم المختار فقط وإخفاء القسمين الآخرين
-            secEntry.classList.toggle('hidden', targetPageId !== 'section-ticket-entry');
-            secTable.classList.toggle('hidden', targetPageId !== 'section-report-table');
-            secKpi.classList.toggle('hidden', targetPageId !== 'section-kpi-summary');
+            if (secEntry) secEntry.classList.toggle('hidden', targetPageId !== 'section-ticket-entry');
+            if (secTable) secTable.classList.toggle('hidden', targetPageId !== 'section-report-table');
+            if (secKpi)   secKpi.classList.toggle('hidden', targetPageId !== 'section-kpi-summary');
 
-            // شريط تحديد فترة التقرير يظهر فقط في صفحتي الجدول والملخص المالي
             if (periodBar) {
                 periodBar.classList.toggle('hidden', targetPageId === 'section-ticket-entry');
             }
 
-            // تحديث حالة التفعيل للتبويبات في العمود الأيمن
             const tabMap = {
                 'section-ticket-entry': { btnId: 'tab-btn-entry', title: '➕ تسجيل تذكرة جديدة' },
                 'section-report-table': { btnId: 'tab-btn-table', title: '📋 جدول التقرير والبحث' },
@@ -1564,7 +1503,6 @@
                 }
             });
 
-            // تحديث العنوان في شريط الجوال العلوي
             const mobileTitle = document.getElementById('mobile-active-tab-title');
             if (mobileTitle && tabMap[targetPageId]) {
                 mobileTitle.innerText = tabMap[targetPageId].title;
@@ -1574,7 +1512,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // فتح وإغلاق التبويب اليميني في شاشات الجوال الصغيرة
         function openMobileSidebar() {
             const sidebar = document.getElementById('right-sidebar');
             const scrim = document.getElementById('drawer-scrim');
@@ -1589,11 +1526,9 @@
             if (scrim) scrim.classList.add('hidden');
         }
 
-        // بديل داعم لتأثير Parallax في المتصفحات التي لا تدعم animation-timeline: scroll()
         function initParallaxFallback() {
-            if (CSS.supports && CSS.supports('animation-timeline: scroll()')) return;
             window.addEventListener('scroll', () => {
-                const offset = window.scrollY * -0.15;
+                const offset = window.scrollY * -0.12;
                 const layer = document.getElementById('parallax-bg');
                 if (layer) {
                     layer.style.setProperty('--parallax-offset', `${offset}px`);
@@ -1601,160 +1536,12 @@
             }, { passive: true });
         }
 
-        // ==========================================================================
-        // العجلة الدوارة لاختيار الوقت (iOS Slot-Machine Drum Wheel Picker + <input type="time">)
-        // ==========================================================================
-        let wheelSelectedHour = '12';
-        let wheelSelectedMinute = '00';
-        let wheelSelectedAmPm = 'PM';
-        let wheelScrollTimers = {};
-
-        function initWheelTimePickerColumns() {
-            const hourCol = document.getElementById('wheel-col-hour');
-            const minCol = document.getElementById('wheel-col-minute');
-            if (!hourCol || !minCol) return;
-
-            hourCol.innerHTML = '';
-            for (let h = 1; h <= 12; h++) {
-                const val = String(h).padStart(2, '0');
-                const div = document.createElement('div');
-                div.className = 'ios-wheel-item';
-                div.dataset.val = val;
-                div.innerText = val;
-                div.onclick = () => snapWheelToValue('hour', val);
-                hourCol.appendChild(div);
-            }
-
-            minCol.innerHTML = '';
-            for (let m = 0; m < 60; m++) {
-                const val = String(m).padStart(2, '0');
-                const div = document.createElement('div');
-                div.className = 'ios-wheel-item';
-                div.dataset.val = val;
-                div.innerText = val;
-                div.onclick = () => snapWheelToValue('minute', val);
-                minCol.appendChild(div);
-            }
-
-            const now = new Date();
-            const hh24 = String(now.getHours()).padStart(2, '0');
-            const mm = String(now.getMinutes()).padStart(2, '0');
-            const timeInput = document.getElementById('sale-entry-time');
-            if (timeInput) {
-                timeInput.value = `${hh24}:${mm}`;
-                syncTimeInputToWheel();
-            }
-        }
-
-        function toggleWheelTimePicker() {
-            const box = document.getElementById('ios-wheel-picker-box');
-            if (!box) return;
-            box.classList.toggle('hidden');
-            if (!box.classList.contains('hidden')) {
-                syncTimeInputToWheel();
-            }
-        }
-
-        function onWheelColumnScroll(type) {
-            clearTimeout(wheelScrollTimers[type]);
-            wheelScrollTimers[type] = setTimeout(() => {
-                const colId = type === 'hour' ? 'wheel-col-hour' : (type === 'minute' ? 'wheel-col-minute' : 'wheel-col-ampm');
-                const col = document.getElementById(colId);
-                if (!col) return;
-                const itemHeight = 36;
-                const index = Math.round(col.scrollTop / itemHeight);
-                const items = col.querySelectorAll('.ios-wheel-item');
-                if (items[index]) {
-                    const chosenVal = items[index].dataset.val;
-                    if (type === 'hour') wheelSelectedHour = chosenVal;
-                    else if (type === 'minute') wheelSelectedMinute = chosenVal;
-                    else if (type === 'ampm') wheelSelectedAmPm = chosenVal;
-
-                    highlightWheelActiveItems();
-                    syncWheelToTimeInput();
-                }
-            }, 60);
-        }
-
-        function snapWheelToValue(type, val) {
-            const colId = type === 'hour' ? 'wheel-col-hour' : (type === 'minute' ? 'wheel-col-minute' : 'wheel-col-ampm');
-            const col = document.getElementById(colId);
-            if (!col) return;
-            const items = Array.from(col.querySelectorAll('.ios-wheel-item'));
-            const idx = items.findIndex(el => el.dataset.val === val);
-            if (idx !== -1) {
-                col.scrollTo({ top: idx * 36, behavior: 'smooth' });
-                if (type === 'hour') wheelSelectedHour = val;
-                else if (type === 'minute') wheelSelectedMinute = val;
-                else if (type === 'ampm') wheelSelectedAmPm = val;
-                highlightWheelActiveItems();
-                syncWheelToTimeInput();
-            }
-        }
-
-        function highlightWheelActiveItems() {
-            const mapping = [
-                { id: 'wheel-col-hour', val: wheelSelectedHour },
-                { id: 'wheel-col-minute', val: wheelSelectedMinute },
-                { id: 'wheel-col-ampm', val: wheelSelectedAmPm }
-            ];
-            mapping.forEach(({ id, val }) => {
-                const col = document.getElementById(id);
-                if (!col) return;
-                col.querySelectorAll('.ios-wheel-item').forEach(item => {
-                    item.classList.toggle('wheel-selected', item.dataset.val === val);
-                });
-            });
-            const readout = document.getElementById('wheel-live-readout');
-            if (readout) {
-                readout.innerText = `${wheelSelectedHour}:${wheelSelectedMinute} ${wheelSelectedAmPm}`;
-            }
-        }
-
-        function syncWheelToTimeInput() {
-            let h = parseInt(wheelSelectedHour, 10);
-            if (wheelSelectedAmPm === 'PM' && h < 12) h += 12;
-            if (wheelSelectedAmPm === 'AM' && h === 12) h = 0;
-            const hh24 = String(h).padStart(2, '0');
-            const timeInput = document.getElementById('sale-entry-time');
-            if (timeInput) {
-                timeInput.value = `${hh24}:${wheelSelectedMinute}`;
-            }
-        }
-
-        function syncTimeInputToWheel() {
-            const timeInput = document.getElementById('sale-entry-time');
-            if (!timeInput || !timeInput.value) return;
-            const parts = timeInput.value.split(':');
-            if (parts.length < 2) return;
-            let h24 = parseInt(parts[0], 10);
-            const m = parts[1];
-            const ampm = h24 >= 12 ? 'PM' : 'AM';
-            let h12 = h24 % 12;
-            if (h12 === 0) h12 = 12;
-
-            wheelSelectedHour = String(h12).padStart(2, '0');
-            wheelSelectedMinute = String(m).padStart(2, '0');
-            wheelSelectedAmPm = ampm;
-
-            highlightWheelActiveItems();
-
-            const hourCol = document.getElementById('wheel-col-hour');
-            const minCol = document.getElementById('wheel-col-minute');
-            const ampmCol = document.getElementById('wheel-col-ampm');
-            if (hourCol) hourCol.scrollTop = (h12 - 1) * 36;
-            if (minCol) minCol.scrollTop = parseInt(m, 10) * 36;
-            if (ampmCol) ampmCol.scrollTop = (ampm === 'PM' ? 1 : 0) * 36;
-        }
-
-        // ==========================================================================
-        // إشعارات الزاوية العابرة غير الحاجبة (Compact Non-Modal Corner Toast)
-        // ==========================================================================
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const box = document.getElementById('toast-box');
             const msgSpan = document.getElementById('toast-message');
             const iconSpan = document.getElementById('toast-icon');
+            if (!container || !box || !msgSpan || !iconSpan) return;
 
             msgSpan.innerText = message;
             box.className = 'pointer-events-auto px-4 py-3 rounded-xl shadow-2xl text-white font-extrabold text-xs sm:text-sm flex items-center gap-2.5 border-2 border-[#C5A059] transition-all duration-300 ';
@@ -1777,16 +1564,12 @@
             }, 3400);
         }
 
-        // ==========================================================================
-        // نافذة الحوار المركزية لتأكيد الحذف مع إدارة وحصر التركيز (Managed Focus Trap)
-        // ==========================================================================
         function openDeleteModal(ticketId) {
             ticketIdToDelete = ticketId;
             lastFocusedElementBeforeModal = document.activeElement;
             const modal = document.getElementById('delete-modal');
-            modal.classList.remove('hidden');
+            if (modal) modal.classList.remove('hidden');
 
-            // نقل التركيز تلقائياً إلى زر الإلغاء أو التأكيد داخل النافذة
             const cancelBtn = document.getElementById('delete-cancel-btn');
             if (cancelBtn) {
                 setTimeout(() => cancelBtn.focus(), 30);
@@ -1796,15 +1579,13 @@
         function closeDeleteModal() {
             ticketIdToDelete = null;
             const modal = document.getElementById('delete-modal');
-            modal.classList.add('hidden');
+            if (modal) modal.classList.add('hidden');
 
-            // إعادة التركيز للعنصر الذي فتح النافذة
             if (lastFocusedElementBeforeModal && typeof lastFocusedElementBeforeModal.focus === 'function') {
                 lastFocusedElementBeforeModal.focus();
             }
         }
 
-        // حصر التركيز (Focus Trap) ودعم زر Escape لإغلاق النوافذ الحوارية
         document.addEventListener('keydown', function(e) {
             const deleteModal = document.getElementById('delete-modal');
             const isDeleteOpen = deleteModal && !deleteModal.classList.contains('hidden');
@@ -1836,9 +1617,6 @@
             }
         });
 
-        // ==========================================================================
-        // أدوات الاختيار الدلالية: Radio Buttons & Instant Toggle Switch
-        // ==========================================================================
         function syncPaymentRadioToHidden(val) {
             const hiddenInput = document.getElementById('payment-method');
             if (hiddenInput) {
@@ -1855,31 +1633,21 @@
             chk.checked = nextState;
             sw.setAttribute('aria-checked', String(nextState));
             renderDashboard();
-            showToast(nextState ? 'تم تفعيل البحث الشامل في كل التواريخ فوراً' : 'تم حصر البحث في الفترة المحددة فقط');
+            showToast(nextState ? 'تم تفعيل عرض وبحث كل التواريخ فوراً' : 'تم حصر العرض في الفترة المحددة فقط');
         }
 
-        function getTodayDateString() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        function getCurrentMonthString() {
-            return getTodayDateString().slice(0, 7);
-        }
-
-        window.onload = function() {
-            applyGlobalTheme();
-            initWheelTimePickerColumns();
-            initParallaxFallback();
-            updateEmployeeFilterNames();
+        // تهيئة النظام عند تحميل الصفحة بأمان تام
+        window.addEventListener('DOMContentLoaded', function() {
             try {
+                applyGlobalTheme();
+                initParallaxFallback();
+                updateEmployeeFilterNames();
+                startLiveTimestampClock();
+
                 const savedSession = sessionStorage.getItem('airline_active_user');
                 if (savedSession) {
                     const parsedUser = JSON.parse(savedSession);
-                    if (parsedUser && usersDB[parsedUser.username]) {
+                    if (parsedUser && parsedUser.username && usersDB[parsedUser.username]) {
                         currentUser = {
                             username: parsedUser.username,
                             name: usersDB[parsedUser.username].name,
@@ -1889,26 +1657,15 @@
                     }
                 }
             } catch (e) {
+                console.error("Init error:", e);
                 sessionStorage.removeItem('airline_active_user');
             }
-        };
-
-        function updateVersionBadgeUI() {
-            if (!currentUser) return;
-            const todayStr = getTodayDateString();
-            const pill = document.getElementById('backup-version-pill');
-            const printVer = document.getElementById('print-version-badge');
-            if (pill) {
-                pill.innerText = `نسخة رقم #${backupVersionCounter} | ${todayStr} | ${currentUser.name}`;
-            }
-            if (printVer) {
-                printVer.innerText = `#${backupVersionCounter}`;
-            }
-        }
+        });
 
         function togglePasswordVisibility() {
             const passInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eye-icon');
+            if (!passInput || !eyeIcon) return;
             if (passInput.type === 'password') {
                 passInput.type = 'text';
                 eyeIcon.innerText = 'إخفاء';
@@ -1919,60 +1676,78 @@
         }
 
         function handleLogin() {
-            const userInp = document.getElementById('username').value.trim();
-            const passInp = document.getElementById('password').value.trim();
+            const userEl = document.getElementById('username');
+            const passEl = document.getElementById('password');
             const errorAlert = document.getElementById('login-error-alert');
+            if (!userEl || !passEl) return;
 
-            if (usersDB[userInp] && usersDB[userInp].password === passInp) {
-                errorAlert.classList.add('hidden');
+            const userInp = userEl.value.trim();
+            const passInp = passEl.value.trim();
+
+            // مطابقة مرنة لاسم المستخدم (تقبل الحروف الكبيرة أو الصغيرة مثل empA أو empa)
+            const matchedKey = Object.keys(usersDB).find(k => k.toLowerCase() === userInp.toLowerCase());
+
+            if (matchedKey && usersDB[matchedKey].password === passInp) {
+                if (errorAlert) errorAlert.classList.add('hidden');
                 currentUser = {
-                    username: userInp,
-                    name: usersDB[userInp].name,
-                    role: usersDB[userInp].role
+                    username: matchedKey,
+                    name: usersDB[matchedKey].name,
+                    role: usersDB[matchedKey].role
                 };
 
                 sessionStorage.setItem('airline_active_user', JSON.stringify(currentUser));
                 enterDashboardView();
-                showToast(`مرحباً بك، ${currentUser.name}`);
+                showToast(`مرحباً بك، ${currentUser.name} (${currentUser.username})`);
             } else {
-                errorAlert.classList.remove('hidden');
+                if (errorAlert) errorAlert.classList.remove('hidden');
             }
         }
 
         function enterDashboardView() {
             const todayStr = getTodayDateString();
-            document.getElementById('date-picker').value = todayStr;
-            document.getElementById('sale-entry-date').value = todayStr;
-            document.getElementById('month-picker').value = getCurrentMonthString();
-            document.getElementById('date-from').value = todayStr.slice(0, 8) + '01';
-            document.getElementById('date-to').value = todayStr;
+            const dp = document.getElementById('date-picker');
+            const mp = document.getElementById('month-picker');
+            const df = document.getElementById('date-from');
+            const dt = document.getElementById('date-to');
+
+            if (dp) dp.value = todayStr;
+            if (mp) mp.value = getCurrentMonthString();
+            if (df) df.value = todayStr.slice(0, 8) + '01';
+            if (dt) dt.value = todayStr;
 
             const roleBadge = document.getElementById('role-badge');
-            if (currentUser.role === 'admin') {
-                document.getElementById('admin-controls').classList.remove('hidden');
-                document.getElementById('th-emp-name').classList.remove('hidden');
-                roleBadge.innerText = 'صلاحية مدير النظام';
-                roleBadge.className = 'text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-[#C5A059] text-[#0F1A28]';
-            } else {
-                document.getElementById('admin-controls').classList.add('hidden');
-                document.getElementById('th-emp-name').classList.add('hidden');
-                roleBadge.innerText = 'حساب موظف مبيعات';
-                roleBadge.className = 'text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-[#192A3E] text-white border border-[#C5A059]';
+            const adminControls = document.getElementById('admin-controls');
+            const thEmpName = document.getElementById('th-emp-name');
+
+            if (currentUser && currentUser.role === 'admin') {
+                if (adminControls) adminControls.classList.remove('hidden');
+                if (thEmpName) thEmpName.classList.remove('hidden');
+                if (roleBadge) {
+                    roleBadge.innerText = `مدير النظام (${currentUser.username})`;
+                    roleBadge.className = 'inline-block mt-1 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#C5A059] text-[#0F1A28]';
+                }
+            } else if (currentUser) {
+                if (adminControls) adminControls.classList.add('hidden');
+                if (thEmpName) thEmpName.classList.add('hidden');
+                if (roleBadge) {
+                    roleBadge.innerText = `المستفيد: ${currentUser.username}`;
+                    roleBadge.className = 'inline-block mt-1 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#192A3E] text-white border border-[#C5A059]';
+                }
             }
 
-            document.getElementById('login-page').classList.add('hidden');
-            document.getElementById('dashboard-page').classList.remove('hidden');
+            const loginPage = document.getElementById('login-page');
+            const dashPage = document.getElementById('dashboard-page');
+            if (loginPage) loginPage.classList.add('hidden');
+            if (dashPage) dashPage.classList.remove('hidden');
 
-            updateVersionBadgeUI();
+            startLiveTimestampClock();
             setFilterMode('daily');
-            // فتح تبويب تسجيل التذكرة كنافذة وحيدة افتراضية عند الدخول
             switchDedicatedPage('section-ticket-entry');
         }
 
         function setFilterMode(mode) {
             currentFilterMode = mode;
 
-            // مزامنة أزرار الراديو الخاصة بنطاق التقرير الزمني
             const radios = document.querySelectorAll('input[name="reportPeriodRadio"]');
             radios.forEach(r => {
                 r.checked = (r.value === mode);
@@ -1992,16 +1767,18 @@
         function handleLogout() {
             currentUser = null;
             sessionStorage.removeItem('airline_active_user');
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('login-error-alert').classList.add('hidden');
+            const uEl = document.getElementById('username');
+            const pEl = document.getElementById('password');
+            const errEl = document.getElementById('login-error-alert');
+            if (uEl) uEl.value = '';
+            if (pEl) pEl.value = '';
+            if (errEl) errEl.classList.add('hidden');
             
             document.getElementById('dashboard-page').classList.add('hidden');
             document.getElementById('login-page').classList.remove('hidden');
             showToast("تم تسجيل الخروج بنجاح");
         }
 
-        // دالة إظهار/إخفاء حقل الكتابة اليدوية لشركة الطيران عند اختيار "أخرى" في نموذج التسجيل
         function toggleCustomAirlineInput() {
             const selectVal = document.getElementById('airline-select').value;
             const customInput = document.getElementById('airline-custom');
@@ -2031,11 +1808,9 @@
 
         function onPaidAmountManualInput() {
             isPaidManuallyEdited = true;
-            const totalPrice = Math.max(0, parseFloat(document.getElementById('total-price').value) || 0);
             const paidInput = document.getElementById('paid-amount');
             let paidVal = parseFloat(paidInput.value);
 
-            // إذا أدخل الموظف مبلغاً مدفوعاً بينما الخيار على "آجل"، ننبهه أو نحول وسيلة قبض العربون إلى "كاش"
             if (!isNaN(paidVal) && paidVal > 0 && document.getElementById('payment-method').value === 'آجل') {
                 document.getElementById('payment-method').value = 'كاش';
                 const cashRadio = document.querySelector('input[name="entryPaymentMethodRadio"][value="كاش"]');
@@ -2082,18 +1857,17 @@
                 profit = 0;
                 commission = 0;
                 debt = 0;
-                statusNote.classList.remove('hidden');
+                if (statusNote) statusNote.classList.remove('hidden');
             } else if (status === 'refund') {
-                // في حالة تسجيل تذكرة مسترجعة ابتداءً: الفرق الموجب يعتبر رسوم استرجاع للمكتب بدون عمولة للموظف
                 profit = Math.max(0, totalPrice - basePrice);
                 commission = 0;
                 debt = 0;
-                statusNote.classList.remove('hidden');
+                if (statusNote) statusNote.classList.remove('hidden');
             } else {
                 profit = totalPrice - basePrice;
                 commission = profit > 0 ? (profit * COMMISSION_RATE) : 0;
                 debt = Math.max(0, totalPrice - paidAmount);
-                statusNote.classList.add('hidden');
+                if (statusNote) statusNote.classList.add('hidden');
             }
 
             document.getElementById('preview-profit').innerText = profit.toFixed(2);
@@ -2101,7 +1875,7 @@
             document.getElementById('preview-debt').innerText = debt.toFixed(2);
         }
 
-        // دالة إضافة التذكرة الجديدة (مع التحقق المنطقي الصارم من المبالغ والمدفوعات)
+        // إضافة التذكرة الجديدة بالتاريخ والوقت الفعلي اللحظي
         function addNewSale() {
             const clientName = document.getElementById('client-name').value.trim();
             const clientPhone = document.getElementById('client-phone').value.trim();
@@ -2116,8 +1890,9 @@
             const basePrice = parseFloat(document.getElementById('base-price').value);
             const totalPrice = parseFloat(document.getElementById('total-price').value);
             const paidRaw = document.getElementById('paid-amount').value;
-            const saleEntryDate = document.getElementById('sale-entry-date').value || getTodayDateString();
-            const saleEntryTime = document.getElementById('sale-entry-time').value || '12:00';
+
+            // التقاط التاريخ والوقت الفعلي اللحظي للنظام وقت الحفظ
+            const { dateStr, time12, time24 } = getActualTimeStrings();
 
             if (!clientName || !clientPhone || !pnrCode || !airlineName || isNaN(basePrice) || isNaN(totalPrice)) {
                 showToast("يرجى تعبئة كافة الحقول المطلوبة (العميل، الجوال، PNR، شركة الطيران، والمبالغ)", "error");
@@ -2144,7 +1919,6 @@
                 showToast("تنبيه: سعر البيع الإجمالي أقل من التكلفة الأساسية (عملية بيع بخسارة)!", "warning");
             }
 
-            // قراءة مربعات الاختيار المستقلة (Checkboxes)
             const selectedAddons = [];
             if (document.getElementById('addon-baggage').checked) selectedAddons.push('وزن إضافي');
             if (document.getElementById('addon-meal').checked) selectedAddons.push('وجبة');
@@ -2157,8 +1931,9 @@
 
             const newTicket = normalizeTicketRecord({
                 id: Date.now(),
-                date: saleEntryDate,
-                time: saleEntryTime,
+                date: dateStr,
+                time: time12,
+                sortTime: time24,
                 employeeUsername: currentUser.username,
                 employeeName: currentUser.name,
                 clientName: clientName,
@@ -2179,10 +1954,11 @@
             localStorage.setItem('airline_pos_v2_db', JSON.stringify(salesDatabase));
 
             if (currentFilterMode === 'daily') {
-                document.getElementById('date-picker').value = saleEntryDate;
+                const dp = document.getElementById('date-picker');
+                if (dp) dp.value = dateStr;
             }
 
-            // تفريغ الحقول بعد الإضافة
+            // تفريغ الحقول وإعادة ضبط طريقة الدفع إلى الافتراضي (شبكة)
             document.getElementById('client-name').value = '';
             document.getElementById('client-phone').value = '';
             document.getElementById('pnr-code').value = '';
@@ -2190,6 +1966,10 @@
             document.getElementById('total-price').value = '';
             document.getElementById('paid-amount').value = '';
             document.getElementById('ticket-status').value = 'issue';
+            document.getElementById('payment-method').value = 'شبكة';
+            const defaultPayRadio = document.querySelector('input[name="entryPaymentMethodRadio"][value="شبكة"]');
+            if (defaultPayRadio) defaultPayRadio.checked = true;
+
             document.getElementById('addon-baggage').checked = false;
             document.getElementById('addon-meal').checked = false;
             document.getElementById('addon-seat').checked = false;
@@ -2201,7 +1981,7 @@
             calculateLivePreview();
 
             renderDashboard();
-            showToast("تم حفظ العملية وتحديث حسابات التقرير والعمولة بنجاح!");
+            showToast(`تم حفظ التذكرة بالتوقيت الفعلي (${dateStr} | ${time12}) بنجاح!`);
 
             if (autoSendWA) {
                 sendWhatsAppReceipt(newTicket.id);
@@ -2239,7 +2019,7 @@
                     <span>✈️ الحجز: <strong class="font-mono bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded">${escapeHTML(ticket.pnr)}</strong> — ${escapeHTML(ticket.airline)}</span>
                 </div>
                 <div class="flex flex-wrap justify-between gap-2 pt-1 border-t border-[#9E978E]">
-                    <span>الحالة الحالية: <strong>${statusLabels[ticket.status] || 'إصدار'}</strong></span>
+                    <span>الحالة: <strong>${statusLabels[ticket.status] || 'إصدار'}</strong></span>
                     <span>الإجمالي: <strong>${ticket.totalPrice.toFixed(2)}</strong></span>
                     <span>المدفوع: <strong class="text-emerald-700">${ticket.paidAmount.toFixed(2)}</strong></span>
                     <span>الدين المتبقي: <strong class="text-red-700">${ticket.remainingDebt.toFixed(2)}</strong></span>
@@ -2249,8 +2029,7 @@
             document.getElementById('modal-client-name').value = ticket.clientName || '';
             document.getElementById('modal-client-phone').value = ticket.clientPhone || '';
             document.getElementById('modal-pnr').value = ticket.pnr || '';
-            document.getElementById('modal-date').value = ticket.date || getTodayDateString();
-            document.getElementById('modal-time').value = ticket.time || '12:00';
+            document.getElementById('modal-readonly-datetime').value = `${ticket.date || ''} | ${ticket.time || ''}`;
 
             const airlineSel = document.getElementById('modal-airline-select');
             const airlineCust = document.getElementById('modal-airline-custom');
@@ -2314,6 +2093,7 @@
 
             Object.keys(sections).forEach(key => {
                 const el = document.getElementById(sections[key]);
+                if (!el) return;
                 if (key === action) {
                     el.classList.remove('hidden');
                 } else {
@@ -2393,8 +2173,6 @@
                 const cName = document.getElementById('modal-client-name').value.trim();
                 const cPhone = document.getElementById('modal-client-phone').value.trim();
                 const cPnr = document.getElementById('modal-pnr').value.trim().toUpperCase();
-                const cDate = document.getElementById('modal-date').value;
-                const cTime = document.getElementById('modal-time').value;
                 const airSel = document.getElementById('modal-airline-select').value;
                 const airCust = document.getElementById('modal-airline-custom').value.trim();
                 const finalAirline = (airSel === 'OTHER') ? airCust : airSel;
@@ -2406,8 +2184,6 @@
                 ticket.clientName = cName;
                 ticket.clientPhone = cPhone;
                 ticket.pnr = cPnr;
-                ticket.date = cDate || ticket.date;
-                ticket.time = cTime || ticket.time || '12:00';
                 ticket.airline = finalAirline;
 
             } else if (action === 'PAY_DEBT') {
@@ -2521,7 +2297,7 @@
                 `• رقم الحجز (PNR): *${ticket.pnr}*`,
                 `• شركة الطيران: *${ticket.airline}*`,
                 `• حالة التذكرة: *${statusLabels[ticket.status] || 'إصدار مؤكد'}*`,
-                `• التاريخ والوقت: ${ticket.date} (${ticket.time || '12:00'})`,
+                `• تاريخ ووقت العملية: ${ticket.date} (${ticket.time || ''})`,
                 addonsText,
                 `--------------------------------`,
                 `💰 *التفاصيل المالية:*`,
@@ -2538,8 +2314,8 @@
 
         function getActiveFilteredData() {
             const empFilter = document.getElementById('employee-filter').value;
-            const selectedDay = document.getElementById('date-picker').value;
-            const selectedMonth = document.getElementById('month-picker').value;
+            const selectedDay = document.getElementById('date-picker').value || getTodayDateString();
+            const selectedMonth = document.getElementById('month-picker').value || getCurrentMonthString();
             const dateFrom = document.getElementById('date-from').value;
             const dateTo = document.getElementById('date-to').value;
             const searchQuery = (document.getElementById('global-search-input').value || '').trim().toLowerCase();
@@ -2547,11 +2323,11 @@
             const statusFilter = document.getElementById('status-filter').value;
 
             let periodLabel = '';
-            let cleanDateTag = selectedDay || getTodayDateString();
+            let cleanDateTag = selectedDay;
 
-            if (searchQuery && searchAllDates) {
-                periodLabel = `نتائج البحث الشامل عن: "${searchQuery}" في كل التواريخ`;
-                cleanDateTag = `All_Dates_Search`;
+            if (searchAllDates) {
+                periodLabel = searchQuery ? `نتائج البحث الشامل عن: "${searchQuery}" في كل التواريخ` : `شامل كل التواريخ في السجل`;
+                cleanDateTag = `All_Dates`;
             } else if (currentFilterMode === 'daily') {
                 periodLabel = `ليوم: ${selectedDay}`;
                 cleanDateTag = selectedDay;
@@ -2565,7 +2341,7 @@
 
             const filteredSales = salesDatabase.map(normalizeTicketRecord).filter(sale => {
                 let matchPeriod = true;
-                if (!(searchQuery && searchAllDates)) {
+                if (!searchAllDates) {
                     if (currentFilterMode === 'daily') {
                         matchPeriod = (sale.date === selectedDay);
                     } else if (currentFilterMode === 'monthly') {
@@ -2576,9 +2352,9 @@
                 }
 
                 let matchEmp = true;
-                if (currentUser.role === 'admin') {
+                if (currentUser && currentUser.role === 'admin') {
                     matchEmp = (empFilter === 'ALL') || (sale.employeeUsername === empFilter);
-                } else {
+                } else if (currentUser) {
                     matchEmp = (sale.employeeUsername === currentUser.username);
                 }
 
@@ -2593,50 +2369,39 @@
 
                 let matchSearch = true;
                 if (searchQuery) {
-                    const haystack = `${sale.pnr} ${sale.clientName} ${sale.clientPhone} ${sale.airline} ${sale.employeeName}`.toLowerCase();
+                    const haystack = `${sale.pnr} ${sale.clientName} ${sale.clientPhone} ${sale.airline} ${sale.employeeName} ${sale.employeeUsername}`.toLowerCase();
                     matchSearch = haystack.includes(searchQuery);
                 }
 
                 return matchPeriod && matchEmp && matchStatus && matchSearch;
             });
 
-            // ترتيب التذاكر زمنياً حسب التاريخ والوقت معاً
             filteredSales.sort((a, b) => {
-                const dtA = `${a.date || ''} ${a.time || '00:00'}`;
-                const dtB = `${b.date || ''} ${b.time || '00:00'}`;
+                const dtA = `${a.date || ''} ${a.sortTime || a.time || '00:00'}`;
+                const dtB = `${b.date || ''} ${b.sortTime || b.time || '00:00'}`;
                 return dtA.localeCompare(dtB);
             });
             return { filteredSales, periodLabel, cleanDateTag, empFilter, selectedDay, selectedMonth, dateFrom, dateTo, searchQuery, searchAllDates };
         }
 
         function renderDashboard() {
-            const { filteredSales, periodLabel, empFilter, selectedDay, selectedMonth, dateFrom, dateTo, searchQuery, searchAllDates } = getActiveFilteredData();
+            if (!currentUser) return;
+            const { filteredSales, periodLabel, empFilter, selectedDay, selectedMonth, dateFrom, dateTo } = getActiveFilteredData();
 
-            if (currentFilterMode === 'daily' && selectedDay) {
-                document.getElementById('sale-entry-date').value = selectedDay;
+            if (usersDB[currentUser.username]) {
+                currentUser.name = usersDB[currentUser.username].name;
             }
-
-            const showDateColumn = (currentFilterMode !== 'daily') || (searchQuery && searchAllDates);
-            const thDate = document.getElementById('th-sale-date');
-            if (showDateColumn) {
-                thDate.classList.remove('hidden');
-            } else {
-                thDate.classList.add('hidden');
-            }
-
-            currentUser.name = usersDB[currentUser.username].name;
             updateVersionBadgeUI();
 
-            let targetReportOwner = currentUser.name;
+            let targetReportOwner = `${currentUser.name} (${currentUser.username})`;
             if (currentUser.role === 'admin') {
                 if (empFilter === 'ALL') {
-                    targetReportOwner = 'المدير العام (شامل جميع الموظفين)';
+                    targetReportOwner = `المدير العام (${currentUser.username}) — شامل جميع الموظفين`;
                 } else if (usersDB[empFilter]) {
-                    targetReportOwner = `تقرير الموظف: ${usersDB[empFilter].name}`;
+                    targetReportOwner = `تقرير المستفيد: ${usersDB[empFilter].name} (${empFilter})`;
                 }
             }
 
-            let reportMainTitle = '✈️ تقرير المبيعات والعمولات والذمم - مكتب الطيران';
             if (currentFilterMode === 'daily') {
                 document.getElementById('print-date-badge').innerText = selectedDay;
             } else if (currentFilterMode === 'monthly') {
@@ -2648,11 +2413,10 @@
                 document.getElementById('print-date-badge').innerText = `${dateFrom} ⬅ ${dateTo}`;
             }
 
-            document.getElementById('welcome-title').innerText = currentUser.name;
+            document.getElementById('welcome-title').innerText = `${currentUser.name}`;
             document.getElementById('report-date-subtitle').innerText = `التقرير المعتمد ${periodLabel}`;
             document.getElementById('table-section-title').innerText = `📋 جدول التقرير المفصل (${periodLabel})`;
-            document.getElementById('print-main-title').innerText = reportMainTitle;
-            document.getElementById('print-meta-info').innerText = `المسؤول / نطاق التقرير: ${targetReportOwner} | حرر بواسطة: ${currentUser.name}`;
+            document.getElementById('print-meta-info').innerText = `المستفيد / نطاق التقرير: ${targetReportOwner}`;
 
             const tbody = document.getElementById('sales-table-body');
             const tfoot = document.getElementById('sales-table-foot');
@@ -2671,10 +2435,7 @@
             let totalCommissionSum = 0;
 
             if (filteredSales.length === 0) {
-                let colSpan = 12;
-                if (currentUser.role === 'admin') colSpan++;
-                if (showDateColumn) colSpan++;
-
+                let colSpan = currentUser.role === 'admin' ? 14 : 13;
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="${colSpan}" class="py-10 text-center opacity-75 font-bold">
@@ -2706,41 +2467,46 @@
 
                     let statusBadge = '';
                     if (sale.status === 'issue') {
-                        statusBadge = `<span class="bg-emerald-100 text-emerald-950 border border-emerald-400 px-2 py-0.5 rounded-full text-[11px] font-extrabold">✅ إصدار</span>`;
+                        statusBadge = `<span class="bg-emerald-100 text-emerald-950 border border-emerald-500 px-2 py-0.5 rounded-full text-[11px] font-extrabold">✅ إصدار</span>`;
                     } else if (sale.status === 'reissue') {
-                        statusBadge = `<span class="bg-sky-100 text-sky-950 border border-sky-400 px-2 py-0.5 rounded-full text-[11px] font-extrabold">🔄 تعديل</span>`;
+                        statusBadge = `<span class="bg-sky-100 text-sky-950 border border-sky-500 px-2 py-0.5 rounded-full text-[11px] font-extrabold">🔄 تعديل</span>`;
                     } else if (sale.status === 'refund') {
-                        statusBadge = `<span class="bg-amber-200 text-amber-950 border border-amber-500 px-2 py-0.5 rounded-full text-[11px] font-extrabold">↩️ مسترجعة</span>`;
+                        statusBadge = `<span class="bg-amber-200 text-amber-950 border border-amber-600 px-2 py-0.5 rounded-full text-[11px] font-extrabold">↩️ مسترجعة</span>`;
                     } else if (sale.status === 'void') {
-                        statusBadge = `<span class="bg-red-200 text-red-950 border border-red-500 px-2 py-0.5 rounded-full text-[11px] font-extrabold">🚫 ملغاة</span>`;
+                        statusBadge = `<span class="bg-red-200 text-red-950 border border-red-600 px-2 py-0.5 rounded-full text-[11px] font-extrabold">🚫 ملغاة</span>`;
                     }
 
                     let paymentBadge = '';
                     if (sale.paymentMethod === 'كاش') {
-                        paymentBadge = `<span class="bg-emerald-100 text-emerald-950 border border-emerald-400 px-2 py-0.5 rounded-md text-[11px] font-extrabold">💵 كاش</span>`;
+                        paymentBadge = `<span class="bg-emerald-100 text-emerald-950 border border-emerald-500 px-2 py-0.5 rounded-md text-[11px] font-extrabold">💵 كاش</span>`;
                     } else if (sale.paymentMethod === 'شبكة') {
                         paymentBadge = `<span class="bg-[#EBE7E0] text-[#0F1A28] border border-[#9E978E] px-2 py-0.5 rounded-md text-[11px] font-extrabold">💳 شبكة</span>`;
                     } else if (sale.paymentMethod === 'تحويل') {
                         paymentBadge = `<span class="bg-amber-100 text-[#0F1A28] border border-[#C5A059] px-2 py-0.5 rounded-md text-[11px] font-extrabold">🏦 تحويل</span>`;
                     } else {
-                        paymentBadge = `<span class="bg-red-100 text-red-950 border border-red-400 px-2 py-0.5 rounded-md text-[11px] font-extrabold">📒 آجل/ذمم</span>`;
+                        paymentBadge = `<span class="bg-red-100 text-red-950 border border-red-500 px-2 py-0.5 rounded-md text-[11px] font-extrabold">📒 آجل/ذمم</span>`;
                     }
 
                     const addonsBadges = (sale.addons && sale.addons.length > 0)
                         ? `<div class="flex flex-wrap gap-1 mt-1">${sale.addons.map(a => `<span class="text-[10px] font-extrabold bg-[#FDF9F0] text-[#0F1A28] border border-[#C5A059] px-1.5 py-0.2 rounded">${escapeHTML(a)}</span>`).join('')}</div>`
                         : '';
 
-                    const displayEmpName = usersDB[sale.employeeUsername] ? usersDB[sale.employeeUsername].name : sale.employeeName;
+                    const displayEmpName = usersDB[sale.employeeUsername]
+                        ? `${usersDB[sale.employeeUsername].name} (${sale.employeeUsername})`
+                        : `${sale.employeeName} (${sale.employeeUsername || ''})`;
 
                     const tr = document.createElement('tr');
-                    tr.className = isRefundOrVoid ? "bg-red-500/10 opacity-80 transition" : "hover:bg-[#9E978E]/15 transition";
+                    tr.className = isRefundOrVoid ? "bg-red-500/10 transition" : "hover:bg-[#9E978E]/15 transition";
                     tr.innerHTML = `
                         <td class="py-2.5 px-2 font-extrabold">${index + 1}</td>
-                        ${showDateColumn ? `<td class="py-2.5 px-2 font-mono text-[11px] font-extrabold whitespace-nowrap">${escapeHTML(sale.date)} <span class="opacity-75">${escapeHTML(sale.time || '')}</span></td>` : ''}
+                        <td class="py-2.5 px-2 font-mono text-[11px] font-extrabold whitespace-nowrap" dir="ltr">
+                            <div>${escapeHTML(sale.date)}</div>
+                            <div class="text-[10px] text-[#C5A059] font-extrabold">${escapeHTML(sale.time || '')}</div>
+                        </td>
                         ${currentUser.role === 'admin' ? `<td class="py-2.5 px-2 font-extrabold">${escapeHTML(displayEmpName)}</td>` : ''}
                         <td class="py-2.5 px-2">
                             <div class="font-extrabold">${escapeHTML(sale.clientName)}</div>
-                            <div class="text-[11px] font-mono font-bold opacity-80">${escapeHTML(sale.clientPhone)}</div>
+                            <div class="text-[11px] font-mono font-bold">${escapeHTML(sale.clientPhone)}</div>
                         </td>
                         <td class="py-2.5 px-2">
                             <span class="font-mono font-extrabold bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded text-[11px]">${escapeHTML(sale.pnr || '-')}</span>
@@ -2749,10 +2515,10 @@
                         </td>
                         <td class="py-2.5 px-2">${statusBadge}</td>
                         <td class="py-2.5 px-2">${paymentBadge}</td>
-                        <td class="py-2.5 px-2 font-bold ${isRefundOrVoid ? 'line-through opacity-60' : ''}">${sale.basePrice.toFixed(2)}</td>
-                        <td class="py-2.5 px-2 font-extrabold ${isRefundOrVoid ? 'line-through opacity-60' : ''}">${sale.totalPrice.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-bold ${isRefundOrVoid ? 'line-through' : ''}">${sale.basePrice.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-extrabold ${isRefundOrVoid ? 'line-through' : ''}">${sale.totalPrice.toFixed(2)}</td>
                         <td class="py-2.5 px-2 font-extrabold text-emerald-700">${sale.paidAmount.toFixed(2)}</td>
-                        <td class="py-2.5 px-2 font-extrabold ${sale.remainingDebt > 0 ? 'text-red-700 underline' : 'opacity-60'}">${sale.remainingDebt.toFixed(2)}</td>
+                        <td class="py-2.5 px-2 font-extrabold ${sale.remainingDebt > 0 ? 'text-red-700 underline' : ''}">${sale.remainingDebt.toFixed(2)}</td>
                         <td class="py-2.5 px-2 font-extrabold">${sale.profit.toFixed(2)}</td>
                         <td class="py-2.5 px-2 font-extrabold ${isRefundOrVoid ? 'text-red-700' : 'text-emerald-700'}">
                             ${sale.commission.toFixed(2)}
@@ -2760,7 +2526,7 @@
                         </td>
                         <td class="py-2.5 px-2 text-center no-print">
                             <div class="flex items-center justify-center gap-1.5">
-                                <button type="button" onclick="sendWhatsAppReceipt(${sale.id})" class="bg-emerald-700 hover:bg-emerald-800 text-white px-2.5 py-1 rounded-lg transition text-[11px] font-extrabold shrink-0" title="إرسال إيصال للعميل عبر واتساب">
+                                <button type="button" onclick="sendWhatsAppReceipt(${sale.id})" class="bg-emerald-700 hover:bg-emerald-800 text-white px-2.5 py-1 rounded-lg transition text-[11px] font-extrabold shrink-0">
                                     💬 واتساب
                                 </button>
                                 <select onchange="handleQuickTableAction(this, ${sale.id})" aria-label="اختر تعديل للتذكرة"
@@ -2779,9 +2545,7 @@
                     tbody.appendChild(tr);
                 });
 
-                let labelColSpan = 5;
-                if (showDateColumn) labelColSpan++;
-                if (currentUser.role === 'admin') labelColSpan++;
+                let labelColSpan = currentUser.role === 'admin' ? 7 : 6;
 
                 tfoot.innerHTML = `
                     <tr>
@@ -2811,13 +2575,15 @@
             document.getElementById('sum-commission').innerText = totalCommissionSum.toFixed(2);
         }
 
-        // دالة تصدير التقرير المفلتر حالياً إلى ملف Excel (CSV) بترميز UTF-8 BOM لدعم العربية
         function exportToExcelCSV() {
             const { filteredSales, cleanDateTag } = getActiveFilteredData();
             if (filteredSales.length === 0) {
                 showToast("لا توجد بيانات في التقرير الحالي لتصديرها إلى Excel!", "warning");
                 return;
             }
+
+            const { dateStr, time24 } = getActualTimeStrings();
+            const safeTime = time24.replace(/:/g, '-');
 
             const statusArabic = {
                 'issue': 'إصدار مؤكد',
@@ -2829,8 +2595,8 @@
             const headers = [
                 "م",
                 "التاريخ",
-                "الوقت",
-                "الموظف",
+                "وقت العملية الفعلي",
+                "حساب المستفيد (الموظف)",
                 "اسم العميل",
                 "رقم الجوال",
                 "رقم الحجز PNR",
@@ -2860,11 +2626,14 @@
                 }
                 totalProfit += s.profit;
 
-                const empName = usersDB[s.employeeUsername] ? usersDB[s.employeeUsername].name : s.employeeName;
+                const empName = usersDB[s.employeeUsername]
+                    ? `${usersDB[s.employeeUsername].name} (${s.employeeUsername})`
+                    : `${s.employeeName} (${s.employeeUsername || ''})`;
+
                 return [
                     idx + 1,
                     s.date,
-                    s.time || '12:00',
+                    s.time || '',
                     empName,
                     s.clientName,
                     s.clientPhone,
@@ -2882,9 +2651,8 @@
                 ].map(escapeCSV).join(',');
             });
 
-            // إضافة صف الإجمالي المحاسبي في نهاية ملف الإكسل
             const footerRow = [
-                "الإجمالي الصافي", "", "", "", "", "", "", "", "", "", "",
+                "الإجمالي الصافي", cleanDateTag, time24, `${currentUser.name} (${currentUser.username})`, "", "", "", "", "", "", "",
                 totalBase.toFixed(2),
                 totalSales.toFixed(2),
                 totalPaid.toFixed(2),
@@ -2897,10 +2665,9 @@
             const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
 
-            const empClean = currentUser.name.replace(/\s+/g, '_');
             const link = document.createElement('a');
             link.href = url;
-            link.download = `Report_Excel_v${backupVersionCounter}_${cleanDateTag}_${empClean}.csv`;
+            link.download = `Report_${dateStr}_${safeTime}_${currentUser.username}.csv`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -2910,14 +2677,14 @@
         }
 
         function exportBackupFile() {
-            const todayStr = getTodayDateString();
-            const currentVer = backupVersionCounter;
-            const empNameClean = currentUser.name.replace(/\s+/g, '_');
+            const { dateStr, time12, time24 } = getActualTimeStrings();
+            const safeTime = time24.replace(/:/g, '-');
+            const stamp = getBeneficiaryVersionStamp();
 
             const backupPayload = {
-                backupVersion: currentVer,
-                backupDate: todayStr,
-                exportedAtTime: new Date().toLocaleTimeString('ar-SA'),
+                versionStamp: stamp,
+                backupDate: dateStr,
+                exportedAtTime: time12,
                 employeeUsername: currentUser.username,
                 employeeName: currentUser.name,
                 systemSignature: "Designed by Eng. Bahaa Al-Sheikh",
@@ -2929,7 +2696,7 @@
             const blob = new Blob([dataStr], { type: "application/json;charset=utf-8" });
             const url = URL.createObjectURL(blob);
 
-            const fileName = `Backup_v${currentVer}_${todayStr}_${empNameClean}.json`;
+            const fileName = `Backup_${dateStr}_${safeTime}_${currentUser.username}.json`;
 
             const downloadLink = document.createElement('a');
             downloadLink.href = url;
@@ -2939,11 +2706,8 @@
             document.body.removeChild(downloadLink);
             URL.revokeObjectURL(url);
 
-            backupVersionCounter = currentVer + 1;
-            localStorage.setItem('airline_backup_version_num', String(backupVersionCounter));
             updateVersionBadgeUI();
-
-            showToast(`تم تحميل النسخة الاحتياطية (نسخة #${currentVer} - ${todayStr} - ${currentUser.name})`);
+            showToast(`تم حفظ النسخة الاحتياطية (${stamp})`);
         }
 
         function triggerRestoreFile() {
@@ -2971,24 +2735,15 @@
                         usersDB = imported.usersDB;
                         localStorage.setItem('airline_users_v3_db', JSON.stringify(usersDB));
                         updateEmployeeFilterNames();
-                        // تحديث اسم المستخدم النشط في الجلسة الحالية فوراً
                         if (currentUser && usersDB[currentUser.username]) {
                             currentUser.name = usersDB[currentUser.username].name;
                             sessionStorage.setItem('airline_active_user', JSON.stringify(currentUser));
                         }
                     }
 
-                    if (imported.backupVersion) {
-                        backupVersionCounter = parseInt(imported.backupVersion, 10) + 1;
-                        localStorage.setItem('airline_backup_version_num', String(backupVersionCounter));
-                    }
-
-                    const verInfo = imported.backupVersion ? `نسخة #${imported.backupVersion}` : 'نسخة مستردة';
-                    const dateInfo = imported.backupDate || 'تاريخ غير محدد';
-                    const empInfo = imported.employeeName || 'غير محدد';
-
+                    const stampInfo = imported.versionStamp || `${imported.backupDate || ''} | ${imported.exportedAtTime || ''} | ${imported.employeeName || ''}`;
                     renderDashboard();
-                    showToast(`تمت الاستعادة بنجاح (${verInfo} | ${dateInfo} | ${empInfo})`);
+                    showToast(`تمت الاستعادة بنجاح (${stampInfo})`);
                 } catch (err) {
                     console.error("Restore error:", err);
                     showToast("حدث خطأ أثناء قراءة ملف النسخة الاحتياطية!", "error");
@@ -2998,10 +2753,8 @@
         }
 
         function buildEmailReportData() {
-            const { filteredSales, periodLabel, cleanDateTag } = getActiveFilteredData();
-            const todayStr = getTodayDateString();
-            const verNum = backupVersionCounter;
-            const empName = currentUser.name;
+            const { filteredSales, periodLabel } = getActiveFilteredData();
+            const stamp = getBeneficiaryVersionStamp();
 
             let activeCount = 0, refundCount = 0, totalSales = 0, totalProfit = 0, totalComm = 0, totalCash = 0, totalCard = 0, totalDebt = 0;
             filteredSales.forEach(s => {
@@ -3019,12 +2772,10 @@
                 }
             });
 
-            const subject = `تقرير مبيعات الطيران | نسخة #${verNum} - التاريخ: ${todayStr} - الموظف: ${empName}`;
+            const subject = `تقرير مبيعات الطيران | ${stamp}`;
             const bodyLines = [
                 `=== تقرير نظام مبيعات وعمولات مكتب الطيران ===`,
-                `• رقم النسخة: v${verNum}`,
-                `• تاريخ الإرسال: ${todayStr}`,
-                `• اسم الموظف: ${empName}`,
+                `• ختم النسخة والمستفيد: ${stamp}`,
                 `• نطاق التقرير: ${periodLabel}`,
                 `----------------------------------------`,
                 `📊 ملخص الإحصائيات والمبالغ:`,
@@ -3041,7 +2792,7 @@
             return {
                 subject,
                 body: bodyLines.join('\n'),
-                metaLabel: `نسخة #${verNum} — ${cleanDateTag} — ${empName}`
+                metaLabel: stamp
             };
         }
 
@@ -3089,11 +2840,11 @@
                 item.innerHTML = `
                     <div class="flex justify-between items-center border-b border-[#9E978E] pb-2">
                         <span class="font-extrabold text-sm">${roleLabel}</span>
-                        <span class="text-xs font-mono bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded">اسم الدخول: <strong>${usernameKey}</strong></span>
+                        <span class="text-xs font-mono bg-[#192A3E] text-[#C5A059] px-2 py-0.5 rounded">حساب الدخول: <strong>${usernameKey}</strong></span>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs theme-label mb-1">الاسم الظاهر في التقرير:</label>
+                            <label class="block text-xs theme-label mb-1">اسم المستفيد الظاهر:</label>
                             <input type="text" id="edit-name-${usernameKey}" value="${escapeHTML(u.name)}" class="w-full px-3 py-1.5 rounded-lg theme-input text-sm">
                         </div>
                         <div>
@@ -3131,11 +2882,13 @@
         }
 
         function updateEmployeeFilterNames() {
-            if (usersDB['empA']) {
-                document.getElementById('filter-opt-empA').innerText = `👤 ${usersDB['empA'].name} فقط`;
+            const optA = document.getElementById('filter-opt-empA');
+            const optB = document.getElementById('filter-opt-empB');
+            if (optA && usersDB['empA']) {
+                optA.innerText = `👤 ${usersDB['empA'].name} (empA) فقط`;
             }
-            if (usersDB['empB']) {
-                document.getElementById('filter-opt-empB').innerText = `👤 ${usersDB['empB'].name} فقط`;
+            if (optB && usersDB['empB']) {
+                optB.innerText = `👤 ${usersDB['empB'].name} (empB) فقط`;
             }
         }
 
@@ -3150,6 +2903,7 @@
         }
 
         function printReport() {
+            updateVersionBadgeUI();
             window.print();
         }
     </script>
